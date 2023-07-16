@@ -1,0 +1,19 @@
+{
+  "name": "full-spectrum-fitness",
+  "version": "1.0.0",
+  "description": "Full Stack Fitness and Mental Health Journal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhardin378/Full-Spectrum-Fitness.git"
+  },
+  "author": "Ryan Hardin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rhardin378/Full-Spectrum-Fitness/issues"
+  },
+  "homepage": "https://github.com/Rhardin378/Full-Spectrum-Fitness#readme"
+}
