@@ -23,11 +23,6 @@ mongoose.connect(url).then(()=> {
 //     reps: Number,
 //     weight: Number,
 // })
-//workout schema
-// const workoutSchema = new Schema ({
-//     name: String,
-//     exercises: [{type: Schema.Types.ObjectId, ref:"Exercise"}]
-// })
 
 
 
@@ -44,21 +39,29 @@ mongoose.connect(url).then(()=> {
 const exerciseSchema = new Schema({
     name: String,
     bodyPart: String, 
-    sets: [   { reps: Number,
-        weight: Number,
-    }],    
+    sets: [{
+         reps: Number, weight: Number
+        }],
+    Date: Date,
     })
 
+// workout schema
+const workoutSchema = new Schema ({
+    name: String,
+    Date: Date,
+    exercises: [{type: Schema.Types.ObjectId, ref:"Exercise"}]
+})
 
 
 const Exercise = mongoose.model('Exercise', exerciseSchema)
-
+const Workout = mongoose.model('Workout', workoutSchema)
 
 const makeExercise = async() => {
     const exercise = new Exercise({ name: 'Leg Press', bodyPart: 'Legs' })
     exercise.sets.push({reps: 10, weight: 100 })
 const res = await exercise.save()
 console.log(res)
+mongoose.connection.close()
 }
 
 const addSet = async() => { 
@@ -66,11 +69,30 @@ const exercise = await Exercise.findOne({name: 'Leg Press'})
 exercise.sets.push({reps: 13, weight: 103})
 const res = await exercise.save()
 console.log(res)
+mongoose.connection.close()
+}
+
+const makeWorkout = async() => {
+    const workout = new Workout({ name: 'Leg Day', Date: new Date() })
+    const exercise = await Exercise.findOne({name: 'Leg Press'})
+    workout.exercises.push(exercise)
+    const res = await workout.save()
+    console.log(res)
+    mongoose.connection.close()
+}
+
+const addExercise = async() => {
+    const workout = await Workout.findOne({name: 'Leg Day'})
+    const exercise = await Exercise.findById('64b8a4c664d75dddfcbd1720')
+    workout.exercises.push(exercise)
+    const res = await workout.save()
+    console.log(res)
+    mongoose.connection.close()
 }
 
 // makeExercise()
-addSet()
-
+// makeWorkout()
+addExercise()
 
 // Exercise.find({}).then(result=> {
 //     result.forEach(exercise=> {
