@@ -16,14 +16,6 @@ mongoose.connect(url).then(()=> {
     console.log(`connected to DB on ${url}`)
 })
 
-//define a schema
-
-//set schema
-// const setSchema = new Schema({
-//     reps: Number,
-//     weight: Number,
-// })
-
 
 
 // measurements schema
@@ -33,7 +25,6 @@ mongoose.connect(url).then(()=> {
 
 
 //define a model
-// const Set = mongoose.model('Set', setSchema)
 
 //exercise schema
 const exerciseSchema = new Schema({
@@ -55,15 +46,15 @@ const workoutSchema = new Schema ({
 
 const Exercise = mongoose.model('Exercise', exerciseSchema)
 const Workout = mongoose.model('Workout', workoutSchema)
-
+// helper function to create a test exercise
 const makeExercise = async() => {
     const exercise = new Exercise({ name: 'Leg Press', bodyPart: 'Legs' })
-    exercise.sets.push({reps: 10, weight: 100 })
+    exercise.sets.push({reps: 10, weight: 100 }, {reps:30, weight: 200}, {reps: 10, weight: 300})
 const res = await exercise.save()
 console.log(res)
 mongoose.connection.close()
 }
-
+// helper function to add a set to an exercise
 const addSet = async() => { 
 const exercise = await Exercise.findOne({name: 'Leg Press'})
 exercise.sets.push({reps: 13, weight: 103})
@@ -71,19 +62,19 @@ const res = await exercise.save()
 console.log(res)
 mongoose.connection.close()
 }
-
+// helper function to create a test workout
 const makeWorkout = async() => {
     const workout = new Workout({ name: 'Leg Day', Date: new Date() })
-    const exercise = await Exercise.findOne({name: 'Leg Press'})
-    workout.exercises.push(exercise)
+    // const exercise = await Exercise.findOne({name: 'Leg Press'})
+    // workout.exercises.push(exercise)
     const res = await workout.save()
     console.log(res)
     mongoose.connection.close()
 }
-
+//helper function to add an exercise to a workout 
 const addExercise = async() => {
     const workout = await Workout.findOne({name: 'Leg Day'})
-    const exercise = await Exercise.findById('64b8a4c664d75dddfcbd1720')
+    const exercise = await Exercise.findById('64c07f7f533f51dcc34f0aa2')
     workout.exercises.push(exercise)
     const res = await workout.save()
     console.log(res)
@@ -92,31 +83,13 @@ const addExercise = async() => {
 
 // makeExercise()
 // makeWorkout()
-addExercise()
+// addExercise()
 
-// Exercise.find({}).then(result=> {
-//     result.forEach(exercise=> {
-//         console.log(`${exercise.name}`)  
-//     } )
-// }
-//     )
-// const Note = mongoose.model('Note', noteSchema)
-
-//create new workout object in a variable to save
-// const workout = new Workout({
-//     []
-// })
-
-//save and console log    example   workout.save().then(result => { 
-    // console.log('workout saved!')
-    //   mongoose.connection.close()
-    // })
-
-// 
-
-// Note.find({}).then(result => {
-//     result.forEach(note => {
-//         console.log(`${note.content} important: ${note.important}`)
-//     })
+//find all workouts and populate the exercises
+// Workout.find({}).populate('exercises').then(result => { 
+// result.forEach(element => {
+    // for each workout, print the exercises' sets 
+//     element.exercises.forEach(exercise => { console.log(exercise.sets)})    
+// });
 //     mongoose.connection.close()
 // })
