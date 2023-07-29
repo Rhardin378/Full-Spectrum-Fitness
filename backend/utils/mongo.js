@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Exercise = require('../models/exercise')
 const { Schema } = mongoose;
 
 if (process.argv.length<3) {
@@ -22,20 +23,6 @@ mongoose.connect(url).then(()=> {
 
 //Journal schema
 
-
-
-//define a model
-
-//exercise schema
-const exerciseSchema = new Schema({
-    name: String,
-    bodyPart: String, 
-    sets: [{
-         reps: Number, weight: Number
-        }],
-    Date: Date,
-    })
-
 // workout schema
 const workoutSchema = new Schema ({
     name: String,
@@ -44,7 +31,6 @@ const workoutSchema = new Schema ({
 })
 
 
-const Exercise = mongoose.model('Exercise', exerciseSchema)
 const Workout = mongoose.model('Workout', workoutSchema)
 // helper function to create a test exercise
 const makeExercise = async() => {
@@ -83,7 +69,7 @@ const addExercise = async() => {
 
 // makeExercise()
 // makeWorkout()
-// addExercise()
+addExercise()
 
 //find all workouts and populate the exercises
 // Workout.find({}).populate('exercises').then(result => { 
