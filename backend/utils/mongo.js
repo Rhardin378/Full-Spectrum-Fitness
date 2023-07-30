@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Exercise = require('../models/exercise')
 const Workout = require('../models/workout')
+const Measurements = require('../models/measurements')
 const { Schema } = mongoose;
 
 if (process.argv.length<3) {
@@ -20,7 +21,6 @@ mongoose.connect(url).then(()=> {
 
 
 
-// measurements schema
 
 //Journal schema
 
@@ -60,11 +60,21 @@ const addExercise = async() => {
     mongoose.connection.close()
 }
 
+const addMeasurements = async() => {
+    const measurements = new Measurements({weight: 200, neck: 15, chest: 40, waist: 35, hips: 40, armR: 15, armL: 15, thighR: 25, thighL: 25, calfR: 15, calfL: 15, Date: new Date()})
+    const res = await measurements.save()
+    console.log(res)
+    mongoose.connection.close()
+}
+
+addMeasurements()
+
 // makeExercise()
-makeWorkout()
+// makeWorkout()
 // addExercise()
 
-//find all workouts and populate the exercises
+//FIND ALL WORKOUTS AND POPULATE EXERCISES
+
 // Workout.find({}).populate('exercises').then(result => { 
 // result.forEach(element => {
     // for each workout, print the exercises' sets 
