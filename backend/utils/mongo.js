@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Exercise = require('../models/exercise')
 const Workout = require('../models/workout')
 const Measurements = require('../models/measurements')
+const MhJournal = require('../models/mhJournal')
 const { Schema } = mongoose;
 
 if (process.argv.length<3) {
@@ -60,6 +61,8 @@ const addExercise = async() => {
     mongoose.connection.close()
 }
 
+//helper function to create test measurements
+
 const addMeasurements = async() => {
     const measurements = new Measurements({weight: 200, neck: 15, chest: 40, waist: 35, hips: 40, armR: 15, armL: 15, thighR: 25, thighL: 25, calfR: 15, calfL: 15, Date: new Date()})
     const res = await measurements.save()
@@ -67,11 +70,21 @@ const addMeasurements = async() => {
     mongoose.connection.close()
 }
 
-addMeasurements()
+const addMhJournal = async() => {
+    const mhJournal = new MhJournal({intimateRelationships: 'good', familyRelationships: 'good', career: 'good', health: 'good', physicalWellBeing: 'good', mentalWellBeing: 'good', drugAndAlcoholUse: 'good', productivityOutsideOfCareer: 'good', createdAt: new Date()})
+    const res = await mhJournal.save()
+    console.log(res)
+    mongoose.connection.close()
+}
+
+//Functions to create test data
+// addMeasurements()
 
 // makeExercise()
 // makeWorkout()
 // addExercise()
+
+addMhJournal()
 
 //FIND ALL WORKOUTS AND POPULATE EXERCISES
 
