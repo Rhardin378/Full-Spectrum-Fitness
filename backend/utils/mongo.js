@@ -89,12 +89,16 @@ const addMhJournal = async() => {
 //FIND ALL WORKOUTS AND POPULATE EXERCISES
 
 //working find function for finding all workouts and populating exercises
-Workout.find({}).populate('exercises').then(result => {
-    console.log(`workout has ${result.length} exercises`)
-    console.log(result.forEach(workout => {
-        console.log(`${workout.name}`)
-        console.log(`${workout.exercises}`)
-    }))
+// Workout.find({}).populate('exercises').then(result => {
+//     console.log(`workout has ${result.length} exercises`)
+//     console.log(result.forEach(workout => {
+//         console.log(`${workout.name}`)
+//         console.log(`${workout.exercises}`)
+//     }))
+//     mongoose.connection.close()
+// })
+
+MhJournal.find({}).then(result => {
+    console.log(result)
     mongoose.connection.close()
 })
-
