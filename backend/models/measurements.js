@@ -26,4 +26,4 @@ progressPhotos: [progressPhotosSchema],
 // user: {type: Schema.Types.ObjectId, ref:"User"}
 })
 
-module.exports = mongoose.model("measurements", measurementsSchema)
+module.exports = mongoose.model("Measurements", measurementsSchema)

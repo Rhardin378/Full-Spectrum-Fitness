@@ -10,6 +10,5 @@ const exerciseSchema = new Schema({
   Date: Date,
   })
 
-const Exercise = mongoose.model("exercise", exerciseSchema)
-
-module.exports = Exercise;
+ 
+module.exports = mongoose.model("Exercise", exerciseSchema)

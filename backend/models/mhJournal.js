@@ -13,4 +13,4 @@ const mhJournalSchema = new Schema({
     createdAt: Date
 })
 
-module.exports = mongoose.model("mhJournal", mhJournalSchema)
+module.exports = mongoose.model("MhJournal", mhJournalSchema)

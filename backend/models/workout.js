@@ -10,5 +10,5 @@ const workoutSchema = new Schema ({
 
 //may need to add helper function to delete exercises from workout when workout is deleted
 
-module.exports = mongoose.model("workout", workoutSchema)
+module.exports = mongoose.model("Workout", workoutSchema)
 
