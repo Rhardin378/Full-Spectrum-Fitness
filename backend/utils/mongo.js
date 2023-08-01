@@ -98,7 +98,14 @@ const addMhJournal = async() => {
 //     mongoose.connection.close()
 // })
 
-MhJournal.find({}).then(result => {
+// find all mhJournals
+// MhJournal.find({}).then(result => {
+//     console.log(result)
+//     mongoose.connection.close()
+// })
+
+//find all measurements
+Measurements.find({}).then(result => {
     console.log(result)
-    mongoose.connection.close()
+        mongoose.connection.close()
 })
