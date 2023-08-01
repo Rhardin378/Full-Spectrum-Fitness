@@ -4,7 +4,7 @@ const logger = require('morgan')
 const cors = require('cors')
 const config = require('./utils/config')
 const mongoose = require('mongoose')
-
+const Workout = require('./models/workout')
 
 app.use(cors())
 
@@ -18,6 +18,12 @@ mongoose.connect(config.MONGO_DB_URI)
   .catch((error) => {
     console.error('error connecting to MongoDB:', error.message)
   })
+
+  app.get('/api/workouts', (req, res) => {
+    Workout.find({}).then(workouts => {
+        res.json(workouts)
+    })
+    })
 
 const unknownEndpoint = (request, response) => {
     response.status(404).send({error: 'unknown endpoint'})
