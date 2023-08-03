@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Exercise = require("./exercise")
 const { Schema } = mongoose;
 
 const workoutSchema = new Schema ({
@@ -17,5 +16,6 @@ workoutSchema.set('toJSON', {
       delete returnedObject.__v
     }
   })
+
 module.exports = mongoose.model("Workout", workoutSchema)
 

@@ -12,7 +12,7 @@ const exerciseSchema = new Schema({
 
   exerciseSchema.set('toJSON', {
     transform: (document, returnedObject) => {
-      returnedObject.id = returnedObject._id.toString()
+      returnedObject._id = returnedObject._id.toString()
       delete returnedObject._id
       delete returnedObject.__v
     }

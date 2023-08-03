@@ -29,7 +29,6 @@ mongoose.connect(url).then(()=> {
 // helper function to create a test exercise
 const makeExercise = async() => {
     const exercise = new Exercise({ name: 'Leg Press', bodyPart: 'Legs' })
-    exercise.sets.push({reps: 10, weight: 100 }, {reps:30, weight: 200}, {reps: 10, weight: 300})
 const res = await exercise.save()
 console.log(res)
 mongoose.connection.close()
@@ -54,7 +53,7 @@ const makeWorkout = async() => {
 //helper function to add an exercise to a workout 
 const addExercise = async() => {
     const workout = await Workout.findOne({name: 'Leg Day'})
-    const exercise = await Exercise.findById('64c07f7f533f51dcc34f0aa2')
+    const exercise = await Exercise.findById('64cb99a7da3038e0dba93b32')
     workout.exercises.push(exercise)
     const res = await workout.save()
     console.log(res)
@@ -81,6 +80,7 @@ const addMhJournal = async() => {
 // addMeasurements()
 
 // makeExercise()
+// addSet()
 // makeWorkout()
 // addExercise()
 
@@ -88,7 +88,11 @@ const addMhJournal = async() => {
 
 //FIND ALL WORKOUTS AND POPULATE EXERCISES
 
-//working find function for finding all workouts and populating exercises
+// Workout.find({}).populate('exercises').then(result => {
+//     console.log(result)
+//     mongoose.connection.close()
+// })
+    //working find function for finding all workouts and populating exercises
 // Workout.find({}).populate('exercises').then(result => {
 //     console.log(`workout has ${result.length} exercises`)
 //     console.log(result.forEach(workout => {
@@ -105,7 +109,7 @@ const addMhJournal = async() => {
 // })
 
 //find all measurements
-Measurements.find({}).then(result => {
-    console.log(result)
-        mongoose.connection.close()
-})
+// Measurements.find({}).then(result => {
+//     console.log(result)
+//         mongoose.connection.close()
+// })
