@@ -20,7 +20,7 @@ mongoose.connect(config.MONGO_DB_URI)
   })
 
   app.get('/api/workouts', (req, res) => {
-    Workout.find({}).then(workouts => {
+    Workout.find({}).populate('exercises').then(workouts => {
         res.json(workouts)
     })
     })
