@@ -1,0 +1,1 @@
+GET http://localhost:2121/api/workouts/64cda1c9d970dc4c62b9fef6
