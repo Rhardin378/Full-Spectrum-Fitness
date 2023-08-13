@@ -26,8 +26,9 @@ workoutsRouter.get('/', async (req, res, next) => {
 // // get a single workout
 
 workoutsRouter.get('/:id', async (req, res, next) => {
+	const {id} = req.params
 	try {
-		const workout = await Workout.findById(req.params.id).populate('exercises')
+		const workout = await Workout.findById(id).populate('exercises')
 		if (workout) {
 			res.json(workout)
 		} else {
@@ -38,21 +39,20 @@ workoutsRouter.get('/:id', async (req, res, next) => {
 		console.log(err)
 		return next(err)
 	}
-	mongoose.connection.close()
 })
 
 // create a workout
 
 workoutsRouter.post('/', async (req, res, next) => {
-	const body = req.body
+	const {body, name, date} = req
 	try {
 		if(body === undefined) {
 			return res.status(400).json({ error: 'content missing' })
 		}
 
 		const workout = new Workout({
-			name: body.name,
-			date: body.date,
+			name: name,
+			date: date,
 			exercises: []
 
 		})
@@ -67,12 +67,34 @@ workoutsRouter.post('/', async (req, res, next) => {
 })
 
 
-// update a workout
+// update a workout name and date patch instead of put because we are only updating a portion of the workout not exercises
 
-//add an exercise to a workout
-
-// delete an exercise from a workout
+workoutsRouter.patch('/:id', async (req, res, next) => {
+	const { id } = req.params
+	const { name, date } = req.body
+	try {
+		const workout = await Workout.findByIdAndUpdate(
+			id,
+			{ name: name, date: date },
+			{ new: true, runValidators: true, context: 'query' })
+		res.json(workout)
+	}
+	catch (err) {
+		return next(err)
+	}
+})
 
 // delete a workout
+workoutsRouter.delete('/:id', async (req, res, next) => {
+	const { id } = req.params
+	try {
+		const deletedWorkout = await Workout.findByIdAndRemove(id)
+		res.status(204).end()
+	} catch (err) {
+		return next(err)
+	}
+})
+
+
 
 module.exports = workoutsRouter

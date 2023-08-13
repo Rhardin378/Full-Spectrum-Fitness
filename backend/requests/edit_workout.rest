@@ -1,0 +1,8 @@
+Patch http://localhost:2121/api/workouts/64cda1c9d970dc4c62b9fef6
+Content-Type: application/json
+
+{
+    "name": "CJ Pump Series Leg Day 1"
+    
+}
+
