@@ -11,7 +11,7 @@ const middleware = require('./utils/middleware')
 app.use(cors())
 
 app.use(express.json())
-
+app.use(middleware.requestLogger)
 app.use(morgan('dev'))
 
 mongoose.connect(config.MONGO_DB_URI)
