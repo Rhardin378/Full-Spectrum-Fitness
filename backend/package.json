@@ -8,7 +8,7 @@
     "start": "nodemon index.js",
     "dev": "nodemon index.js",
     "debug": "nodemon --inspect index.js",
-    "lint": "eslint . --fix"
+    "lint": "eslint . "
   },
   "repository": {
     "type": "git",

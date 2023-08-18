@@ -2,6 +2,6 @@ POST http://localhost:2121/api/workouts/
 Content-Type: application/json
 
 {
-    "name": "Test Workout #23468"
+    "name": "Test Workout #23468f"
     
 }

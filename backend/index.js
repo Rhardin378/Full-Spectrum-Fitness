@@ -6,6 +6,8 @@ const config = require('./utils/config')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 const workoutsRouter = require('./controllers/workouts')
+const ExercisesRouter = require('./controllers/exercises')
+const AddExercisesRouter = require('./controllers/addExercises')
 const middleware = require('./utils/middleware')
 
 app.use(cors())
@@ -15,12 +17,12 @@ app.use(middleware.requestLogger)
 app.use(morgan('dev'))
 
 mongoose.connect(config.MONGO_DB_URI)
-	.then(() => {
-		console.log('connected to MongoDB')
-	})
-	.catch((error) => {
-		console.error('error connecting to MongoDB:', error.message)
-	})
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.error('error connecting to MongoDB:', error.message)
+  })
 
 // get all workouts route
 //get single workout route
@@ -29,10 +31,12 @@ mongoose.connect(config.MONGO_DB_URI)
 
 
 app.use('/api/workouts', workoutsRouter)
+app.use('/api/workouts/:workoutId/exercises', AddExercisesRouter)
+app.use('/api/exercises', ExercisesRouter )
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
 app.listen(config.PORT, () => {
-	console.log(`listening on port: ${config.PORT}`)
+  console.log(`listening on port: ${config.PORT}`)
 })

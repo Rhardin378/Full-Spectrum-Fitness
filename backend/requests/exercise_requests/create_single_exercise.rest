@@ -1,0 +1,8 @@
+POST http://localhost:2121/api/workouts/64d96dbb4da5291e60434278/exercises
+Content-Type: application/json
+
+{
+    "name": "Bench Press",
+    "bodyPart": "Chest"
+    
+}

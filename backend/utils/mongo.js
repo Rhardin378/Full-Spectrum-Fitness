@@ -6,8 +6,8 @@ const MhJournal = require('../models/mhJournal')
 const { Schema } = mongoose
 
 if (process.argv.length<3) {
-	console.log('give password as argument')
-	process.exit(1)
+  console.log('give password as argument')
+  process.exit(1)
 }
 
 const password = process.argv[2]
@@ -17,7 +17,7 @@ const url = `mongodb+srv://rhardin378:${password}@cluster0.d67qiey.mongodb.net/F
 
 mongoose.set('strictQuery',false)
 mongoose.connect(url).then(() => {
-	console.log(`connected to DB on ${url}`)
+  console.log(`connected to DB on ${url}`)
 })
 
 
@@ -28,52 +28,52 @@ mongoose.connect(url).then(() => {
 
 // helper function to create a test exercise
 const makeExercise = async() => {
-	const exercise = new Exercise({ name: 'Leg Curls', bodyPart: 'Legs' })
-	const res = await exercise.save()
-	console.log(res)
-	mongoose.connection.close()
+  const exercise = new Exercise({ name: 'Leg Curls', bodyPart: 'Legs' })
+  const res = await exercise.save()
+  console.log(res)
+  mongoose.connection.close()
 }
 // helper function to add a set to an exercise
 const addSet = async() => {
-	const exercise = await Exercise.findById('64cda25e2db0968b66de0ab5')
-	exercise.sets.push({ reps: 13, weight: 103 })
-	const res = await exercise.save()
-	console.log(res)
-	mongoose.connection.close()
+  const exercise = await Exercise.findById('64cda25e2db0968b66de0ab5')
+  exercise.sets.push({ reps: 13, weight: 103 })
+  const res = await exercise.save()
+  console.log(res)
+  mongoose.connection.close()
 }
 // helper function to create a test workout
 const makeWorkout = async() => {
-	const workout = new Workout({ name: 'Cj pump series leg Day', Date: new Date() })
-	// const exercise = await Exercise.findOne({name: 'Leg Press'})
-	// workout.exercises.push(exercise)
-	const res = await workout.save()
-	console.log(res)
-	mongoose.connection.close()
+  const workout = new Workout({ name: 'Cj pump series leg Day', Date: new Date() })
+  // const exercise = await Exercise.findOne({name: 'Leg Press'})
+  // workout.exercises.push(exercise)
+  const res = await workout.save()
+  console.log(res)
+  mongoose.connection.close()
 }
 //helper function to add an exercise to a workout
 const addExercise = async() => {
-	const workout = await Workout.findOne({ name: 'Cj pump series leg Day' })
-	const exercise = await Exercise.findById('64cda7c71bf1e232cf92be25')
-	workout.exercises.push(exercise)
-	const res = await workout.save()
-	console.log(res)
-	mongoose.connection.close()
+  const workout = await Workout.findOne({ name: 'Cj pump series leg Day' })
+  const exercise = await Exercise.findById('64cda7c71bf1e232cf92be25')
+  workout.exercises.push(exercise)
+  const res = await workout.save()
+  console.log(res)
+  mongoose.connection.close()
 }
 
 //helper function to create test measurements
 
 const addMeasurements = async() => {
-	const measurements = new Measurements({ weight: 200, neck: 15, chest: 40, waist: 35, hips: 40, armR: 15, armL: 15, thighR: 25, thighL: 25, calfR: 15, calfL: 15, Date: new Date() })
-	const res = await measurements.save()
-	console.log(res)
-	mongoose.connection.close()
+  const measurements = new Measurements({ weight: 200, neck: 15, chest: 40, waist: 35, hips: 40, armR: 15, armL: 15, thighR: 25, thighL: 25, calfR: 15, calfL: 15, Date: new Date() })
+  const res = await measurements.save()
+  console.log(res)
+  mongoose.connection.close()
 }
 
 const addMhJournal = async() => {
-	const mhJournal = new MhJournal({ intimateRelationships: 'good', familyRelationships: 'good', career: 'good', health: 'good', physicalWellBeing: 'good', mentalWellBeing: 'good', drugAndAlcoholUse: 'good', productivityOutsideOfCareer: 'good', createdAt: new Date() })
-	const res = await mhJournal.save()
-	console.log(res)
-	mongoose.connection.close()
+  const mhJournal = new MhJournal({ intimateRelationships: 'good', familyRelationships: 'good', career: 'good', health: 'good', physicalWellBeing: 'good', mentalWellBeing: 'good', drugAndAlcoholUse: 'good', productivityOutsideOfCareer: 'good', createdAt: new Date() })
+  const res = await mhJournal.save()
+  console.log(res)
+  mongoose.connection.close()
 }
 
 //Functions to create test data
@@ -107,8 +107,8 @@ const addMhJournal = async() => {
 
 //find single workout
 Workout.findById('64cda1c9d970dc4c62b9fef6').then(result => {
-	console.log(result)
-	mongoose.connection.close()
+  console.log(result)
+  mongoose.connection.close()
 })
 
 // find all mhJournals
