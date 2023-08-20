@@ -1,8 +1,9 @@
-POST http://localhost:2121/api/workouts/64d96dbb4da5291e60434278/exercises
+PUT http://localhost:2121/api/exercises/64e188c7a31ed10687167659
 Content-Type: application/json
 
 {
-    "name": "Bench Press",
-    "bodyPart": "Chest"
+    "name": "Barbell Bench Press",
+    "bodyPart": "chest",
+    "exercises": []
     
 }

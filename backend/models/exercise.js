@@ -10,6 +10,7 @@ const exerciseSchema = new Schema({
   bodyPart: {
     type: String,
     required: true,
+    enum: ['chest', 'back', 'legs', 'calves', 'shoulders', 'biceps', 'triceps', 'abs', 'cardio']
   },
   sets: [{
     reps: {
