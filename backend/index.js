@@ -10,6 +10,8 @@ const exercisesRouter = require('./controllers/exercises')
 const addExercisesRouter = require('./controllers/addExercises')
 const middleware = require('./utils/middleware')
 const measurementsRouter = require('./controllers/measurements')
+const mhJournalRouter = require('./controllers/mhJournal')
+
 
 app.use(cors())
 
@@ -25,16 +27,12 @@ mongoose.connect(config.MONGO_DB_URI)
     console.error('error connecting to MongoDB:', error.message)
   })
 
-// get all workouts route
-//get single workout route
-//create a workout route
-//update a workout route
-
 
 app.use('/api/workouts', workoutsRouter)
 app.use('/api/workouts/:workoutId/exercises', addExercisesRouter)
 app.use('/api/exercises', exercisesRouter )
 app.use('/api/measurements', measurementsRouter)
+app.use('/api/mhjournals', mhJournalRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 

@@ -1,0 +1,15 @@
+POST http://localhost:2121/api/mhJournals/
+Content-Type: application/json
+
+{
+    "intimateRelationships": "n/a",
+    "friendships": "going well",
+    "familyRelationships": "decent",
+    "career": "working on transitioning to a new career",
+    "health": "doing well",
+    "physicalWellbeing": "doing well",
+    "mentalWellbeing": "doing well",
+    "drugAndAlcoholUse": "smoking weed drinking on occasion",
+    "productivityOutsideOfCareer": "working on a few side projects",
+    "spirituality": "attendinc church regularly"
+}

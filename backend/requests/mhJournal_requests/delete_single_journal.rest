@@ -1,0 +1,1 @@
+DELETE http://localhost:2121/api/mhJournals/64ea83db3168431ffa041791

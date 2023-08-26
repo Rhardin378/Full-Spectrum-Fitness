@@ -3,14 +3,16 @@ const { Schema } = mongoose
 
 const mhJournalSchema = new Schema({
   intimateRelationships: String,
+  friendships: String,
   familyRelationships: String,
   career: String,
   health: String,
-  physicalWellBeing: String,
-  mentalWellBeing: String,
+  physicalWellbeing: String,
+  mentalWellbeing: String,
   drugAndAlcoholUse: String,
   productivityOutsideOfCareer: String,
-  createdAt: Date
+  spirituality: String,
+  Date: Date
 })
 
 
