@@ -15,6 +15,21 @@ measurementsRouter.get('/', async (req, res, next) => {
   }
 }
 )
+measurementsRouter.get('/:id', async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    const measurement = await Measurement.findById(id)
+    if (measurement) {
+      res.json(measurement)
+    } else {
+      res.status(404).end()
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
+})
 //go back and add progress photo to model and use cloudinary to store photos
 measurementsRouter.post('/', async (req, res, next) => {
   const { weight, neck, chest, waist, hips, armR, armL, thighR, thighL, calfR, calfL, Date } = req.body
@@ -44,5 +59,44 @@ measurementsRouter.post('/', async (req, res, next) => {
     return next(err)
   }
 })
+
+measurementsRouter.put('/:id', async (req, res, next) => {
+  const { id } = req.params
+  const { weight, neck, chest, waist, hips, armR, armL, thighR, thighL, calfR, calfL, Date } = req.body
+  const measurements = {
+    weight: weight,
+    neck: neck,
+    chest: chest,
+    waist: waist,
+    hips: hips,
+    armR: armR,
+    armL: armL,
+    thighR: thighR,
+    thighL: thighL,
+    calfR: calfR,
+    calfL: calfL,
+    Date: Date,
+    // progressPhotos: []
+  }
+  try {
+    const updatedMeasurements = await Measurement.findByIdAndUpdate(
+      id, measurements, { new: true, runValidators: true, context: 'query' })
+    res.json(updatedMeasurements)
+  }
+  catch (err) {
+    return next(err)
+  }
+})
+
+measurementsRouter.delete('/:id', async (req, res, next) => {
+  const { id } = req.params
+  try {
+    const deletedMeasurements = await Measurement.findByIdAndDelete(id)
+    res.status(204).end()
+  } catch (err) {
+    return next(err)
+  }
+})
+
 
 module.exports = measurementsRouter

@@ -1,0 +1,16 @@
+PUT http://localhost:2121/api/measurements/64ea22cb2fce02e96aa9f548
+Content-Type: application/json
+
+{
+  "weight": 230,
+  "neck": 17,
+  "chest": 38,
+  "waist": 30,
+  "hips": 46,
+  "armR": 36,
+  "armL": 16,
+  "thighR": 24,
+  "thighL": 234,
+  "calfR": 16,
+  "calfL": 16
+}

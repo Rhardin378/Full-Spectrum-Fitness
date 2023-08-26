@@ -1,0 +1,2 @@
+DELETE http://localhost:2121/api/measurements/64ea22cb2fce02e96aa9f548
+
