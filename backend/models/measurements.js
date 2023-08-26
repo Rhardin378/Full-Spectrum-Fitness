@@ -9,19 +9,55 @@ const progressPhotosSchema = new Schema({
 })
 
 const measurementsSchema = new Schema({
-  weight: Number,
-  neck: Number,
-  chest: Number,
-  waist: Number,
-  hips: Number,
-  armR: Number,
-  armL: Number,
-  thighR: Number,
-  thighL: Number,
-  calfR: Number,
-  calfL: Number,
-  Date: Date,
-  progressPhotos: [progressPhotosSchema],
+  weight: {
+    type: Number,
+    default: 0,
+  },
+  neck: {
+    type: Number,
+    default: 0,
+  },
+  chest: {
+    type: Number,
+    default: 0,
+  },
+  waist: {
+    type: Number,
+    default: 0,
+  },
+  hips: {
+    type: Number,
+    default: 0,
+  },
+  armR: {
+    type: Number,
+    default: 0,
+  },
+  armL: {
+    type: Number,
+    default: 0,
+  },
+  thighR: {
+    type: Number,
+    default: 0,
+  },
+  thighL: {
+    type: Number,
+    default: 0,
+  },
+  calfR: {
+    type: Number,
+    default: 0,
+  },
+  calfL: {
+    type: Number,
+    default: 0,
+  },
+  Date: {
+    type: Date,
+    default: Date.now,
+  },
+  // progressPhotos: [progressPhotosSchema],
 // commented out to test without user authentication
 // user: {type: Schema.Types.ObjectId, ref:"User"}
 })

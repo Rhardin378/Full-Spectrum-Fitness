@@ -1,15 +1,15 @@
 const router = require('express').Router({ mergeParams: true })
 const Workout = require('../models/workout')
 const Exercise = require('../models/exercise')
-const { default: mongoose } = require('mongoose')
+const mongoose = require('mongoose')
 
 //  create an exercise and add it to a workout route /
 
 router.post('/', async (req, res, next) => {
+  const { name, bodyPart, date } = req.body
   try {
     console.log(req.params.workoutId)
     const workout = await Workout.findById(req.params.workoutId)
-    const { name, bodyPart, date } = req.body
     console.log(workout)
     if (!workout) {
       return res.status(404).json({ error: 'workout not found' })
@@ -20,11 +20,11 @@ router.post('/', async (req, res, next) => {
       sets: [],
       date: date
     })
-    workout.exercises.push(exercise)
     await exercise.save()
+    workout.exercises.push(exercise)
     await workout.save()
     res.json(exercise)
-
+    console.log(`look at that nice id:${exercise.id}`)
 
 
   }

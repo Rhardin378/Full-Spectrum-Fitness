@@ -1,0 +1,8 @@
+PUT http://localhost:2121/api/exercises/64e2a78d4101e720d3f8d1c9
+Content-Type: application/json
+
+{
+    "name": "dumbell Row",
+    "bodyPart": "back"
+    
+}

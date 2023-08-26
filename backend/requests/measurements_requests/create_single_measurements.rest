@@ -1,0 +1,16 @@
+POST http://localhost:2121/api/measurements/
+Content-Type: application/json
+
+{ 
+    "weight":240,
+    "neck":16,
+    "chest":48,
+    "waist":36,
+    "hips":48,
+    "armR":16,
+    "armL": 16,
+    "thighR":24,
+    "thighL":24,
+    "calfR":16,
+    "calfL":16
+}

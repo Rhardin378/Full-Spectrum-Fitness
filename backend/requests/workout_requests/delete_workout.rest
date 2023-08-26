@@ -1,1 +1,1 @@
-DELETE http://localhost:2121/api/workouts/64d8eecd55bf54b8a513aa08
+DELETE http://localhost:2121/api/workouts/64e29fc17cf24acb6bc2c11b

@@ -1,0 +1,1 @@
+DELETE http://localhost:2121/api/exercises/64e2a61c0200d0a1df37dfd7

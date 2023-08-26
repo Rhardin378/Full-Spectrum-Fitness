@@ -28,6 +28,7 @@ workoutsRouter.get('/', async (req, res, next) => {
 workoutsRouter.get('/:id', async (req, res, next) => {
   const { id } = req.params
   try {
+    // populated paths are no longer set to their original _id value but are replaced with the mongoose document returned from the database by performing a separate query before returning the results to the application. Arrays or refs are populated the same way
     const workout = await Workout.findById(id).populate('exercises')
     if (workout) {
       res.json(workout)
@@ -87,7 +88,7 @@ workoutsRouter.patch('/:id', async (req, res, next) => {
 workoutsRouter.delete('/:id', async (req, res, next) => {
   const { id } = req.params
   try {
-    const deletedWorkout = await Workout.findByIdAndRemove(id)
+    const deletedWorkout = await Workout.findByIdAndDelete(id)
     res.status(204).end()
   } catch (err) {
     return next(err)

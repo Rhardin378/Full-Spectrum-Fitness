@@ -6,9 +6,10 @@ const config = require('./utils/config')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 const workoutsRouter = require('./controllers/workouts')
-const ExercisesRouter = require('./controllers/exercises')
-const AddExercisesRouter = require('./controllers/addExercises')
+const exercisesRouter = require('./controllers/exercises')
+const addExercisesRouter = require('./controllers/addExercises')
 const middleware = require('./utils/middleware')
+const measurementsRouter = require('./controllers/measurements')
 
 app.use(cors())
 
@@ -31,9 +32,9 @@ mongoose.connect(config.MONGO_DB_URI)
 
 
 app.use('/api/workouts', workoutsRouter)
-app.use('/api/workouts/:workoutId/exercises', AddExercisesRouter)
-app.use('/api/exercises', ExercisesRouter )
-
+app.use('/api/workouts/:workoutId/exercises', addExercisesRouter)
+app.use('/api/exercises', exercisesRouter )
+app.use('/api/measurements', measurementsRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 

@@ -1,0 +1,7 @@
+PATCH http://localhost:2121/api/exercises/64e2a78d4101e720d3f8d1c9/sets
+Content-Type: application/json
+
+{ "sets": 
+    {"reps": 20, 
+    "weight": 135}
+}
