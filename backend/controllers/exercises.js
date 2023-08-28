@@ -1,5 +1,5 @@
 const exercisesRouter = require('express').Router()
-const Workout = require('../models/workout')
+const logger = require('../utils/logger')
 const Exercise = require('../models/exercise')
 
 
@@ -9,37 +9,17 @@ exercisesRouter.get('/', async (req, res, next) => {
   try {
     const exercises = await Exercise.find({})
     if (exercises) {
-      console.log(exercises)
+      logger.info(exercises)
       res.json(exercises)
     } else {
       res.status(404).end()
     }
   }
   catch (err) {
-    console.log(err)
+    return next(err)
   }
 })
-// exercisesRouter.post('/', async (req, res, next) => {
-//   const { name, bodyPart, date } = req.body
-//   try {
-//     if (req.body === undefined) {
-//       return res.status(400).json({ error: 'content missing' })
-//     }
-//     const workout = await Workout.findById(req.params.id)
-//     const exercise = new Exercise({
-//       name: name,
-//       bodyPart: bodyPart,
-//       sets: [],
-//       date: date
-//     })
-//     const savedExercise = await exercise.save()
-//     const updatedWorkout = workout.push(savedExercise)
-//     res.json(updatedWorkout)
-//   }
-//   catch (err) {
-//     return next(err)
-//   }
-// })
+
 exercisesRouter.get('/:id', async (req, res, next) => {
   const { id } = req.params
   try {
@@ -51,7 +31,6 @@ exercisesRouter.get('/:id', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
     return next(err)
   }
 })
@@ -59,19 +38,19 @@ exercisesRouter.get('/:id', async (req, res, next) => {
 
 exercisesRouter.put('/:id', async (req, res, next) => {
   const { id } = req.params
-  console.log(id)
-  console.log(req.body)
+  logger.info(id)
+  logger.info(req.body)
   const { name, bodyPart, date } = req.body
   const workout = {
     name: name,
     bodyPart: bodyPart,
     date: date
   }
-  console.log(workout)
+  logger.info(workout)
   try {
     const updatedExercise = await Exercise.findByIdAndUpdate(
       id, workout, { new: true, runValidators: true, context: 'query'  })
-    console.log(updatedExercise)
+      logger.info(updatedExercise)
     res.json(updatedExercise)
   } catch (err) {
     return next(err)
@@ -88,10 +67,10 @@ exercisesRouter.patch('/:id/sets', async (req, res, next) => {
     weight: sets.weight,
 
   }
-  console.log(set)
+  logger.info(set)
   try {
     const exercise = await Exercise.findById(id)
-    console.log(exercise)
+    logger.info(exercise)
     exercise.sets.push(set)
     const updatedExercise = await exercise.save()
     res.json(updatedExercise)
@@ -118,7 +97,7 @@ exercisesRouter.delete('/:id', async (req, res, next) => {
 // find the exercise by id and delete the set from the sets array by set id
 exercisesRouter.delete('/:id/sets/:setId', async (req, res, next) => {
   const { id, setId } = req.params
-  try { 
+  try {
     const exercise = await Exercise.findById(id)
     const set = exercise.sets.id(setId)
     exercise.sets.remove(set)

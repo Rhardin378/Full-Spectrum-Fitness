@@ -1,5 +1,5 @@
 const workoutsRouter = require('express').Router()
-const mongoose = require('mongoose')
+const logger = require('../utils/logger')
 const Workout = require('../models/workout')
 const Exercise = require('../models/exercise')
 
@@ -19,7 +19,7 @@ workoutsRouter.get('/', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
+    return next(err)
   }
 })
 
@@ -37,7 +37,6 @@ workoutsRouter.get('/:id', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
     return next(err)
   }
 })

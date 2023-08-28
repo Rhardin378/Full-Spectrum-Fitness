@@ -1,4 +1,5 @@
 const mhJournalRouter = require('express').Router()
+const logger = require('../utils/logger')
 const MhJournal = require('../models/mhJournal')
 
 mhJournalRouter.get('/', async (req, res, next) => {
@@ -11,7 +12,7 @@ mhJournalRouter.get('/', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
+    return next(err)
   }
 })
 
@@ -27,7 +28,7 @@ mhJournalRouter.get('/:id', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
+    return next(err)
   }
 })
 
@@ -58,7 +59,7 @@ mhJournalRouter.post('/', async (req, res, next) => {
   }
 })
 
-mhJournalRouter.put('/:id', async (req, res, next) => { 
+mhJournalRouter.put('/:id', async (req, res, next) => {
   const { id } = req.params
   const { intimateRelationships, friendships, familyRelationships, career, health, physicalWellbeing, mentalWellbeing, drugAndAlcoholUse, productivityOutsideOfCareer, Date, spirituality } = req.body
   const mhJournal = {

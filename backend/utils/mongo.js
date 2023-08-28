@@ -3,7 +3,7 @@ const Exercise = require('../models/exercise')
 const Workout = require('../models/workout')
 const Measurements = require('../models/measurements')
 const MhJournal = require('../models/mhJournal')
-const { Schema } = mongoose
+
 
 if (process.argv.length<3) {
   console.log('give password as argument')

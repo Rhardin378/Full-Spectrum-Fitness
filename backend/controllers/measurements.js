@@ -1,4 +1,5 @@
 const measurementsRouter = require('express').Router()
+const logger = require('../utils/logger')
 const Measurement = require('../models/measurements')
 
 measurementsRouter.get('/', async (req, res, next) => {
@@ -11,7 +12,7 @@ measurementsRouter.get('/', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
+    return next(err)
   }
 }
 )
@@ -27,7 +28,7 @@ measurementsRouter.get('/:id', async (req, res, next) => {
     }
   }
   catch (err) {
-    console.log(err)
+    return next(err)
   }
 })
 //go back and add progress photo to model and use cloudinary to store photos
