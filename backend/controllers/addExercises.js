@@ -5,15 +5,14 @@ const Exercise = require('../models/exercise')
 
 //  create an exercise and add it to a workout route /
 
-router.post('/', async (req, res, next) => {
+router.post('/', async (req, res) => {
   const { name, bodyPart, date } = req.body
-  try {
-    console.log(req.params.workoutId)
-    const workout = await Workout.findById(req.params.workoutId)
-    logger.info(workout)
-    if (!workout) {
-      return res.status(404).json({ error: 'workout not found' })
-    }
+
+  const workout = await Workout.findById(req.params.workoutId)
+  logger.info(workout)
+  if (!workout) {
+    return res.status(404).json({ error: 'workout not found' })
+  } else{
     const exercise = new Exercise({
       name: name,
       bodyPart: bodyPart,
@@ -23,14 +22,8 @@ router.post('/', async (req, res, next) => {
     await exercise.save()
     workout.exercises.push(exercise)
     await workout.save()
-    res.json(exercise)
+    res.status(201).json(exercise)
     logger.info(`look at that nice id:${exercise.id}`)
-
-
-  }
-  catch (err) {
-    return next(err)
-
   }
 })
 
