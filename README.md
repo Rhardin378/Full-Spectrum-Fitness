@@ -100,11 +100,11 @@ Enable users to build sustainable physical and mental growth habits by revealing
 
 ### Folder Structure
 
-/app/ # Next.js app directory
-/components/ # Reusable UI components
-/lib/ # Utility functions (e.g., auth, AI, analytics)
-/prisma/ # Database schema and migrations
-/docs/ # Documentation (PRD, system design, launch plan)
+- /app/ # Next.js app directory
+- /components/ # Reusable UI components
+- /lib/ # Utility functions (e.g., auth, AI, analytics)
+- /prisma/ # Database schema and migrations
+- /docs/ # Documentation (PRD, system design, launch plan)
 
 ### Key Principles
 
