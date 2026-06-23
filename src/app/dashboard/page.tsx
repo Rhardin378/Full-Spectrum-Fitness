@@ -1,0 +1,94 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getOrCreateProfile } from "@/lib/profile/actions";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth");
+  }
+
+  const profileResult = await getOrCreateProfile();
+
+  if (!profileResult.success) {
+    if (profileResult.error === "unauthorized") {
+      redirect("/auth");
+    }
+
+    return (
+      <main className="min-h-screen bg-slate-950 p-6 text-slate-100 sm:p-10">
+        <section className="mx-auto max-w-4xl rounded-2xl border border-rose-500/30 bg-rose-500/10 p-8">
+          <h1 className="text-2xl font-semibold">Unable to load profile</h1>
+          <p className="mt-3 text-slate-300">{profileResult.message}</p>
+        </section>
+      </main>
+    );
+  }
+
+  const { profile } = profileResult;
+
+  async function signOut() {
+    "use server";
+
+    const supabaseClient = await createClient();
+    await supabaseClient.auth.signOut();
+    redirect("/auth");
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-950 p-6 text-slate-100 sm:p-10">
+      <section className="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/5 p-8 shadow-xl">
+        <p className="mb-2 text-sm text-sky-300">Dashboard</p>
+        <h1 className="text-3xl font-semibold">Welcome to Full Spectrum Fitness</h1>
+        <p className="mt-3 max-w-2xl text-slate-300">
+          {profile.display_name
+            ? `Welcome back, ${profile.display_name}.`
+            : "You are signed in. Complete your profile to personalize your experience."}
+        </p>
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-xl bg-black/25 p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-400">
+              Signed in as
+            </p>
+            <p className="mt-1 text-base font-medium">{user.email}</p>
+          </div>
+
+          <div className="rounded-xl bg-black/25 p-4">
+            <p className="text-xs uppercase tracking-wide text-slate-400">
+              Profile status
+            </p>
+            <p className="mt-1 text-base font-medium">
+              {profile.display_name ? "Profile created" : "Profile pending setup"}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/profile"
+            className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-400"
+          >
+            {profile.display_name && profile.fitness_goal
+              ? "Edit profile"
+              : "Complete profile setup"}
+          </Link>
+
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="w-full rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10 sm:w-auto"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+  );
+}
