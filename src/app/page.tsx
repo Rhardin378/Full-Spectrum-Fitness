@@ -1,65 +1,204 @@
-import Image from "next/image";
+import Link from "next/link";
+import { FounderTeaser } from "@/components/founder-teaser";
+
+const stats = [
+  { value: "NASM-CPT", label: "Certified Trainer" },
+  { value: "Research", label: "Exercise & Mental Health" },
+  { value: "Psychology", label: "King University" },
+  { value: "Free", label: "To Get Started" },
+];
+
+const trustBadges = [
+  "Free Forever",
+  "No Credit Card Required",
+  "Get Started in 30 Seconds",
+];
+
+const features = [
+  {
+    title: "Fitness Tracking",
+    description:
+      "Log workouts, track progress, and achieve your fitness goals with our comprehensive tracking system.",
+    bullets: ["Workout log", "Progress analytics", "Personal records"],
+  },
+  {
+    title: "Mental Health Journal",
+    description:
+      "Track moods, journal thoughts, and nurture your mental wellness with AI-powered insights.",
+    bullets: ["Mood tracking", "Daily prompts", "Wellness insights"],
+  },
+  {
+    title: "Wellness Insights",
+    description:
+      "AI-powered insights to help you understand your patterns and optimize your health journey.",
+    bullets: ["Pattern recognition", "Personalized tips", "Progress reports"],
+  },
+  {
+    title: "Progress Analytics",
+    description:
+      "Visualize your journey with comprehensive charts and metrics that show your improvement.",
+    bullets: ["Visual charts", "Goal tracking", "Trend analysis"],
+  },
+  {
+    title: "Community Support",
+    description:
+      "Connect with others on similar wellness journeys and share your achievements.",
+    bullets: ["Community forums", "Shared goals", "Motivation feed"],
+  },
+  {
+    title: "Achievement System",
+    description:
+      "Celebrate milestones and stay motivated with our comprehensive reward system.",
+    bullets: ["Milestone tracking", "Reward system", "Motivation boost"],
+  },
+];
+
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path
+        fillRule="evenodd"
+        d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen">
+      {/* Hero */}
+      <section
+        className="px-6 py-20 text-center text-white sm:px-10 sm:py-28"
+        style={{
+          background:
+            "linear-gradient(90deg, #1e3a5f 0%, #0d9488 55%, #2dd4bf 100%)",
+        }}
+      >
+        <div className="mx-auto max-w-4xl">
+          <p className="text-lg leading-relaxed text-white/95 sm:text-xl">
+            The complete platform for fitness tracking and mental wellness.
+            Start your transformation today – completely free.
           </p>
+
+          <div className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-2xl font-bold sm:text-3xl">{stat.value}</p>
+                <p className="mt-1 text-sm text-white/80 sm:text-base">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/auth"
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-white/90 sm:text-base"
+            >
+              Start Your Fitness Journey →
+            </Link>
+            <Link
+              href="/auth"
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-white/90 sm:text-base"
+            >
+              Begin Mental Wellness →
+            </Link>
+          </div>
+
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 text-sm text-white/90 sm:flex-row sm:gap-8">
+            {trustBadges.map((badge) => (
+              <span key={badge} className="inline-flex items-center gap-2">
+                <CheckIcon className="h-4 w-4 shrink-0" />
+                {badge}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Features */}
+      <section className="bg-white px-6 py-20 sm:px-10 sm:py-28">
+        <div className="mx-auto max-w-6xl text-center">
+          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+            Everything You Need for Complete Wellness
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-500 sm:text-lg">
+            Comprehensive tools designed to support every aspect of your health
+            and happiness journey.
+          </p>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((feature) => (
+              <article
+                key={feature.title}
+                className="rounded-2xl border border-slate-100 bg-white p-6 text-left shadow-sm"
+              >
+                <h3 className="text-lg font-bold text-slate-900">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-500">
+                  {feature.description}
+                </p>
+                <ul className="mt-5 space-y-2">
+                  {feature.bullets.map((bullet) => (
+                    <li
+                      key={bullet}
+                      className="flex items-center gap-2 text-sm text-slate-700"
+                    >
+                      <CheckIcon className="h-4 w-4 shrink-0 text-teal-500" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <FounderTeaser />
+
+      {/* Bottom CTA */}
+      <section
+        className="px-6 py-20 text-center text-white sm:px-10 sm:py-28"
+        style={{
+          background:
+            "linear-gradient(90deg, #84cc16 0%, #14b8a6 55%, #2dd4bf 100%)",
+        }}
+      >
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-3xl font-bold sm:text-4xl">
+            Ready to Start Your Transformation?
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-white/95 sm:text-lg">
+            Built by a trainer, researcher, and engineer who understands both
+            sides of wellness. Start your journey today – completely free.
+          </p>
+
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/auth"
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-teal-600 transition hover:bg-white/90 sm:text-base"
+            >
+              Start Fitness Tracking →
+            </Link>
+            <Link
+              href="/auth"
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-teal-600 transition hover:bg-white/90 sm:text-base"
+            >
+              Begin Mental Wellness →
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
