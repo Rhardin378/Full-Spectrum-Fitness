@@ -311,6 +311,7 @@ You are currently building:
 
 - Authentication
 - Profile setup
+- Baseline measurements (`weight`, `waist` time-series)
 - Journal entries
 - Life domain scoring
 - Workout logging
@@ -328,6 +329,8 @@ Nothing more.
 - Vector databases
 - Predictive modeling
 - Wearable integrations
+- Progress photos (front/side/back visual tracking — deferred after Slice 1.5)
+- Hardcore body measurements (chest, arms, legs, etc.)
 - Group challenges
 - Stripe subscriptions
 - Coaching marketplace

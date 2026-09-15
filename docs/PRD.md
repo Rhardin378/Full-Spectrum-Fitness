@@ -43,12 +43,13 @@ To empower individuals to take control of their mental and physical health throu
 ### Core Features
 
 1. Authentication & User Profiles
-2. Mental Health Journaling Across Life Domains
-3. Workout Tracking System
-4. Trend Analysis Dashboard
-5. Social Accountability Feed (Privacy-First)
-6. Basic AI Coaching Prompt Engine
-7. Achievement System & Badges
+2. Baseline Measurements (weight, waist)
+3. Mental Health Journaling Across Life Domains
+4. Workout Tracking System
+5. Trend Analysis Dashboard
+6. Social Accountability Feed (Privacy-First)
+7. Basic AI Coaching Prompt Engine
+8. Achievement System & Badges
 
 ---
 
@@ -85,6 +86,33 @@ To empower individuals to take control of their mental and physical health throu
 - Domain priorities
 - Experience level
 - Social sharing preferences
+
+---
+
+# 1.5️⃣ Baseline Measurements (Slice 1.5)
+
+### Overview
+
+Users log lightweight body metrics as time-series data, separate from profile preferences.
+
+### In Scope
+
+- Weight (`lb` / `kg`)
+- Waist (`in` / `cm`)
+- Create + list history, owner-scoped
+- Simple weight trend/history view
+
+### Explicitly Deferred
+
+- Progress photos (optional front / side / back for visual tracking)
+- Hardcore physique measurements (chest, arms, legs, etc.)
+- Body fat percentage / wearable vitals
+
+### Design Notes
+
+- `profiles` = stable identity and preferences
+- `measurements` = metric history and trends
+- Values stored as entered; no unit conversion in this phase
 
 ---
 
@@ -337,6 +365,30 @@ fitness_goal
 wellness_goal
 
 sharing_preferences
+
+---
+
+### Measurements
+
+measurements
+
+id
+
+user_id (FK)
+
+measurement_type (`weight` | `waist`)
+
+value
+
+unit (`lb`/`kg` for weight; `in`/`cm` for waist)
+
+measured_at
+
+notes (optional)
+
+created_at
+
+updated_at
 
 ---
 
