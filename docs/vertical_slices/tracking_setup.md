@@ -7,6 +7,7 @@ Use this as your default project-tracking structure in GitHub.
 Create one milestone per vertical slice:
 
 - `Slice 1 - Auth & Profile Setup`
+- `Slice 1.5 - Measurements & Baseline Tracking`
 - `Slice 2 - Journaling & Life Domains`
 - `Slice 3 - Workouts`
 - `Slice 4 - Dashboard Insights`
@@ -21,12 +22,13 @@ Suggested due date pattern:
 
 Use a small, consistent set of labels:
 
-- `slice-1`, `slice-2`, `slice-3`, `slice-4`, `slice-5`, `slice-6`
+- `slice-1`, `slice-1.5`, `slice-2`, `slice-3`, `slice-4`, `slice-5`, `slice-6`
 - `backend`
 - `frontend`
 - `database`
 - `api`
 - `auth`
+- `measurements`
 - `ui`
 - `tests`
 - `qa`
@@ -38,8 +40,8 @@ Use a small, consistent set of labels:
 
 ## Recommended Workflow
 
-- Create issues from `docs/vertical_slices/slice_1_authentication_profile_setup/tickets.md`.
-- Assign each issue to milestone `Slice 1 - Auth & Profile Setup`.
+- Create issues from the matching slice tickets file under `docs/vertical_slices/`.
+- Assign Slice 1.5 issues to milestone `Slice 1.5 - Measurements & Baseline Tracking`.
 - Add one `slice-*` label and one or two scope labels (`backend`, `frontend`, etc.).
 - Keep only one issue in active execution at a time if solo.
 - When blocked, add `blocked` and open a small unblocker issue.
@@ -50,7 +52,8 @@ Use predictable issue titles:
 
 - `[Slice 1] Set up authentication foundation`
 - `[Slice 1] Create profile data model and migration`
-- `[Slice 1] Build get-or-create profile action`
+- `[Slice 1.5] Create measurements data model and migration`
+- `[Slice 1.5] Build create measurement backend action`
 
 ## Definition of Done (Issue-Level)
 
