@@ -37,10 +37,18 @@ This phase establishes the foundation of the platform.
 Users can:
 
 - Log exercises
-- Track sets, reps, and weight
+- Track individual sets, reps/ranges, load, rest, RPE/RIR, and tempo
 - View workout history
 - Track PRs
 - See basic progress visualizations
+- Create reusable workout and multi-session program templates
+
+**MVP+ follow-on (Slice 3.1):**
+
+- Import one text-based workout PDF with AI
+- Review and edit extracted sessions, exercises, sets, and groupings
+- Confirm the result as reusable templates
+- Never auto-save AI output or create completed workout history
 
 ---
 
@@ -273,12 +281,17 @@ Users can design:
 ## Phase 1 Build Order (Critical)
 
 1. Authentication & user models
-2. Workout logging system
+2. Workout logging and manual template system
 3. Journaling & life domains
 4. Rule-based trend engine
 5. Achievement system & badge tracking
 6. Social feed (lite)
 7. Dashboard polish & beta launch
+
+### MVP+ Follow-on (Non-Blocking)
+
+- AI Workout Import (Slice 3.1) starts only after the manual workout/template foundation is stable.
+- Slice 3.1 is not required for the Phase 1 beta launch.
 
 ---
 
@@ -288,6 +301,7 @@ Do NOT build early:
 
 - Wearables integration
 - Full AI coaching
+- Scanned/image workout import and fully automated workout saving
 - Marketplaces
 - Complex group systems
 - Heavy gamification
