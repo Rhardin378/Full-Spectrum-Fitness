@@ -51,6 +51,10 @@ To empower individuals to take control of their mental and physical health throu
 7. Basic AI Coaching Prompt Engine
 8. Achievement System & Badges
 
+### MVP+ Follow-on (not a beta-launch dependency)
+
+- AI Workout Import (Slice 3.1, after manual workout templates)
+
 ---
 
 ## 📊 Success Metrics (KPIs)
@@ -169,20 +173,82 @@ Users log structured reflections across multiple life domains.
 ## Supported Features
 
 - Exercise logging
-- Sets / reps / weight
+- Individual set prescriptions (reps/ranges, load, rest, RPE/RIR, tempo)
 - RPE tracking
 - Workout categorization
 - PR detection
-- Workout templates
+- Reusable single-workout templates
+- Program templates with ordered sessions
+- Optional exercise groupings (supersets, circuits, giant sets)
 
 ---
 
 ## Functional Requirements
 
 - Manual workout logging
+- Manual workout/program template creation and editing
 - Historical workout comparison
 - Progress charts
 - Suggested progression recommendations
+
+---
+
+# 3.1️⃣ AI Workout Import
+
+## Overview
+
+Users can upload an existing text-based workout PDF and use AI to create a structured, editable workout or program-template draft.
+
+AI Workout Import is a follow-on to the manual workout/template foundation. It uses the same canonical data model, validation, editor concepts, and save path as manually created templates.
+
+## Functional Requirements
+
+- Entry point in the dashboard Workouts tab
+- Dedicated `/dashboard/workouts/import` flow
+- One text-based PDF per import (maximum 10 MB and 30 pages)
+- Private temporary upload and server-side text extraction
+- Durable queued AI extraction with visible status/failure states
+- Single-workout and ordered multi-session program support
+- Optional week/day labels
+- Set-level reps/ranges, load, rest, RPE/RIR, tempo, and notes
+- Editable supersets/circuits/giant-set groupings
+- Explicit warnings and `needs_review` flags for ambiguity
+- Resumable human review before save
+- User-confirmed atomic save as reusable templates
+- Duplicate warning, configurable five-new-import rolling 24-hour limit, and one user-initiated extraction retry
+- Bounded parsing/provider input (10 MB, 30 pages, 200,000 extracted characters, configurable token ceiling)
+- Automatic transient-content deletion on confirm/cancel and seven-day expiry
+
+## AI Safety and Fidelity
+
+- AI must not invent missing workout information.
+- Missing or ambiguous values remain `null`.
+- Model output is validated against a strict, versioned schema.
+- AI output never writes directly to canonical workout tables.
+- Numeric confidence percentages are not shown; actionable review flags and source excerpts are used instead.
+- The user must confirm the reviewed draft before canonical data is created.
+
+## Privacy and Storage
+
+- PDFs and extracted text are private and owner-scoped.
+- The pre-upload notice names the configured provider, states that extracted document content is sent to it, and links to current provider data-use/retention information.
+- Only server-extracted, page-delimited text is sent to the AI provider.
+- Source PDF, extracted text, editable import draft, excerpts, source-derived warning text, and raw AI response are transient.
+- Minimal audit provenance remains after cleanup; source content does not.
+
+## Explicitly Deferred
+
+- Scanned PDF OCR
+- Image/screenshot, spreadsheet, DOCX, URL, and email import
+- Automatic exercise-library or video matching
+- Automatic scheduling or progression generation
+- Wearable integration and recommendations
+- Saving imports directly as completed workout history
+- Fully automated save without human review
+
+## Detailed Specification
+
+See `docs/vertical_slices/slice_3_1_ai_workout_import/`.
 
 ---
 
@@ -440,39 +506,66 @@ score
 
 ---
 
-### Workouts
+### Workout Templates and Programs
 
-workouts
+Canonical logical hierarchy (physical table names finalized in Slice 3):
 
-id
+```text
+ProgramTemplate
+  id
+  user_id
+  name
 
-user_id
+  SessionTemplate[]
+    id
+    position
+    name
+    week_label (optional)
+    day_label (optional)
 
-workout_date
+    ExerciseGroup[] (optional)
+      id
+      type
+      label
 
-workout_type
+    ExerciseTemplate[]
+      id
+      position
+      exercise_name
+      group_id (optional)
+      notes (optional)
 
-notes
+      SetPrescription[]
+        id
+        position
+        reps_min / reps_max / reps_text (optional)
+        load_value / load_unit / load_text (optional)
+        rest_seconds (optional)
+        rpe / rir (optional)
+        tempo (optional)
+        notes (optional)
+```
+
+Completed workout logs/instances remain separate from reusable prescriptions so imported plans are not mistaken for completed history.
 
 ---
 
-### Exercises
+### AI Workout Imports
 
-exercises
+`workout_imports`
 
-id
+- `id`
+- `user_id`
+- `status`
+- file hash/size/page count
+- provider/model/schema version
+- editable structured draft + version
+- warnings/retry count
+- immutable `expires_at`
+- created template IDs
+- lifecycle timestamps
 
-workout_id (FK)
-
-exercise_name
-
-sets
-
-reps
-
-weight
-
-rpe
+Internal object paths and raw provider data live in a non-exposed server-only artifact record. PDFs, extracted text, editable drafts, source excerpts, source-derived warning text, and raw model output are transient and are removed on confirmation, cancellation, or immutable seven-day expiry.
 
 ---
 
@@ -582,16 +675,15 @@ progress_value
 - Next.js
 - TypeScript
 - Tailwind
-- React Query / TanStack
 
 ### Backend
 
 - Supabase (PostgreSQL + Auth + Storage)
-- Edge Functions (optional)
+- Supabase Edge Functions (required for the Slice 3.1 asynchronous import worker)
 
 ### AI Layer
 
-- OpenAI / Vertex AI (MVP)
+- Provider-neutral server adapter with OpenAI as the initial configured provider
 - Vector storage (Future RAG)
 
 ---
@@ -604,16 +696,21 @@ progress_value
 
 - Authentication
 - Journaling
-- Workout Tracking
+- Workout tracking and reusable templates
 - Dashboard Insights
 - Social Feed (basic)
 - AI Prompts (Lite)
 
 ---
 
+## MVP+ Follow-on
+
+- AI Workout Import (Slice 3.1, after manual workout templates)
+
+---
+
 ## Phase 2
 
-- Workout templates
 - Advanced AI trend insights
 - Group challenges
 - Notification engine
@@ -720,7 +817,7 @@ AI Response:
 
 # 🧪 Testing Requirements
 
-- Unit tests (Jest)
+- Unit and component tests (Vitest)
 - End-to-end tests (Playwright)
 - AI response evaluation benchmarks
 - Security penetration testing
@@ -731,6 +828,9 @@ AI Response:
 
 - Sensitive mental health data handling
 - AI hallucination risk
+- AI workout extraction may omit or misread prescriptions; imports require explicit human review
+- Uploaded workout documents require private storage, short retention, and owner-scoped access
+- Provider cost, latency, rate limits, and availability must not affect manual workout creation
 - Solo developer resource limits
 - Social moderation complexity
 

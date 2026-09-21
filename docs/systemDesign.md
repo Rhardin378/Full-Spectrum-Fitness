@@ -92,43 +92,47 @@ Purpose:
 
 - Stores application data
 - Structured relational storage
-- Secure via Row Level Security (optional but recommended)
+- Secured with Row Level Security on exposed application tables
 
 ---
 
-## ORM Layer
+## Data Access and Migrations
 
-- Prisma
+- `supabase-js` / `@supabase/ssr`
+- Supabase SQL migrations
+- Zod domain/input validation
 
 Purpose:
 
-- Type-safe database queries
-- Relationship modeling
-- Migration management
-- Server-side data access
+- Authenticated server-side data access
+- Relationship modeling in Postgres
+- Migration management through `supabase/migrations`
+- Owner-scoped access enforced with Row Level Security
 
 Important:
-Prisma talks directly to Supabase Postgres.
-Supabase still manages auth separately.
+The implemented application does not use Prisma. Supabase manages Auth, Postgres, Storage, and the Data API; application business logic remains in server actions/routes and domain modules.
 
 ---
 
 ## AI Layer (Optional for MVP)
 
-- OpenAI API (or equivalent)
+- Provider-neutral server adapter
+- OpenAI as the initial configured provider
+- Supabase Edge Functions for asynchronous AI Workout Import processing
 
 Purpose:
 
 - Generate weekly summaries
 - Generate reflection prompts
 - Summarize journal entries
+- Extract structured, reviewable workout drafts from server-extracted PDF text
 
 AI does NOT:
 
 - Store data
 - Control logic
 - Replace analytics
-- Run autonomously
+- Save imported workouts without human confirmation
 
 It is just a service you call.
 
@@ -164,7 +168,7 @@ User logs workout / journal entry
 ↓
 Server action processes input
 ↓
-Prisma stores data
+Supabase Postgres stores data
 ↓
 **Achievement system evaluates criteria**
 
@@ -186,7 +190,7 @@ Prisma stores data
 
 User → Supabase Auth → returns user ID → stored in database
 
-You store the Supabase user ID inside Prisma-managed tables.
+You store the Supabase user ID in owner-scoped Postgres tables.
 
 ---
 
@@ -196,7 +200,7 @@ Frontend form
 ↓  
 Server action / API route  
 ↓  
-Prisma creates:
+Supabase data access creates:
 
 - journal_entry
 - journal_domain_scores
@@ -211,7 +215,7 @@ Frontend form
 ↓  
 Server action  
 ↓  
-Prisma creates:
+Supabase data access creates:
 
 - workout
 - exercises
@@ -226,7 +230,7 @@ Prisma creates:
 
 ## Viewing Dashboard
 
-Server query via Prisma  
+Server query via `supabase-js`
 ↓  
 Aggregate mood scores  
 ↓  
@@ -244,7 +248,7 @@ No AI required.
 
 Server job runs  
 ↓  
-Prisma fetches last 7 days of data  
+Server-side Supabase client fetches last 7 days of data
 ↓  
 Constructs prompt  
 ↓  
@@ -258,21 +262,41 @@ AI is an enhancement, not core infrastructure.
 
 ---
 
+## AI Workout Import (Slice 3.1)
+
+```text
+Authenticated upload
+  → Private Supabase Storage + owner-scoped import record
+  → Server validates the PDF and extracts page-delimited text
+  → Supabase Edge Function calls the configured AI adapter
+  → Zod validates a structured, resumable review draft
+  → User edits and explicitly confirms
+  → Canonical manual-workout save path atomically creates reusable templates
+  → Transient PDF/text/model content is deleted
+```
+
+The AI provider never writes workout tables directly. If import processing is unavailable, manual workout creation remains fully functional.
+
+---
+
 # 6. Database Ownership Model
 
-Supabase owns:
+Supabase provides:
 
 - Authentication users
-- Raw Postgres instance
+- Postgres database
+- Private Storage
+- Row Level Security and Data API
+- Edge Functions
 
-Prisma owns:
+The repository owns:
 
-- Schema modeling
-- Migrations
-- All relational data logic
+- SQL migrations and relational schema
+- Zod/domain validation
+- Server actions/routes and business logic
+- Storage lifecycle and AI orchestration
 
-This is not two databases.
-This is one database with two responsibilities.
+Authentication, Storage, and application tables share one owner identity (`auth.uid()`), but each layer has separate access policies.
 
 ---
 
@@ -299,7 +323,7 @@ Database:
 
 AI:
 
-- Text generation only
+- Structured generation behind validated server boundaries
 
 Keep these mentally separate.
 
@@ -315,11 +339,14 @@ You are currently building:
 - Journal entries
 - Life domain scoring
 - Workout logging
+- Manual workout/program templates
 - Dashboard trends
 
 That is Phase 1.
 
-Nothing more.
+MVP+ follow-on after the manual workout foundation:
+
+- AI Workout Import (Slice 3.1; not a beta-launch dependency)
 
 ---
 
@@ -330,6 +357,7 @@ Nothing more.
 - Predictive modeling
 - Wearable integrations
 - Progress photos (front/side/back visual tracking — deferred after Slice 1.5)
+- Scanned/image workout import and fully automated AI workout saving
 - Hardcore body measurements (chest, arms, legs, etc.)
 - Group challenges
 - Stripe subscriptions
@@ -352,21 +380,23 @@ social/
 api/
 
 lib/
-prisma.ts
-auth.ts
+supabase/
+profile/
+workouts/
+workout-imports/
 ai.ts
 analytics.ts
 
-prisma/
-schema.prisma
+supabase/
 migrations/
+functions/
 
 components/
 charts/
 forms/
 ui/
 
-Keep AI logic isolated in /lib/ai.ts
+Keep provider-specific AI logic behind a server-only adapter. Keep canonical workout persistence independent from AI extraction.
 
 ---
 
@@ -407,7 +437,7 @@ That is good architecture.
 When needed:
 
 - Add pgvector for embeddings
-- Add background jobs
+- Expand background jobs beyond the Slice 3.1 import worker
 - Add caching
 - Add rate limiting
 - Add Stripe
@@ -424,7 +454,7 @@ Right now you are building:
 A structured journaling + workout tracking web app
 with relational analytics
 using:
-Next.js + Supabase + Prisma
+Next.js + Supabase
 
 That is manageable.
 That is clear.
