@@ -6,9 +6,9 @@ Copy each section into a GitHub issue after the Slice 3 workout/template foundat
 
 ## Ticket 3.1.1: Lock the canonical workout-template import contract
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `validation`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `validation`
 
 ### Description
 
@@ -45,9 +45,9 @@ Define the versioned domain input that both the manual workout editor and AI imp
 
 ## Ticket 3.1.2: Create import staging schema, private Storage, and RLS
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `database`, `backend`, `security`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `database`, `backend`, `security`
 
 ### Description
 
@@ -96,9 +96,9 @@ Create owner-scoped staging infrastructure for temporary PDFs, extracted text, s
 
 ## Ticket 3.1.3: Build secure PDF intake and server-side text extraction
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `api`, `validation`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `api`, `validation`
 
 ### Description
 
@@ -143,9 +143,9 @@ Validate one text-based PDF, extract page-delimited text server-side, and stage 
 
 ## Ticket 3.1.4: Implement the versioned AI extraction adapter and schema
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `validation`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `validation`
 
 ### Description
 
@@ -187,9 +187,9 @@ Implement a provider-neutral server adapter with OpenAI as the first provider an
 
 ## Ticket 3.1.5: Build asynchronous extraction worker and import state machine
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `supabase`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `supabase`
 
 ### Description
 
@@ -235,9 +235,9 @@ Consume durable Supabase Queue messages through a trusted Edge Function and pers
 
 ## Ticket 3.1.6: Build import entry and processing-status UI
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `frontend`, `ui`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `frontend`, `ui`
 
 ### Description
 
@@ -273,9 +273,9 @@ Add the Workouts-tab entry point and dedicated upload/status flow at `/dashboard
 
 ## Ticket 3.1.7: Build resumable editable import review
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `frontend`, `ui`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `frontend`, `ui`
 
 ### Description
 
@@ -319,9 +319,9 @@ Create a mobile-first review editor for correcting the structured extraction bef
 
 ## Ticket 3.1.8: Confirm imports through atomic canonical template creation
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `database`, `validation`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `database`, `validation`
 
 ### Description
 
@@ -361,9 +361,9 @@ Validate a reviewed draft and atomically create reusable canonical templates thr
 
 ## Ticket 3.1.9: Implement cancellation, expiry, and privacy cleanup
 
-**Type:** feature  
-**Priority:** P0  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `security`, `chore`
+- **Type:** feature
+- **Priority:** P0
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `backend`, `security`, `chore`
 
 ### Description
 
@@ -409,9 +409,9 @@ Schedule expiry, retry incomplete lifecycle cleanup, and verify transient workou
 
 ## Ticket 3.1.10: Add automated tests and AI extraction evaluations
 
-**Type:** chore  
-**Priority:** P1  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `tests`, `quality`
+- **Type:** chore
+- **Priority:** P1
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `tests`, `quality`
 
 ### Description
 
@@ -465,9 +465,9 @@ Cover the critical import path, security boundaries, non-invention behavior, and
 
 ## Ticket 3.1.11: Slice 3.1 QA, observability, and release checklist
 
-**Type:** chore  
-**Priority:** P1  
-**Labels:** `slice-3.1`, `workouts`, `ai`, `qa`, `release`
+- **Type:** chore
+- **Priority:** P1
+- **Labels:** `slice-3.1`, `workouts`, `ai`, `qa`, `release`
 
 ### Description
 
