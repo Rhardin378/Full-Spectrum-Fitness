@@ -172,6 +172,27 @@ describe("createMeasurement", () => {
     expect(testClient.spies.from).not.toHaveBeenCalled();
   });
 
+  it("rejects an unsupported measurement type with a clear error", async () => {
+    const testClient = makeClient({ id: "user-1" });
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await createMeasurement({
+      measurement_type: "height",
+      value: 70,
+      unit: "in",
+      measured_at: "2026-09-23",
+    } as unknown as CreateMeasurementInput);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("validation");
+      expect(result.fieldErrors?.measurement_type).toBe(
+        "Measurement type must be weight or waist.",
+      );
+    }
+    expect(testClient.spies.from).not.toHaveBeenCalled();
+  });
+
   it("rejects caller-supplied ownership instead of writing it", async () => {
     const testClient = makeClient({ id: "user-1" });
     createClientMock.mockResolvedValueOnce(testClient.client);
