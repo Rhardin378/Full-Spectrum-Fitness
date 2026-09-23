@@ -135,7 +135,10 @@ describe("listMeasurementsSchema", () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data).toEqual({ sort_order: "newest" });
+      expect(result.data).toEqual({
+        sort_order: "newest",
+        page_size: 25,
+      });
     }
   });
 
@@ -160,6 +163,7 @@ describe("listMeasurementsSchema", () => {
           dateOnly: true,
         },
         sort_order: "oldest",
+        page_size: 25,
       });
     }
   });
@@ -187,6 +191,10 @@ describe("listMeasurementsSchema", () => {
     [{ measurement_type: "height" }, "measurement_type"],
     [{ sort_order: "largest" }, "sort_order"],
     [{ start_date: "not-a-date" }, "start_date"],
+    [{ page_size: 0 }, "page_size"],
+    [{ page_size: 101 }, "page_size"],
+    [{ page_size: 1.5 }, "page_size"],
+    [{ cursor: "not-a-cursor" }, "cursor"],
   ])("rejects invalid filter %#", (input, field) => {
     const result = listMeasurementsSchema.safeParse(input);
 

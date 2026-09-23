@@ -33,4 +33,6 @@ export type ListMeasurementsInput = {
   start_date?: string;
   end_date?: string;
   sort_order?: MeasurementSortOrder;
+  page_size?: number;
+  cursor?: string;
 };
