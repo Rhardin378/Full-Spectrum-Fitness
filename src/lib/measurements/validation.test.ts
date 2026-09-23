@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   createMeasurementSchema,
   formatMeasurementValidationErrors,
+  listMeasurementsSchema,
 } from "@/lib/measurements/validation";
 
 describe("createMeasurementSchema", () => {
@@ -123,6 +124,88 @@ describe("createMeasurementSchema", () => {
     if (!result.success) {
       expect(formatMeasurementValidationErrors(result.error).notes).toBe(
         "Notes must be 500 characters or fewer.",
+      );
+    }
+  });
+});
+
+describe("listMeasurementsSchema", () => {
+  it("defaults to newest-first with no filters", () => {
+    const result = listMeasurementsSchema.safeParse({});
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toEqual({ sort_order: "newest" });
+    }
+  });
+
+  it("normalizes type, date-only bounds, and oldest-first sorting", () => {
+    const result = listMeasurementsSchema.safeParse({
+      measurement_type: "weight",
+      start_date: "2026-09-01",
+      end_date: "2026-09-30",
+      sort_order: "oldest",
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toEqual({
+        measurement_type: "weight",
+        start_date: {
+          value: "2026-09-01T00:00:00.000Z",
+          dateOnly: true,
+        },
+        end_date: {
+          value: "2026-10-01T00:00:00.000Z",
+          dateOnly: true,
+        },
+        sort_order: "oldest",
+      });
+    }
+  });
+
+  it("keeps date-time end bounds inclusive", () => {
+    const result = listMeasurementsSchema.safeParse({
+      start_date: "2026-09-23T08:00:00-04:00",
+      end_date: "2026-09-23T17:00:00-04:00",
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.start_date).toEqual({
+        value: "2026-09-23T12:00:00.000Z",
+        dateOnly: false,
+      });
+      expect(result.data.end_date).toEqual({
+        value: "2026-09-23T21:00:00.000Z",
+        dateOnly: false,
+      });
+    }
+  });
+
+  it.each([
+    [{ measurement_type: "height" }, "measurement_type"],
+    [{ sort_order: "largest" }, "sort_order"],
+    [{ start_date: "not-a-date" }, "start_date"],
+  ])("rejects invalid filter %#", (input, field) => {
+    const result = listMeasurementsSchema.safeParse(input);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(formatMeasurementValidationErrors(result.error)[field]).toBeTruthy();
+    }
+  });
+
+  it("rejects a date range whose end precedes its start", () => {
+    const result = listMeasurementsSchema.safeParse({
+      start_date: "2026-10-01",
+      end_date: "2026-09-30",
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(formatMeasurementValidationErrors(result.error).end_date).toBe(
+        "End date must be on or after start date.",
       );
     }
   });

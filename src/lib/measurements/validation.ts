@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  MEASUREMENT_SORT_ORDERS,
   MEASUREMENT_TYPES,
   MEASUREMENT_UNITS,
   WAIST_UNITS,
@@ -52,6 +53,30 @@ const notesSchema = z.preprocess(
     .optional(),
 );
 
+function dateFilterSchema(boundary: "start" | "end") {
+  return z
+    .string({ message: "Date filter must be a string." })
+    .trim()
+    .min(1, "Date filter cannot be empty.")
+    .refine(
+      isValidMeasuredAt,
+      "Enter a valid date or ISO date-time with a timezone.",
+    )
+    .transform((value) => {
+      const dateOnly = DATE_ONLY_PATTERN.test(value);
+      const date = new Date(dateOnly ? `${value}T00:00:00.000Z` : value);
+
+      if (dateOnly && boundary === "end") {
+        date.setUTCDate(date.getUTCDate() + 1);
+      }
+
+      return {
+        value: date.toISOString(),
+        dateOnly,
+      };
+    });
+}
+
 export const createMeasurementSchema = z
   .object({
     measurement_type: z.enum(MEASUREMENT_TYPES, {
@@ -85,6 +110,40 @@ export const createMeasurementSchema = z
             ? "Weight unit must be lb or kg."
             : "Waist unit must be in or cm.",
         path: ["unit"],
+      });
+    }
+  });
+
+export const listMeasurementsSchema = z
+  .object({
+    measurement_type: z
+      .enum(MEASUREMENT_TYPES, {
+        message: "Measurement type must be weight or waist.",
+      })
+      .optional(),
+    start_date: dateFilterSchema("start").optional(),
+    end_date: dateFilterSchema("end").optional(),
+    sort_order: z
+      .enum(MEASUREMENT_SORT_ORDERS, {
+        message: "Sort order must be newest or oldest.",
+      })
+      .default("newest"),
+  })
+  .strict()
+  .superRefine((input, context) => {
+    if (!input.start_date || !input.end_date) return;
+
+    const startTime = new Date(input.start_date.value).getTime();
+    const endTime = new Date(input.end_date.value).getTime();
+    const rangeIsInvalid = input.end_date.dateOnly
+      ? startTime >= endTime
+      : startTime > endTime;
+
+    if (rangeIsInvalid) {
+      context.addIssue({
+        code: "custom",
+        message: "End date must be on or after start date.",
+        path: ["end_date"],
       });
     }
   });
