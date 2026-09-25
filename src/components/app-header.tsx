@@ -1,34 +1,110 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BrandLogo } from "@/components/brand-logo";
 import { useProfile } from "@/components/profile/profile-provider";
 
-export default function AppHeader() {
-  const { profile, isLoading } = useProfile();
+function NavLink({
+  href,
+  children,
+  active,
+  muted,
+  badge,
+}: {
+  href: string;
+  children: React.ReactNode;
+  active?: boolean;
+  muted?: boolean;
+  badge?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`relative pb-0.5 text-sm font-medium transition-colors ${
+        active
+          ? "text-text-on-dark"
+          : muted
+            ? "text-text-on-dark-muted/60"
+            : "text-text-on-dark-muted hover:text-text-on-dark"
+      }`}
+      aria-disabled={muted}
+    >
+      {children}
+      {badge ? (
+        <span className="ml-1.5 rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-on-dark-muted">
+          {badge}
+        </span>
+      ) : null}
+      {active ? (
+        <span
+          aria-hidden
+          className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-brand-coral"
+        />
+      ) : null}
+    </Link>
+  );
+}
 
-  const displayName = profile?.display_name?.trim() || "Athlete";
+export default function AppHeader() {
+  const pathname = usePathname();
+  const { profile } = useProfile();
+  const isAuthenticated = profile !== null;
+
+  const isFitness =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/fitness");
+  const isMind = pathname.startsWith("/mind");
 
   return (
-    <header className="border-b border-slate-200/70 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="text-sm font-semibold text-slate-900 sm:text-base">
-          Full Spectrum Fitness
-        </Link>
+    <header className="bg-surface-header shadow-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <BrandLogo />
 
-        <nav className="flex items-center gap-3 text-xs font-medium text-slate-700 sm:gap-4 sm:text-sm">
-          <Link href="/dashboard" className="transition hover:text-slate-900">
-            Dashboard
-          </Link>
-          <Link href="/profile" className="transition hover:text-slate-900">
-            Profile
-          </Link>
-          <Link href="/about" className="transition hover:text-slate-900">
-            About
-          </Link>
-          <span className="hidden rounded-full bg-slate-900 px-3 py-1 text-xs text-white sm:inline-flex">
-            {isLoading ? "Refreshing..." : `Hi, ${displayName}`}
-          </span>
-        </nav>
+        {isAuthenticated ? (
+          <nav
+            aria-label="Main"
+            className="hidden items-center gap-5 md:flex lg:gap-6"
+          >
+            <NavLink href="/dashboard" active={isFitness && !isMind}>
+              Fitness
+            </NavLink>
+            <NavLink href="/dashboard" muted>
+              Mind
+            </NavLink>
+            <NavLink href="/dashboard" muted>
+              Insights
+            </NavLink>
+            <NavLink href="/dashboard" muted badge="Soon">
+              Community
+            </NavLink>
+          </nav>
+        ) : null}
+
+        <div className="flex shrink-0 items-center gap-3">
+          {isAuthenticated ? (
+            <Link
+              href="/profile"
+              className="rounded-full px-3 py-1.5 text-sm font-medium text-text-on-dark-muted transition hover:bg-white/5 hover:text-text-on-dark"
+            >
+              {profile.display_name?.trim() || "Profile"}
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/auth"
+                className="hidden text-sm font-medium text-text-on-dark-muted transition hover:text-text-on-dark sm:inline-flex"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/auth"
+                className="inline-flex rounded-full bg-brand-coral px-4 py-2 text-sm font-semibold text-text-on-dark transition hover:bg-brand-coral-deep"
+              >
+                Get started
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

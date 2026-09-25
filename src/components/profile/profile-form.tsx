@@ -42,7 +42,7 @@ const DOMAIN_LABELS: Record<(typeof DOMAIN_FOCUS_AREAS)[number], string> = {
 };
 
 const inputClassName =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none ring-orange-300 transition focus:ring";
+  "w-full rounded-lg border border-black/10 bg-surface-card px-3 py-2 text-text-primary outline-none ring-brand-coral/40 transition focus:ring-2";
 
 function emptyDomainRow(): DomainPriority {
   return { domain: "", priority: 1 };
@@ -198,7 +198,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
       <div>
         <label
           htmlFor="display-name"
-          className="mb-1 block text-sm font-medium text-slate-200"
+          className="mb-1 block text-sm font-medium text-text-primary"
         >
           Display name
         </label>
@@ -221,7 +221,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
       <div>
         <label
           htmlFor="fitness-goal"
-          className="mb-1 block text-sm font-medium text-slate-200"
+          className="mb-1 block text-sm font-medium text-text-primary"
         >
           Fitness goal
         </label>
@@ -242,7 +242,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
       <div>
         <label
           htmlFor="wellness-goal"
-          className="mb-1 block text-sm font-medium text-slate-200"
+          className="mb-1 block text-sm font-medium text-text-primary"
         >
           Wellness goal
         </label>
@@ -264,7 +264,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
         <div>
           <label
             htmlFor="experience-level"
-            className="mb-1 block text-sm font-medium text-slate-200"
+            className="mb-1 block text-sm font-medium text-text-primary"
           >
             Experience level
           </label>
@@ -293,7 +293,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
         <div>
           <label
             htmlFor="sharing-preference"
-            className="mb-1 block text-sm font-medium text-slate-200"
+            className="mb-1 block text-sm font-medium text-text-primary"
           >
             Sharing preference
           </label>
@@ -321,10 +321,10 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
       </div>
 
       <fieldset className="rounded-xl border border-white/10 bg-black/20 p-4">
-        <legend className="px-1 text-sm font-medium text-slate-200">
+        <legend className="px-1 text-sm font-medium text-text-primary">
           Life domain priorities
         </legend>
-        <p className="mb-4 text-sm text-slate-400">
+        <p className="mb-4 text-sm text-text-muted">
           Rank the areas that matter most right now. Lower numbers mean higher
           priority.
         </p>
@@ -338,7 +338,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
               <div>
                 <label
                   htmlFor={`domain-name-${index}`}
-                  className="mb-1 block text-xs font-medium text-slate-300"
+                  className="mb-1 block text-xs font-medium text-text-muted"
                 >
                   Domain
                 </label>
@@ -372,7 +372,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
               <div>
                 <label
                   htmlFor={`domain-priority-${index}`}
-                  className="mb-1 block text-xs font-medium text-slate-300"
+                  className="mb-1 block text-xs font-medium text-text-muted"
                 >
                   Priority
                 </label>
@@ -398,7 +398,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
                 <button
                   type="button"
                   onClick={() => removeDomainRow(index)}
-                  className="rounded-lg border border-white/20 px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+                  className="rounded-lg border border-black/10 px-3 py-2 text-sm text-text-muted transition hover:bg-surface-page"
                 >
                   Remove
                 </button>
@@ -411,7 +411,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
           type="button"
           onClick={addDomainRow}
           disabled={domainPriorities.length >= DOMAIN_FOCUS_AREAS.length}
-          className="mt-4 rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+          className="mt-4 rounded-lg border border-black/10 px-3 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-page disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
         >
           Add domain
         </button>
@@ -424,12 +424,12 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
       </fieldset>
 
       {statusMessage && (
-        <p className="rounded-lg bg-orange-500/20 px-3 py-2 text-sm text-orange-100">
+        <p className="rounded-lg bg-emerald-100 px-3 py-2 text-sm text-emerald-800">
           {statusMessage}
         </p>
       )}
       {errorMessage && (
-        <p className="rounded-lg bg-rose-500/20 px-3 py-2 text-sm text-rose-100">
+        <p className="rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800">
           {errorMessage}
         </p>
       )}
@@ -437,7 +437,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-xl bg-orange-500 px-4 py-3 font-semibold text-white transition hover:bg-orange-400 disabled:opacity-70 sm:w-auto"
+        className="w-full rounded-xl bg-brand-coral px-4 py-3 font-semibold text-text-on-dark transition hover:bg-brand-coral-deep disabled:opacity-70 sm:w-auto"
       >
         {loading ? "Saving profile..." : "Save profile"}
       </button>

@@ -73,18 +73,14 @@ function CheckIcon({ className }: { className?: string }) {
 export default function Home() {
   return (
     <main className="min-h-screen">
-      {/* Hero */}
-      <section
-        className="px-6 py-20 text-center text-white sm:px-10 sm:py-28"
-        style={{
-          background:
-            "linear-gradient(90deg, #1e3a5f 0%, #0d9488 55%, #2dd4bf 100%)",
-        }}
-      >
+      <section className="bg-gradient-welcome px-6 py-20 text-center text-text-on-dark sm:px-10 sm:py-28">
         <div className="mx-auto max-w-4xl">
-          <p className="text-lg leading-relaxed text-white/95 sm:text-xl">
+          <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
+            Strength of body and mind.
+          </h1>
+          <p className="mt-6 text-lg leading-relaxed text-white/95 sm:text-xl">
             The complete platform for fitness tracking and mental wellness.
-            Start your transformation today – completely free.
+            Start your transformation today — completely free.
           </p>
 
           <div className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-4">
@@ -101,13 +97,13 @@ export default function Home() {
           <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/auth"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-white/90 sm:text-base"
+              className="inline-flex items-center justify-center rounded-full bg-surface-card px-6 py-3 text-sm font-semibold text-brand-coral-deep transition hover:bg-white/90 sm:text-base"
             >
               Start Your Fitness Journey →
             </Link>
             <Link
               href="/auth"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-white/90 sm:text-base"
+              className="inline-flex items-center justify-center rounded-full border-2 border-white/80 px-6 py-3 text-sm font-semibold text-text-on-dark transition hover:bg-white/10 sm:text-base"
             >
               Begin Mental Wellness →
             </Link>
@@ -124,13 +120,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="bg-white px-6 py-20 sm:px-10 sm:py-28">
+      <section className="bg-surface-page px-6 py-20 sm:px-10 sm:py-28">
         <div className="mx-auto max-w-6xl text-center">
-          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+          <h2 className="text-3xl font-bold text-text-primary sm:text-4xl">
             Everything You Need for Complete Wellness
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-500 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-text-muted sm:text-lg">
             Comprehensive tools designed to support every aspect of your health
             and happiness journey.
           </p>
@@ -139,21 +134,21 @@ export default function Home() {
             {features.map((feature) => (
               <article
                 key={feature.title}
-                className="rounded-2xl border border-slate-100 bg-white p-6 text-left shadow-sm"
+                className="rounded-2xl border border-black/5 bg-surface-card p-6 text-left shadow-sm"
               >
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-text-primary">
                   {feature.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-500">
+                <p className="mt-3 text-sm leading-relaxed text-text-muted">
                   {feature.description}
                 </p>
                 <ul className="mt-5 space-y-2">
                   {feature.bullets.map((bullet) => (
                     <li
                       key={bullet}
-                      className="flex items-center gap-2 text-sm text-slate-700"
+                      className="flex items-center gap-2 text-sm text-text-primary"
                     >
-                      <CheckIcon className="h-4 w-4 shrink-0 text-teal-500" />
+                      <CheckIcon className="h-4 w-4 shrink-0 text-brand-coral" />
                       {bullet}
                     </li>
                   ))}
@@ -166,33 +161,26 @@ export default function Home() {
 
       <FounderTeaser />
 
-      {/* Bottom CTA */}
-      <section
-        className="px-6 py-20 text-center text-white sm:px-10 sm:py-28"
-        style={{
-          background:
-            "linear-gradient(90deg, #84cc16 0%, #14b8a6 55%, #2dd4bf 100%)",
-        }}
-      >
+      <section className="bg-gradient-welcome px-6 py-20 text-center text-text-on-dark sm:px-10 sm:py-28">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-3xl font-bold sm:text-4xl">
             Ready to Start Your Transformation?
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/95 sm:text-lg">
             Built by a trainer, researcher, and engineer who understands both
-            sides of wellness. Start your journey today – completely free.
+            sides of wellness. Start your journey today — completely free.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/auth"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-teal-600 transition hover:bg-white/90 sm:text-base"
+              className="inline-flex items-center justify-center rounded-full bg-surface-card px-6 py-3 text-sm font-semibold text-brand-coral-deep transition hover:bg-white/90 sm:text-base"
             >
               Start Fitness Tracking →
             </Link>
             <Link
               href="/auth"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-teal-600 transition hover:bg-white/90 sm:text-base"
+              className="inline-flex items-center justify-center rounded-full bg-surface-card px-6 py-3 text-sm font-semibold text-brand-coral-deep transition hover:bg-white/90 sm:text-base"
             >
               Begin Mental Wellness →
             </Link>

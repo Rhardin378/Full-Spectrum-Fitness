@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { BrandLogo } from "@/components/brand-logo";
 import { createClient } from "@/lib/supabase/client";
 
 const emailSchema = z.string().email("Please enter a valid email address");
@@ -114,31 +115,29 @@ export default function AuthPage() {
     setLoading(false);
   }
 
+  const inputClassName =
+    "w-full rounded-lg border border-black/10 bg-surface-card px-3 py-2 text-text-primary outline-none ring-brand-coral/40 transition focus:ring-2";
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(120deg, #1e1b4b, #1d4ed8, #7c3aed, #fb7185)",
-        }}
-        aria-hidden
-      />
-      <div className="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-cyan-400/30 blur-3xl" aria-hidden />
-      <div className="absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-pink-400/30 blur-3xl" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-auth" aria-hidden />
 
-      <main className="relative z-10 w-full max-w-md rounded-2xl border border-white/30 bg-white/85 p-6 shadow-2xl backdrop-blur-md">
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-semibold text-indigo-900">Full Spectrum Fitness</h1>
-          <p className="mt-2 text-sm text-slate-700">Stronger minds. Stronger bodies.</p>
+      <main className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-surface-card/90 p-6 shadow-2xl backdrop-blur-md">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <BrandLogo className="[&_span]:text-text-primary" />
+          <p className="mt-3 text-sm text-text-muted">
+            Stronger minds. Stronger bodies.
+          </p>
         </div>
 
-        <div className="mb-5 grid grid-cols-2 rounded-lg bg-slate-200 p-1">
+        <div className="mb-5 grid grid-cols-2 rounded-lg bg-surface-page p-1">
           <button
             type="button"
             onClick={() => setTab("signin")}
             className={`rounded-md px-3 py-2 text-sm font-medium transition ${
-              tab === "signin" ? "bg-white text-slate-900 shadow" : "text-slate-600"
+              tab === "signin"
+                ? "bg-surface-card text-text-primary shadow"
+                : "text-text-muted"
             }`}
           >
             Sign In
@@ -147,7 +146,9 @@ export default function AuthPage() {
             type="button"
             onClick={() => setTab("signup")}
             className={`rounded-md px-3 py-2 text-sm font-medium transition ${
-              tab === "signup" ? "bg-white text-slate-900 shadow" : "text-slate-600"
+              tab === "signup"
+                ? "bg-surface-card text-text-primary shadow"
+                : "text-text-muted"
             }`}
           >
             Sign Up
@@ -157,7 +158,7 @@ export default function AuthPage() {
         {tab === "signin" ? (
           <form className="space-y-4" onSubmit={handleSignIn}>
             <div>
-              <label htmlFor="signin-email" className="mb-1 block text-sm font-medium text-slate-800">
+              <label htmlFor="signin-email" className="mb-1 block text-sm font-medium text-text-primary">
                 Email
               </label>
               <input
@@ -165,7 +166,7 @@ export default function AuthPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none ring-indigo-300 transition focus:ring"
+                className={inputClassName}
                 placeholder="you@example.com"
                 required
               />
@@ -173,7 +174,7 @@ export default function AuthPage() {
             </div>
 
             <div>
-              <label htmlFor="signin-password" className="mb-1 block text-sm font-medium text-slate-800">
+              <label htmlFor="signin-password" className="mb-1 block text-sm font-medium text-text-primary">
                 Password
               </label>
               <input
@@ -181,7 +182,7 @@ export default function AuthPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none ring-indigo-300 transition focus:ring"
+                className={inputClassName}
                 placeholder="Enter password"
                 required
               />
@@ -191,7 +192,7 @@ export default function AuthPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-70"
+              className="w-full rounded-lg bg-brand-coral-deep px-4 py-2 font-semibold text-text-on-dark transition hover:bg-brand-coral disabled:opacity-70"
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
@@ -199,7 +200,7 @@ export default function AuthPage() {
         ) : (
           <form className="space-y-4" onSubmit={handleSignUp}>
             <div>
-              <label htmlFor="signup-fullname" className="mb-1 block text-sm font-medium text-slate-800">
+              <label htmlFor="signup-fullname" className="mb-1 block text-sm font-medium text-text-primary">
                 Full Name
               </label>
               <input
@@ -207,13 +208,13 @@ export default function AuthPage() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none ring-indigo-300 transition focus:ring"
+                className={inputClassName}
                 placeholder="John Doe"
               />
             </div>
 
             <div>
-              <label htmlFor="signup-email" className="mb-1 block text-sm font-medium text-slate-800">
+              <label htmlFor="signup-email" className="mb-1 block text-sm font-medium text-text-primary">
                 Email
               </label>
               <input
@@ -221,7 +222,7 @@ export default function AuthPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none ring-indigo-300 transition focus:ring"
+                className={inputClassName}
                 placeholder="you@example.com"
                 required
               />
@@ -229,7 +230,7 @@ export default function AuthPage() {
             </div>
 
             <div>
-              <label htmlFor="signup-password" className="mb-1 block text-sm font-medium text-slate-800">
+              <label htmlFor="signup-password" className="mb-1 block text-sm font-medium text-text-primary">
                 Password
               </label>
               <input
@@ -237,7 +238,7 @@ export default function AuthPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none ring-indigo-300 transition focus:ring"
+                className={inputClassName}
                 placeholder="Create password"
                 required
               />
@@ -247,15 +248,23 @@ export default function AuthPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-70"
+              className="w-full rounded-lg bg-brand-coral-deep px-4 py-2 font-semibold text-text-on-dark transition hover:bg-brand-coral disabled:opacity-70"
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>
           </form>
         )}
 
-        {statusMessage && <p className="mt-4 rounded-lg bg-emerald-100 px-3 py-2 text-sm text-emerald-800">{statusMessage}</p>}
-        {errorMessage && <p className="mt-4 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800">{errorMessage}</p>}
+        {statusMessage && (
+          <p className="mt-4 rounded-lg bg-emerald-100 px-3 py-2 text-sm text-emerald-800">
+            {statusMessage}
+          </p>
+        )}
+        {errorMessage && (
+          <p className="mt-4 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800">
+            {errorMessage}
+          </p>
+        )}
       </main>
     </div>
   );

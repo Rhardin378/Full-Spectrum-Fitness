@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --surface-header: #1e1e1e;
+  --surface-page: #f5f3f0;
+  --surface-card: #ffffff;
+  --brand-coral: #e85a4f;
+  --brand-coral-deep: #d14a40;
+  --brand-coral-dark: #c9453a;
+  --brand-coral-light: #ffd4cc;
+  --text-primary: #1a1a1a;
+  --text-muted: #6b6560;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: #a3a3a3;
+  --success: #4ade80;
+  --gradient-welcome: linear-gradient(
+    90deg,
+    var(--brand-coral-dark) 0%,
+    var(--brand-coral) 50%,
+    var(--brand-coral-light) 100%
+  );
+  --gradient-auth: linear-gradient(
+    135deg,
+    #1e1e1e 0%,
+    #3d2520 40%,
+    #e85a4f 70%,
+    #ffd4cc 100%
+  );
+  --background: var(--surface-page);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface-header: var(--surface-header);
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-brand-coral: var(--brand-coral);
+  --color-brand-coral-deep: var(--brand-coral-deep);
+  --color-brand-coral-dark: var(--brand-coral-dark);
+  --color-brand-coral-light: var(--brand-coral-light);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-text-on-dark: var(--text-on-dark);
+  --color-text-on-dark-muted: var(--text-on-dark-muted);
+  --color-success: var(--success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.bg-gradient-welcome {
+  background: var(--gradient-welcome);
+}
+
+.bg-gradient-auth {
+  background: var(--gradient-auth);
 }

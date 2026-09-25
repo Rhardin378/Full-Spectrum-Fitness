@@ -28,14 +28,8 @@ const credentials = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-white">
-      <header
-        className="px-6 py-16 text-center text-white sm:px-10 sm:py-20"
-        style={{
-          background:
-            "linear-gradient(90deg, #1e3a5f 0%, #0d9488 55%, #2dd4bf 100%)",
-        }}
-      >
+    <main className="min-h-screen bg-surface-page">
+      <header className="bg-gradient-welcome px-6 py-16 text-center text-text-on-dark sm:px-10 sm:py-20">
         <div className="mx-auto max-w-3xl">
           <Link
             href="/"
@@ -61,17 +55,17 @@ export default function AboutPage() {
             priority
           />
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            <h2 className="text-2xl font-bold text-text-primary sm:text-3xl">
               Ryan Hardin, NASM-CPT
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-text-muted sm:text-lg">
               Fitness and mental health are too often treated as separate
               journeys — but the research tells a different story. After studying
               psychology at King University and presenting research on how
               exercise positively impacts mental health, Ryan saw an opportunity
               to build something that bridges both worlds.
             </p>
-            <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-text-muted sm:text-lg">
               As a NASM-certified personal trainer and software engineer, Ryan
               brings a rare combination of scientific understanding, real-world
               training experience, and the technical skill to build a platform
@@ -81,21 +75,21 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-slate-50 px-6 py-16 sm:px-10 sm:py-20">
+      <section className="bg-surface-card px-6 py-16 sm:px-10 sm:py-20">
         <div className="mx-auto max-w-4xl">
-          <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">
+          <h2 className="text-center text-2xl font-bold text-text-primary sm:text-3xl">
             Credentials & Expertise
           </h2>
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {credentials.map((item) => (
               <article
                 key={item.title}
-                className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-black/5 bg-surface-page p-6 shadow-sm"
               >
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-text-primary">
                   {item.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                <p className="mt-3 text-sm leading-relaxed text-text-muted">
                   {item.description}
                 </p>
               </article>
@@ -106,10 +100,10 @@ export default function AboutPage() {
 
       <section className="px-6 py-16 text-center sm:px-10 sm:py-20">
         <div className="mx-auto max-w-2xl">
-          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+          <h2 className="text-2xl font-bold text-text-primary sm:text-3xl">
             The Mission
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-text-muted sm:text-lg">
             Full Spectrum Fitness exists to help people build sustainable
             physical and mental growth habits by revealing the patterns between
             lifestyle behaviors, training, and emotional well-being. It&apos;s
@@ -119,7 +113,7 @@ export default function AboutPage() {
           </p>
           <Link
             href="/auth"
-            className="mt-8 inline-flex items-center justify-center rounded-full bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-700 sm:text-base"
+            className="mt-8 inline-flex items-center justify-center rounded-full bg-brand-coral px-6 py-3 text-sm font-semibold text-text-on-dark transition hover:bg-brand-coral-deep sm:text-base"
           >
             Start Your Journey →
           </Link>

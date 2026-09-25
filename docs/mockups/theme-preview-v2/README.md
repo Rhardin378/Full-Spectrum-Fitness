@@ -1,8 +1,6 @@
-# Theme preview v2 — charcoal + coral (final tweak)
+# Theme preview v2 — charcoal + coral (**locked in**)
 
-Full-page mockups of **every implemented route** and **key designed shells**, using the proposed locked-in palette with a **desaturated gradient right stop** (`#FFD4CC`).
-
-Use this folder to review before updating `brand_style_guide.md` and implementing in code.
+Approved theme applied in code (`src/app/globals.css`, `src/lib/theme/colors.ts`) and documented in [brand_style_guide.md](../../brand_style_guide.md).
 
 ---
 
@@ -58,4 +56,4 @@ Use this folder to review before updating `brand_style_guide.md` and implementin
 - [navigation-ia.md](../../navigation-ia.md) — navbar vs domain tabs
 - [mockups/navbar/README.md](../navbar/README.md) — earlier iteration mockups
 - [mockups/landing/README.md](../landing/README.md) — first home page concept
-- [brand_style_guide.md](../../brand_style_guide.md) — **pending update** after lock-in
+- [brand_style_guide.md](../../brand_style_guide.md) — **canonical locked palette**
