@@ -6,7 +6,8 @@ Static concept images for the app navbar, updated to use the **official Full Spe
 
 | File | State | Notes |
 |------|--------|--------|
-| `dashboard-shell-dark-navbar-v1.png` | **Hybrid (preferred)** | Dark charcoal navbar over Slice 1.5 reference dashboard colors (indigo gradient + orange accents) |
+| `dashboard-shell-dark-navbar-v2.png` | **Hybrid (preferred)** | Dark navbar + "Welcome back, Alex" + stat cards above tabs + Slice 1.5 colors |
+| `dashboard-shell-dark-navbar-v1.png` | Hybrid v1 | Dark navbar over Slice 1.5 shell (brand title in gradient band) |
 | `dashboard-shell-concept-v1.png` | Dashboard shell | Full logged-in dashboard — logo-aligned charcoal + coral throughout |
 | `navbar-concept-logged-in-v2.png` | Authenticated | Profile avatar + dropdown; Measurements active with coral underline |
 | `navbar-concept-logged-out-v2.png` | Visitor | Sign in link + coral **Get started** CTA |
