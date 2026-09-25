@@ -6,6 +6,7 @@ Static concept images for the app navbar, updated to use the **official Full Spe
 
 | File | State | Notes |
 |------|--------|--------|
+| `dashboard-shell-concept-v1.png` | Dashboard shell | Full logged-in dashboard with navbar, welcome band, stat cards, tabs, Measurements content |
 | `navbar-concept-logged-in-v2.png` | Authenticated | Profile avatar + dropdown; Measurements active with coral underline |
 | `navbar-concept-logged-out-v2.png` | Visitor | Sign in link + coral **Get started** CTA |
 | `assets/fsf-logo.png` | Source logo | Reference asset used for mockup generation |
