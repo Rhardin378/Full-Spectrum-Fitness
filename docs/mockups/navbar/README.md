@@ -6,7 +6,13 @@ Static concept images for the app navbar, updated to use the **official Full Spe
 
 | File | State | Notes |
 |------|--------|--------|
-| `dashboard-shell-concept-v1.png` | Dashboard shell | Full logged-in dashboard with navbar, welcome band, stat cards, tabs, Measurements content |
+| `fitness-domain-shell-v1.png` | **Fitness domain (IA v1)** | New nav IA: Fitness/Mind switcher, Insights, Community Soon, fitness tabs, softened coral gradient |
+| `dashboard-shell-dark-navbar-v2.png` | **Hybrid** | Dark navbar + "Welcome back, Alex" + stat cards above tabs + Slice 1.5 indigo/orange colors |
+| `dashboard-shell-charcoal-coral-v2.png` | **Logo-aligned (preferred)** | Charcoal + coral; light cream welcome band (distinct from dark navbar) |
+| `dashboard-shell-comparison-side-by-side.png` | Comparison | Logo-aligned v2 vs Hybrid v2 side by side |
+| `dashboard-shell-charcoal-coral-v1.png` | Logo-aligned v1 | Charcoal welcome band (superseded — too close to navbar) |
+| `dashboard-shell-dark-navbar-v1.png` | Hybrid v1 | Dark navbar over Slice 1.5 shell (brand title in gradient band) |
+| `dashboard-shell-concept-v1.png` | Dashboard shell (v1 layout) | Full logged-in dashboard — logo-aligned charcoal + coral, tabs above stat cards |
 | `navbar-concept-logged-in-v2.png` | Authenticated | Profile avatar + dropdown; Measurements active with coral underline |
 | `navbar-concept-logged-out-v2.png` | Visitor | Sign in link + coral **Get started** CTA |
 | `assets/fsf-logo.png` | Source logo | Reference asset used for mockup generation |
@@ -78,6 +84,7 @@ The Slice 1.5 reference uses a **two-tier shell**: dark top navbar + white tab b
 | Tier | Background | Accent |
 |------|------------|--------|
 | Top navbar | `#1E1E1E` | Coral active underline; profile corner |
+| Welcome band | `#EDE9E4` (light cream) | Dark charcoal text; coral CTAs — **keep lighter than navbar** |
 | Tab bar (dashboard) | `#FFFFFF` | Coral underline on active tab (Measurements, etc.) |
 | Page body | `#F5F3F0` | Coral primary buttons; green for positive trends |
 
@@ -103,6 +110,14 @@ The Slice 1.5 reference uses a **two-tier shell**: dark top navbar + white tab b
 - [ ] Audit landing page hero gradient against new charcoal + coral direction
 
 ---
+
+## Navigation IA
+
+Navbar vs in-domain tabs, domain split (Fitness / Mind), and resolved placement decisions are documented in **[navigation-ia.md](../navigation-ia.md)**.
+
+## Landing page
+
+Home page mockup (charcoal + coral marketing site): **[mockups/landing/](../landing/)**
 
 ## Reference
 

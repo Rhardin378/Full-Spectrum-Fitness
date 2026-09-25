@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import AppHeader from "@/components/app-header";
 import { ProfileProvider } from "@/components/profile/profile-provider";
 import { getOrCreateProfile } from "@/lib/profile/actions";
 import "./globals.css";
@@ -39,7 +38,6 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ProfileProvider initialProfile={initialProfile}>
-          <AppHeader />
           {children}
         </ProfileProvider>
       </body>

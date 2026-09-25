@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function FounderTeaser() {
   return (
-    <section className="bg-slate-50 px-6 py-20 sm:px-10 sm:py-28">
+    <section className="bg-surface-page px-6 py-20 sm:px-10 sm:py-28">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-10 md:flex-row md:items-start">
         <Image
           src="/founder.jpg"
@@ -13,13 +13,13 @@ export function FounderTeaser() {
           className="w-48 shrink-0 rounded-2xl object-cover shadow-md sm:w-56"
         />
         <div className="text-center md:text-left">
-          <p className="text-sm font-semibold uppercase tracking-wide text-teal-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-brand-coral">
             Built at the intersection of science, training, and technology
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-bold text-text-primary sm:text-3xl">
             Ryan Hardin, NASM-CPT
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-text-muted sm:text-lg">
             Full Spectrum Fitness was created by Ryan Hardin — a psychology
             graduate from King University who presented research on the positive
             effects exercise has on mental health, a NASM-certified personal
@@ -28,7 +28,7 @@ export function FounderTeaser() {
           </p>
           <Link
             href="/about"
-            className="mt-6 inline-flex items-center text-sm font-semibold text-teal-600 transition hover:text-teal-700"
+            className="mt-6 inline-flex items-center text-sm font-semibold text-brand-coral transition hover:text-brand-coral-deep"
           >
             Learn more about the founder →
           </Link>
