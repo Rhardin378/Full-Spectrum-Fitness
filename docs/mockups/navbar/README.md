@@ -6,6 +6,7 @@ Static concept images for the app navbar, updated to use the **official Full Spe
 
 | File | State | Notes |
 |------|--------|--------|
+| `fitness-domain-shell-v1.png` | **Fitness domain (IA v1)** | New nav IA: Fitness/Mind switcher, Insights, Community Soon, fitness tabs, softened coral gradient |
 | `dashboard-shell-dark-navbar-v2.png` | **Hybrid** | Dark navbar + "Welcome back, Alex" + stat cards above tabs + Slice 1.5 indigo/orange colors |
 | `dashboard-shell-charcoal-coral-v2.png` | **Logo-aligned (preferred)** | Charcoal + coral; light cream welcome band (distinct from dark navbar) |
 | `dashboard-shell-comparison-side-by-side.png` | Comparison | Logo-aligned v2 vs Hybrid v2 side by side |

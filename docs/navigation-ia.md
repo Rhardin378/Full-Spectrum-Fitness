@@ -155,6 +155,12 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 
 ---
 
+## Mockups
+
+- **Fitness domain shell:** `docs/mockups/navbar/fitness-domain-shell-v1.png` — implements this IA (Fitness active, Measurements tab, Community “Soon”)
+
+---
+
 ## Related docs
 
 - [PRD](./PRD.md) — feature scope
