@@ -115,6 +115,10 @@ The Slice 1.5 reference uses a **two-tier shell**: dark top navbar + white tab b
 
 Navbar vs in-domain tabs, domain split (Fitness / Mind), and resolved placement decisions are documented in **[navigation-ia.md](../navigation-ia.md)**.
 
+## Landing page
+
+Home page mockup (charcoal + coral marketing site): **[mockups/landing/](../landing/)**
+
 ## Reference
 
 - Layout inspiration: `docs/vertical_slices/slice_1_5_measurements/references/fsf-measurements-tabbed-dashboard.png`
