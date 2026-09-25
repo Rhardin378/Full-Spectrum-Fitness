@@ -6,9 +6,10 @@ Static concept images for the app navbar, updated to use the **official Full Spe
 
 | File | State | Notes |
 |------|--------|--------|
-| `dashboard-shell-dark-navbar-v2.png` | **Hybrid (preferred)** | Dark navbar + "Welcome back, Alex" + stat cards above tabs + Slice 1.5 colors |
+| `dashboard-shell-dark-navbar-v2.png` | **Hybrid** | Dark navbar + "Welcome back, Alex" + stat cards above tabs + Slice 1.5 indigo/orange colors |
+| `dashboard-shell-charcoal-coral-v1.png` | **Logo-aligned** | Same layout as hybrid v2 — charcoal + coral throughout (no indigo/purple) |
 | `dashboard-shell-dark-navbar-v1.png` | Hybrid v1 | Dark navbar over Slice 1.5 shell (brand title in gradient band) |
-| `dashboard-shell-concept-v1.png` | Dashboard shell | Full logged-in dashboard — logo-aligned charcoal + coral throughout |
+| `dashboard-shell-concept-v1.png` | Dashboard shell (v1 layout) | Full logged-in dashboard — logo-aligned charcoal + coral, tabs above stat cards |
 | `navbar-concept-logged-in-v2.png` | Authenticated | Profile avatar + dropdown; Measurements active with coral underline |
 | `navbar-concept-logged-out-v2.png` | Visitor | Sign in link + coral **Get started** CTA |
 | `assets/fsf-logo.png` | Source logo | Reference asset used for mockup generation |
