@@ -12,6 +12,10 @@ export const colors = {
   textOnDark: "#FFFFFF",
   textOnDarkMuted: "#A3A3A3",
   success: "#4ADE80",
+  feedbackError: "#C9453A",
+  feedbackErrorBg: "#FFF5F3",
+  feedbackSuccessBg: "#ECFDF5",
+  feedbackSuccessText: "#166534",
 } as const;
 
 export const gradients = {
