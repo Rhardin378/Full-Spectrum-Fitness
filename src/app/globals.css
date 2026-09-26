@@ -13,6 +13,11 @@
   --text-on-dark: #ffffff;
   --text-on-dark-muted: #a3a3a3;
   --success: #4ade80;
+  --feedback-error: #c9453a;
+  --feedback-error-bg: #fff5f3;
+  --feedback-error-border: rgba(201, 69, 58, 0.3);
+  --feedback-success-bg: #ecfdf5;
+  --feedback-success-text: #166534;
   --gradient-welcome: linear-gradient(
     90deg,
     var(--brand-coral-dark) 0%,
@@ -45,6 +50,11 @@
   --color-text-on-dark: var(--text-on-dark);
   --color-text-on-dark-muted: var(--text-on-dark-muted);
   --color-success: var(--success);
+  --color-feedback-error: var(--feedback-error);
+  --color-feedback-error-bg: var(--feedback-error-bg);
+  --color-feedback-error-border: var(--feedback-error-border);
+  --color-feedback-success-bg: var(--feedback-success-bg);
+  --color-feedback-success-text: var(--feedback-success-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

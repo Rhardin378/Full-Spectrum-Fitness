@@ -170,7 +170,9 @@ export default function AuthPage() {
                 placeholder="you@example.com"
                 required
               />
-              {errors.email && <p className="mt-1 text-xs text-rose-700">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-xs text-feedback-error">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -186,7 +188,9 @@ export default function AuthPage() {
                 placeholder="Enter password"
                 required
               />
-              {errors.password && <p className="mt-1 text-xs text-rose-700">{errors.password}</p>}
+              {errors.password && (
+                <p className="mt-1 text-xs text-feedback-error">{errors.password}</p>
+              )}
             </div>
 
             <button
@@ -226,7 +230,9 @@ export default function AuthPage() {
                 placeholder="you@example.com"
                 required
               />
-              {errors.email && <p className="mt-1 text-xs text-rose-700">{errors.email}</p>}
+              {errors.email && (
+                <p className="mt-1 text-xs text-feedback-error">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -242,7 +248,9 @@ export default function AuthPage() {
                 placeholder="Create password"
                 required
               />
-              {errors.password && <p className="mt-1 text-xs text-rose-700">{errors.password}</p>}
+              {errors.password && (
+                <p className="mt-1 text-xs text-feedback-error">{errors.password}</p>
+              )}
             </div>
 
             <button
@@ -256,12 +264,12 @@ export default function AuthPage() {
         )}
 
         {statusMessage && (
-          <p className="mt-4 rounded-lg bg-emerald-100 px-3 py-2 text-sm text-emerald-800">
+          <p className="mt-4 rounded-lg bg-feedback-success-bg px-3 py-2 text-sm text-feedback-success-text">
             {statusMessage}
           </p>
         )}
         {errorMessage && (
-          <p className="mt-4 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800">
+          <p className="mt-4 rounded-lg border border-feedback-error-border bg-feedback-error-bg px-3 py-2 text-sm text-feedback-error">
             {errorMessage}
           </p>
         )}

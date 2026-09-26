@@ -22,7 +22,7 @@ export default async function DashboardPage() {
 
     return (
       <main className="min-h-screen bg-surface-page p-6 sm:p-10">
-        <section className="mx-auto max-w-4xl rounded-2xl border border-rose-500/30 bg-rose-50 p-8">
+        <section className="mx-auto max-w-4xl rounded-2xl border border-feedback-error-border bg-feedback-error-bg p-8">
           <h1 className="text-2xl font-semibold text-text-primary">
             Unable to load profile
           </h1>

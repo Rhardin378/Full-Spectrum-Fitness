@@ -212,7 +212,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
           autoComplete="name"
         />
         {fieldErrors.display_name && (
-          <p className="mt-1 text-xs text-rose-300">
+          <p className="mt-1 text-xs text-feedback-error">
             {fieldErrors.display_name}
           </p>
         )}
@@ -233,7 +233,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
           placeholder="What do you want to build physically?"
         />
         {fieldErrors.fitness_goal && (
-          <p className="mt-1 text-xs text-rose-300">
+          <p className="mt-1 text-xs text-feedback-error">
             {fieldErrors.fitness_goal}
           </p>
         )}
@@ -254,7 +254,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
           placeholder="How do you want to feel mentally and emotionally?"
         />
         {fieldErrors.wellness_goal && (
-          <p className="mt-1 text-xs text-rose-300">
+          <p className="mt-1 text-xs text-feedback-error">
             {fieldErrors.wellness_goal}
           </p>
         )}
@@ -284,7 +284,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
             ))}
           </select>
           {fieldErrors.experience_level && (
-            <p className="mt-1 text-xs text-rose-300">
+            <p className="mt-1 text-xs text-feedback-error">
               {fieldErrors.experience_level}
             </p>
           )}
@@ -313,14 +313,14 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
             ))}
           </select>
           {fieldErrors.sharing_preferences && (
-            <p className="mt-1 text-xs text-rose-300">
+            <p className="mt-1 text-xs text-feedback-error">
               {fieldErrors.sharing_preferences}
             </p>
           )}
         </div>
       </div>
 
-      <fieldset className="rounded-xl border border-white/10 bg-black/20 p-4">
+      <fieldset className="rounded-xl border border-black/5 bg-surface-page p-4">
         <legend className="px-1 text-sm font-medium text-text-primary">
           Life domain priorities
         </legend>
@@ -417,19 +417,19 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
         </button>
 
         {fieldErrors.domain_priorities && (
-          <p className="mt-3 text-xs text-rose-300">
+          <p className="mt-3 text-xs text-feedback-error">
             {fieldErrors.domain_priorities}
           </p>
         )}
       </fieldset>
 
       {statusMessage && (
-        <p className="rounded-lg bg-emerald-100 px-3 py-2 text-sm text-emerald-800">
+        <p className="rounded-lg bg-feedback-success-bg px-3 py-2 text-sm text-feedback-success-text">
           {statusMessage}
         </p>
       )}
       {errorMessage && (
-        <p className="rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800">
+        <p className="rounded-lg border border-feedback-error-border bg-feedback-error-bg px-3 py-2 text-sm text-feedback-error">
           {errorMessage}
         </p>
       )}
