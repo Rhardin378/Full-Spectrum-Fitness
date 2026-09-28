@@ -215,7 +215,7 @@ Create the Measurements tab content: log flow and recent history inside the ligh
 
 - Add “+ Log measurement” CTA in the Measurements tab (header and/or trend card per mockups).
 - Wire the **welcome-band** `+ Log measurement` (visible only when Measurements tab is active per `navigation-ia.md`) to the **same** log modal/drawer — one flow, two entry points.
-- Build entry form in a modal or drawer with type (`weight` / `waist`), value, unit, date, and optional notes.
+- Build entry form in a modal or drawer matching **log-measurement-modal-v2** (segmented type, value + unit, date, optional notes; coral primary CTA; coral-light selected type state).
 - Unit options update based on selected type.
 - Submit form to create measurement action/API.
 - Build **Recent history** card (most recent first), with optional All / Weight / Waist filter.
@@ -229,12 +229,13 @@ Create the Measurements tab content: log flow and recent history inside the ligh
 - New entry appears in recent history after save.
 - Empty, loading, and error states are visible and understandable.
 - Basic accessibility supported (labels, keyboard submit, modal focus trap if using modal).
+- Log modal visual treatment aligns with `log-measurement-modal-v2.png` and `docs/brand_style_guide.md`.
 
 ### Dependencies
 
 - Ticket 1.5.2
 - Ticket 1.5.3
-- Ticket 1.5.4
+- Ticket 1.5.4 (#21)
 
 ---
 

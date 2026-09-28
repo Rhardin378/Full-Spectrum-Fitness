@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { DashboardWelcomeBand } from "@/components/dashboard/dashboard-welcome-band";
 import { FITNESS_TABS, type FitnessTabId } from "@/components/dashboard/fitness-tabs";
+import { LogMeasurementModal } from "@/components/measurements/log-measurement-modal";
+import { MeasurementsTabPanel } from "@/components/measurements/measurements-tab-panel";
 
 type FitnessDashboardShellProps = {
   displayName: string | null;
@@ -61,57 +63,44 @@ function ComingSoonPanel({ tabLabel }: { tabLabel: string }) {
   );
 }
 
-function MeasurementsShellPanel() {
-  return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <section
-        className="rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm"
-        aria-labelledby="recent-history-heading"
-      >
-        <h2
-          id="recent-history-heading"
-          className="text-lg font-semibold text-text-primary"
-        >
-          Recent history
-        </h2>
-        <p className="mt-4 text-sm leading-relaxed text-text-muted">
-          Your weight and waist entries will show up here. Log your first
-          measurement when the entry flow ships — you are building a clear
-          picture of progress, not chasing perfection.
-        </p>
-      </section>
-
-      <section
-        className="rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm"
-        aria-labelledby="weight-trend-heading"
-      >
-        <h2
-          id="weight-trend-heading"
-          className="text-lg font-semibold text-text-primary"
-        >
-          Weight trend
-        </h2>
-        <p className="mt-1 text-xs text-text-muted">Last 30 days</p>
-        <p className="mt-4 text-sm leading-relaxed text-text-muted">
-          A simple trend view will appear here once you have measurements saved.
-          For now, this card reserves space for the chart in ticket #16.
-        </p>
-      </section>
-    </div>
-  );
-}
-
 export default function FitnessDashboardShell({
   displayName,
   needsProfileSetup = false,
 }: FitnessDashboardShellProps) {
   const [activeTab, setActiveTab] = useState<FitnessTabId>("measurements");
+  const [logModalOpen, setLogModalOpen] = useState(false);
+  const [logModalKey, setLogModalKey] = useState(0);
+  const [historyRefreshToken, setHistoryRefreshToken] = useState(0);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+
+  const openLogModal = useCallback(() => {
+    setLogModalKey((key) => key + 1);
+    setLogModalOpen(true);
+  }, []);
+  const closeLogModal = useCallback(() => setLogModalOpen(false), []);
+  const handleMeasurementSaved = useCallback(() => {
+    setHistoryRefreshToken((token) => token + 1);
+    setShowSaveSuccess(true);
+    window.setTimeout(() => setShowSaveSuccess(false), 5000);
+  }, []);
 
   const activeTabMeta = FITNESS_TABS.find((tab) => tab.id === activeTab)!;
 
   return (
     <>
-      <DashboardWelcomeBand displayName={displayName} activeTab={activeTab} />
+      <DashboardWelcomeBand
+        displayName={displayName}
+        activeTab={activeTab}
+        onLogMeasurementClick={openLogModal}
+        logMeasurementDisabled={false}
+      />
+
+      <LogMeasurementModal
+        key={logModalKey}
+        open={logModalOpen}
+        onClose={closeLogModal}
+        onSaved={handleMeasurementSaved}
+      />
 
       {needsProfileSetup ? (
         <div className="border-b border-black/5 bg-surface-card px-4 py-3 sm:px-6">
@@ -150,7 +139,11 @@ export default function FitnessDashboardShell({
 
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
           {activeTab === "measurements" ? (
-            <MeasurementsShellPanel />
+            <MeasurementsTabPanel
+              onLogMeasurementClick={openLogModal}
+              refreshToken={historyRefreshToken}
+              showSaveSuccess={showSaveSuccess}
+            />
           ) : (
             <ComingSoonPanel tabLabel={activeTabMeta.label} />
           )}
