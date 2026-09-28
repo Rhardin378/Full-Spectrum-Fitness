@@ -34,14 +34,6 @@ export default async function DashboardPage() {
 
   const { profile } = profileResult;
 
-  async function signOut() {
-    "use server";
-
-    const supabaseClient = await createClient();
-    await supabaseClient.auth.signOut();
-    redirect("/auth");
-  }
-
   return (
     <main className="min-h-screen bg-surface-page p-6 sm:p-10">
       <section className="mx-auto max-w-4xl rounded-2xl border border-black/5 bg-surface-card p-8 shadow-sm">
@@ -75,7 +67,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8">
           <Link
             href="/profile"
             className="inline-flex items-center justify-center rounded-xl bg-brand-coral px-4 py-2 text-sm font-semibold text-text-on-dark transition hover:bg-brand-coral-deep"
@@ -84,15 +76,6 @@ export default async function DashboardPage() {
               ? "Edit profile"
               : "Complete profile setup"}
           </Link>
-
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="w-full rounded-xl border border-black/10 px-4 py-2 text-sm font-semibold text-text-muted transition hover:bg-surface-page sm:w-auto"
-            >
-              Sign out
-            </button>
-          </form>
         </div>
       </section>
     </main>
