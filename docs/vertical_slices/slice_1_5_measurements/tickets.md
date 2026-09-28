@@ -128,7 +128,7 @@ Align the authenticated global navbar with locked v2 mockups and [navigation-ia.
 ### Scope
 
 - Replace top-level Profile text link with avatar initials + display name (name hidden on small screens).
-- Update navbar logo lockup to match `theme-preview-navbar-logged-in-v2.png` (coral head mark + coral wordmark; use `public/brand-mark.png`, not full wordmark-in-circle `logo.png` at icon size).
+- Update navbar logo lockup to match `theme-preview-navbar-logged-in-v2.png` (coral SVG head mark via `BrandMarkIcon` + coral wordmark).
 - Dropdown: Profile, Achievements (coming soon), Settings (coming soon), Sign out.
 - Mobile: hamburger menu for domain links (charcoal panel, coral active state) + avatar menu; desktop keeps inline domain nav.
 - Remove duplicate Sign out from `/dashboard` page body.

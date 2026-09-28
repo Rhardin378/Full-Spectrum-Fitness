@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { BrandMarkIcon } from "@/components/brand-mark-icon";
 
 type BrandLogoProps = {
   showWordmark?: boolean;
@@ -28,13 +28,8 @@ export function BrandLogo({
       href="/"
       className={`flex min-w-0 items-center gap-2 md:gap-2.5 ${className}`}
     >
-      <Image
-        src="/brand-mark.png"
-        alt=""
-        width={36}
-        height={36}
-        className="h-8 w-8 shrink-0 object-contain md:h-9 md:w-9"
-        priority
+      <BrandMarkIcon
+        className={`h-8 w-8 shrink-0 md:h-9 md:w-9 ${markClassName}`}
       />
       {showWordmark ? (
         <span className={`${wordmarkClassName} ${wordmarkVisibility} truncate`}>
