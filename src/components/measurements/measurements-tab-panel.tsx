@@ -7,6 +7,7 @@ import {
   formatMeasurementValue,
   measurementTypeLabel,
 } from "@/lib/measurements/display";
+import { WeightTrendCard } from "@/components/measurements/weight-trend-card";
 import type { Measurement, MeasurementType } from "@/lib/types/measurement";
 
 type TypeFilter = "all" | MeasurementType;
@@ -219,22 +220,10 @@ export function MeasurementsTabPanel({
         </div>
       </section>
 
-      <section
-        className="rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm"
-        aria-labelledby="weight-trend-heading"
-      >
-        <h2
-          id="weight-trend-heading"
-          className="text-lg font-semibold text-text-primary"
-        >
-          Weight trend
-        </h2>
-        <p className="mt-1 text-xs text-text-muted">Last 30 days</p>
-        <p className="mt-4 text-sm leading-relaxed text-text-muted">
-          A simple trend view will appear here once you have measurements saved.
-          Chart visualization ships in ticket #16.
-        </p>
-      </section>
+      <WeightTrendCard
+        refreshToken={refreshToken}
+        onLogMeasurementClick={onLogMeasurementClick}
+      />
     </div>
   );
 }
