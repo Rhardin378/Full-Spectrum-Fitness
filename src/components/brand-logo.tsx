@@ -28,9 +28,7 @@ export function BrandLogo({
       href="/"
       className={`flex min-w-0 items-center gap-2 md:gap-2.5 ${className}`}
     >
-      <BrandMarkIcon
-        className={`h-8 w-8 shrink-0 md:h-9 md:w-9 ${markClassName}`}
-      />
+      <BrandMarkIcon className="h-8 w-8 shrink-0 text-brand-coral md:h-9 md:w-9" />
       {showWordmark ? (
         <span className={`${wordmarkClassName} ${wordmarkVisibility} truncate`}>
           Full Spectrum Fitness
