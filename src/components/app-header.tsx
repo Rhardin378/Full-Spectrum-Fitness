@@ -59,7 +59,7 @@ export default function AppHeader() {
   return (
     <header className="bg-surface-header shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <BrandLogo />
+        <BrandLogo variant="on-dark" className="shrink-0" />
 
         {isAuthenticated ? (
           <nav
