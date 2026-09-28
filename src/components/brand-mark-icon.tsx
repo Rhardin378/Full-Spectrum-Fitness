@@ -4,8 +4,8 @@ type BrandMarkIconProps = {
 };
 
 /**
- * Line-art head + brain mark (left profile).
- * Stroke uses `currentColor` — pair with `text-brand-coral` on dark chrome.
+ * Official FSF line mark (left profile + brain). Three strokes + closed brain;
+ * `currentColor` stroke — use `text-brand-coral` on the navbar.
  */
 export function BrandMarkIcon({ className = "h-9 w-9", title }: BrandMarkIconProps) {
   return (
@@ -14,7 +14,7 @@ export function BrandMarkIcon({ className = "h-9 w-9", title }: BrandMarkIconPro
       viewBox="0 0 64 64"
       fill="none"
       stroke="currentColor"
-      strokeWidth={3}
+      strokeWidth={3.25}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
@@ -22,25 +22,31 @@ export function BrandMarkIcon({ className = "h-9 w-9", title }: BrandMarkIconPro
       role={title ? "img" : undefined}
     >
       {title ? <title>{title}</title> : null}
-      {/* Neck base + left-facing profile */}
+      {/* Front neck, face, and crown (open at bottom-left) */}
       <path
-        d="M 9 53.5 H 20.5 V 44.5
-           C 20.5 41.5, 18.5 39, 16.5 38
-           C 14.5 35.5, 14 32, 16 29.5
-           C 17.5 26.5, 21 22.5, 26.5 20
-           C 32 17.5, 39 17.5, 44.5 20.5
-           C 49.5 23.5, 52 28.5, 51.5 33.5
-           C 51 38, 48 41.5, 44 43.5
-           V 53.5 H 55"
+        d="M 8.5 52.75 H 17.75
+           M 17.75 52.75 V 44.5
+           C 17.75 41.25, 16 39, 14.25 38
+           C 12.75 35.5, 13 32.25, 14.5 29.75
+           C 16 27, 18.75 24.25, 22.5 22.25
+           C 27 20, 32.5 19, 38 19.75
+           C 43 20.5, 47 23, 49 26.5"
       />
-      {/* Simplified brain (single lobed shape) */}
+      {/* Back of head, neck, and right base (open at bottom-right) */}
       <path
-        d="M 29.5 27
-           C 26.5 27, 24.5 29.5, 25 32.5
-           C 25.5 35.5, 28.5 37.5, 32.5 37.5
-           C 37 37.5, 40.5 35, 41 31.5
-           C 41.5 28.5, 39 25.5, 35.5 25
-           C 33 25, 30.5 25.5, 29.5 27 Z"
+        d="M 49 26.5
+           C 51.5 30, 52.25 34.5, 51.25 39
+           C 50.25 42.5, 47.5 45, 44.25 46.25
+           V 52.75 H 55.5"
+      />
+      {/* Brain */}
+      <path
+        d="M 27.5 29.5
+           C 25 29.5, 23.25 31.75, 23.5 34.25
+           C 23.75 37, 26.25 39, 29.75 39.25
+           C 33.75 39.5, 37.25 37.25, 37.75 34
+           C 38.25 30.75, 35.75 28, 32.25 27.75
+           C 29.75 27.5, 27.5 28.25, 27.5 29.5 Z"
       />
     </svg>
   );
