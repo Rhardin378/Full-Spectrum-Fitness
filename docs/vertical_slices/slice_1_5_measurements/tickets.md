@@ -122,15 +122,23 @@ Implement endpoint/action to return a user’s measurements with optional filter
 
 Replace the Slice 1 dashboard placeholder with a light dashboard shell that makes **Measurements** the default home for this slice.
 
-Reference: `references/README.md`, `references/fsf-dashboard-header-stats-tabs.png`, `references/fsf-measurements-tabbed-dashboard.png`.
+**Canonical mockups (required):** [`docs/mockups/theme-preview-v2/`](../../mockups/theme-preview-v2/README.md)
+
+| File | Use for #21 |
+|------|-------------|
+| `theme-preview-fitness-shell-v2.png` | **Primary** — welcome band, in-domain tab bar, Measurements-forward shell layout |
+| `theme-preview-navbar-logged-in-v2.png` | Global charcoal navbar + coral active states |
+| `theme-preview-dashboard-v2.png` | Current `/dashboard` route — warm page + card surfaces while shell ships |
+
+Also see `docs/brand_style_guide.md` and `docs/navigation-ia.md` (Fitness tabs). Legacy layout refs in `references/` are optional inspiration only.
 
 ### Scope
 
-- Evolve `/dashboard` into a light shell:
-  - **Welcome band** below the global nav using the locked **coral welcome gradient** and personalized copy (profile display name when available). Warm `surface-page` body; `surface-card` panels; `brand-coral` CTAs — per `docs/brand_style_guide.md`. **Do not** use retired indigo/navy dashboard chrome.
-  - Tab bar below the welcome band with **Measurements** as the default active tab.
-  - Measurements tab panel layout ready for history + trend content (two-column card layout per mockups).
-- Non-Measurements tabs (Overview, Journal, Workouts, Insights, Achievements):
+- Evolve `/dashboard` into a light shell that **matches the locked v2 mockups above** (not retired indigo/navy chrome from older PNGs):
+  - **Welcome band** below the global nav using the locked **coral welcome gradient** and personalized copy (profile display name when available). Warm `surface-page` body; `surface-card` panels; `brand-coral` CTAs.
+  - **Fitness-domain tab bar** below the welcome band per `navigation-ia.md`; **Measurements** is the default active tab for this slice.
+  - Measurements tab panel layout ready for history + trend content (card regions as shown in `theme-preview-fitness-shell-v2.png`).
+- Other Fitness tabs (Overview, Workouts, Library):
   - May render as disabled “Coming soon” placeholders, **or** be omitted until future slices.
   - Must **not** require backend data or navigation to unfinished features.
 - **Do not** build in this ticket:
@@ -143,7 +151,7 @@ Reference: `references/README.md`, `references/fsf-dashboard-header-stats-tabs.p
 
 - Authenticated user sees the light dashboard shell on `/dashboard`.
 - Measurements is the default/active tab and clear home for measurement workflows.
-- Shell matches locked v2 brand (charcoal nav via existing header, coral welcome gradient + coral CTAs, warm page background) — not indigo/navy or teal sports-tracker styling.
+- Shell visually aligns with `theme-preview-fitness-shell-v2.png` and `theme-preview-navbar-logged-in-v2.png` (charcoal nav, coral welcome gradient, warm page, coral CTAs) — not indigo/navy or teal sports-tracker styling.
 - No fake stat-card data or functional non-Measurements tabs are required to ship.
 
 ### Dependencies
