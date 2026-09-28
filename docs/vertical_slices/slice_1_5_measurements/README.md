@@ -66,6 +66,18 @@ Non-Measurements tabs may appear as disabled placeholders (“Coming soon”) or
 - Add UI to log a measurement (modal/drawer) and view recent measurement history inside the Measurements tab.
 - Include basic validation (allowed types, valid units, positive numeric values, valid date).
 
+## Follow-up after core Slice 1.5 (create + list + shell)
+
+Tracked in [`tickets.md`](./tickets.md):
+
+| Ticket | Summary |
+|--------|---------|
+| **1.5.9** | Backend: `updateMeasurement`, `softDeleteMeasurement`, `deleted_at` migration, RLS `UPDATE`, list excludes deleted |
+| **1.5.10** | UI: Edit / Delete on Recent history; edit via log modal; delete confirm dialog |
+| **1.5.11** | Automated tests for update, soft delete, and list behavior |
+
+Hard delete is intentionally out of scope; soft delete preserves auditability and simplifies RLS (update-only).
+
 ## Done Criteria
 
 - User can create weight and waist measurement entries from the dashboard Measurements tab.
