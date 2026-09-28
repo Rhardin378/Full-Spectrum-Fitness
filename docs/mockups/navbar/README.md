@@ -100,9 +100,14 @@ The Slice 1.5 reference uses a **two-tier shell**: dark top navbar + white tab b
 
 ---
 
+## Known follow-up
+
+- **Navbar mark quality:** Hand-traced `BrandMarkIcon` does not yet match `assets/fsf-mark-official.jpg` at small sizes. Track cleanup on GitHub (search “BrandMarkIcon” / brand logo mark); use a designer-exported SVG when available.
+
 ## Implementation checklist (when building for real)
 
-- [ ] Add logo SVG/PNG to `public/` and reference in navbar component
+- [x] Add logo to navbar (`BrandMarkIcon` — needs polish; see follow-up above)
+- [ ] Finalize logo SVG/PNG against official mark asset
 - [ ] Define CSS/Tailwind tokens for `brand-coral`, `surface-header`, `surface-page`
 - [ ] Replace gradient logo placeholder in `AppHeader`
 - [ ] Active nav: coral underline on dark header

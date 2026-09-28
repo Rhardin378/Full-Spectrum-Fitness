@@ -120,6 +120,7 @@ See [navigation-ia.md](./navigation-ia.md) for full structure.
 2. TypeScript constants in `src/lib/theme/colors.ts` for non-CSS contexts.
 3. Reference mockups in `docs/mockups/theme-preview-v2/` before shipping new surfaces.
 4. Review copy against voice guidelines before shipping text-heavy flows.
+5. **Navbar mark:** `BrandMarkIcon` is a temporary hand-traced SVG — replace with official export when available (GitHub #36).
 
 ---
 
