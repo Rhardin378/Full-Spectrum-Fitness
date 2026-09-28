@@ -243,30 +243,41 @@ Create the Measurements tab content: log flow and recent history inside the ligh
 
 **Type:** feature  
 **Priority:** P1  
-**Labels:** `slice-1.5`, `measurements`, `frontend`, `analytics`
+**Labels:** `slice-1.5`, `measurements`, `frontend`, `analytics`  
+**GitHub:** #16
 
 ### Description
 
-Provide a minimal trend visualization for weight (primary) inside the Measurements tab. Waist may reuse the same list/filter patterns without a separate chart requirement.
+Provide a minimal **weight** trend visualization in the Measurements tab **Weight trend** card (right column, paired with Recent history). Waist continues to use list/filter patterns only — no separate waist chart in this ticket.
+
+**Canonical mockup (fitness shell with graph):**
+
+- Folder: [`docs/mockups/theme-preview-v2/`](../../mockups/theme-preview-v2/README.md)  
+  GitHub: <https://github.com/Rhardin378/Full-Spectrum-Fitness/tree/main/docs/mockups/theme-preview-v2>
+- **Primary screenshot for #16:** [`theme-preview-fitness-shell-v2.png`](../../mockups/theme-preview-v2/theme-preview-fitness-shell-v2.png) — use the **Weight trend · 30 days** card on the right: headline current weight (e.g. `182.4 lb`), delta line (e.g. `-0.7 lb vs 30 days` with success/muted coloring), and a **simple coral line chart** with point markers over the window. Charcoal + coral v2 tokens only (`docs/brand_style_guide.md`).
+
+Shell chrome, welcome band, and stat cards in that PNG are **#21 / future slices**; this ticket only implements the **trend card content** inside the existing two-column Measurements layout shipped in #15.
 
 ### Scope
 
-- Add **Weight trend** card in the Measurements tab (paired with Recent history per mockups).
-- Use recent time window (for example last 30 days).
-- Show current value and directional trend context (up/down/flat).
-- Keep visualization minimal (list + delta is enough; avoid heavy chart libraries unless already in stack).
-- Empty trend state when no weight entries exist.
+- Replace the #15 **Weight trend** placeholder in `MeasurementsTabPanel` with a data-driven card aligned to `theme-preview-fitness-shell-v2.png`.
+- Data: weight entries only, **last 30 days** (by `measured_at`), from `listMeasurements` (or a focused query/filter).
+- UI: current value (latest weight in window), **delta vs start of window** (or vs 30 days ago — document choice in PR), up/down/flat styling using `success` / muted tokens where appropriate.
+- Chart: minimal SVG or CSS — **no new heavy chart library** unless already in the stack; match mockup (smooth-ish line, coral stroke, dot markers).
+- **Empty state** when no weight entries in the window (supportive copy; no fake chart).
+- **Loading / error** states consistent with Recent history card.
 
 ### Acceptance Criteria
 
-- User can view weight trend/history from the Measurements tab on `/dashboard`.
-- Trend reflects persisted measurement data accurately.
-- Empty state handled gracefully when no data exists.
+- User sees weight trend on `/dashboard` → Measurements tab matching the **right-hand card** in `theme-preview-fitness-shell-v2.png` in structure and theme (not indigo/legacy refs).
+- Trend values match persisted weight measurements for the selected 30-day window.
+- Empty, loading, and error states are clear when there is no or failed data.
+- Waist is not required to have a chart in this ticket.
 
 ### Dependencies
 
 - Ticket 1.5.3
-- Ticket 1.5.5
+- Ticket 1.5.5 (#15)
 
 ---
 

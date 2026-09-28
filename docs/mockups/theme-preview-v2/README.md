@@ -37,7 +37,7 @@ Approved theme applied in code (`src/app/globals.css`, `src/lib/theme/colors.ts`
 
 | File | Target | Notes |
 |------|--------|-------|
-| `theme-preview-fitness-shell-v2.png` | `/fitness` (Measurements tab) | **Slice 1.5 #21** — layout/chrome reference; welcome-band CTAs follow **tab-aware** rules in [navigation-ia.md](../../navigation-ia.md) (not always two fixed log buttons) |
+| `theme-preview-fitness-shell-v2.png` | `/dashboard` (Fitness → Measurements tab) | **#21** — shell layout/chrome; welcome-band CTAs follow **tab-aware** rules in [navigation-ia.md](../../navigation-ia.md). **#16** — **Weight trend · 30 days** card (line graph, current weight, delta vs 30 days) on the right column |
 | `theme-preview-navbar-logged-out-v2.png` | Global navbar | Visitor / marketing pages |
 | `theme-preview-navbar-logged-in-v2.png` | Global navbar | Authenticated app shell |
 
