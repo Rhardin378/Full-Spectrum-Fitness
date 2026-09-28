@@ -190,8 +190,6 @@ Also see `docs/brand_style_guide.md` and `docs/navigation-ia.md` (Fitness tabs).
 - Welcome band follows **tab-aware CTA** rules (Measurements tab only for log CTA in Slice 1.5).
 - No fake stat-card data or functional non-Measurements tabs are required to ship.
 
-**Follow-up:** If an earlier shell PR shipped dual disabled band buttons, align UI with Option B in the same ticket or a small sub-task before closing #21.
-
 ### Dependencies
 
 - Slice 1 auth/profile foundation complete

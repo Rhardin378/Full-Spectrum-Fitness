@@ -1,15 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { DashboardWelcomeBand } from "@/components/dashboard/dashboard-welcome-band";
+import { FITNESS_TABS, type FitnessTabId } from "@/components/dashboard/fitness-tabs";
 
-const FITNESS_TABS = [
-  { id: "overview", label: "Overview", comingSoon: true },
-  { id: "workouts", label: "Workouts", comingSoon: true },
-  { id: "measurements", label: "Measurements", comingSoon: false },
-  { id: "library", label: "Library", comingSoon: true },
-] as const;
-
-type FitnessTabId = (typeof FITNESS_TABS)[number]["id"];
+type FitnessDashboardShellProps = {
+  displayName: string | null;
+  needsProfileSetup?: boolean;
+};
 
 function TabButton({
   label,
@@ -102,42 +101,61 @@ function MeasurementsShellPanel() {
   );
 }
 
-export default function FitnessDashboardShell() {
+export default function FitnessDashboardShell({
+  displayName,
+  needsProfileSetup = false,
+}: FitnessDashboardShellProps) {
   const [activeTab, setActiveTab] = useState<FitnessTabId>("measurements");
 
   const activeTabMeta = FITNESS_TABS.find((tab) => tab.id === activeTab)!;
 
-  function selectTab(tabId: FitnessTabId) {
-    setActiveTab(tabId);
-  }
-
   return (
-    <div className="bg-surface-page">
-      <div
-        role="tablist"
-        aria-label="Fitness"
-        className="border-b border-black/5 bg-surface-card"
-      >
-        <div className="mx-auto flex max-w-6xl gap-6 overflow-x-auto px-4 sm:gap-8 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {FITNESS_TABS.map((tab) => (
-            <TabButton
-              key={tab.id}
-              label={tab.label}
-              active={activeTab === tab.id}
-              comingSoon={tab.comingSoon}
-              onSelect={() => selectTab(tab.id)}
-            />
-          ))}
+    <>
+      <DashboardWelcomeBand displayName={displayName} activeTab={activeTab} />
+
+      {needsProfileSetup ? (
+        <div className="border-b border-black/5 bg-surface-card px-4 py-3 sm:px-6">
+          <div className="mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-text-muted">
+              Complete your profile to personalize welcome copy and goals.
+            </p>
+            <Link
+              href="/profile"
+              className="inline-flex text-sm font-semibold text-brand-coral hover:text-brand-coral-deep"
+            >
+              Complete profile setup →
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="bg-surface-page">
+        <div
+          role="tablist"
+          aria-label="Fitness"
+          className="border-b border-black/5 bg-surface-card"
+        >
+          <div className="mx-auto flex max-w-6xl gap-6 overflow-x-auto px-4 sm:gap-8 sm:px-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {FITNESS_TABS.map((tab) => (
+              <TabButton
+                key={tab.id}
+                label={tab.label}
+                active={activeTab === tab.id}
+                comingSoon={tab.comingSoon}
+                onSelect={() => setActiveTab(tab.id)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+          {activeTab === "measurements" ? (
+            <MeasurementsShellPanel />
+          ) : (
+            <ComingSoonPanel tabLabel={activeTabMeta.label} />
+          )}
         </div>
       </div>
-
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-        {activeTab === "measurements" ? (
-          <MeasurementsShellPanel />
-        ) : (
-          <ComingSoonPanel tabLabel={activeTabMeta.label} />
-        )}
-      </div>
-    </div>
+    </>
   );
 }

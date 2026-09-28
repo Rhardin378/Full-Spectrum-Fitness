@@ -1,15 +1,68 @@
+import type { FitnessTabId } from "@/components/dashboard/fitness-tabs";
+
 type DashboardWelcomeBandProps = {
   displayName: string | null;
+  activeTab: FitnessTabId;
+  onLogMeasurementClick?: () => void;
+  logMeasurementDisabled?: boolean;
 };
 
-export function DashboardWelcomeBand({ displayName }: DashboardWelcomeBandProps) {
+function WelcomeBandCta({
+  activeTab,
+  onLogMeasurementClick,
+  logMeasurementDisabled = true,
+}: {
+  activeTab: FitnessTabId;
+  onLogMeasurementClick?: () => void;
+  logMeasurementDisabled?: boolean;
+}) {
+  if (activeTab === "measurements") {
+    return (
+      <button
+        type="button"
+        disabled={logMeasurementDisabled}
+        aria-disabled={logMeasurementDisabled}
+        onClick={onLogMeasurementClick}
+        title={
+          logMeasurementDisabled
+            ? "Log flow ships in ticket #15"
+            : undefined
+        }
+        className="inline-flex items-center justify-center rounded-full bg-surface-card px-5 py-2.5 text-sm font-semibold text-brand-coral shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        + Log measurement
+      </button>
+    );
+  }
+
+  return null;
+}
+
+export function DashboardWelcomeBand({
+  displayName,
+  activeTab,
+  onLogMeasurementClick,
+  logMeasurementDisabled = true,
+}: DashboardWelcomeBandProps) {
   const greeting = displayName?.trim()
     ? `Welcome back, ${displayName.trim()}`
     : "Welcome back";
 
+  const cta = (
+    <WelcomeBandCta
+      activeTab={activeTab}
+      onLogMeasurementClick={onLogMeasurementClick}
+      logMeasurementDisabled={logMeasurementDisabled}
+    />
+  );
+
   return (
     <section className="bg-gradient-welcome px-4 py-8 text-text-on-dark sm:px-6 sm:py-10">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <div
+        className={`mx-auto flex max-w-6xl flex-col gap-6 ${
+          cta ? "md:flex-row md:items-center md:justify-between" : ""
+        }`}
+      >
         <div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {greeting}
@@ -19,26 +72,7 @@ export function DashboardWelcomeBand({ displayName }: DashboardWelcomeBandProps)
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            title="Available in a future update"
-            className="inline-flex cursor-not-allowed items-center justify-center rounded-full bg-surface-card px-5 py-2.5 text-sm font-semibold text-brand-coral opacity-60 shadow-sm"
-          >
-            + Log workout
-          </button>
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            title="Available in Slice 1.5 UI (#15)"
-            className="inline-flex cursor-not-allowed items-center justify-center rounded-full border border-white/40 bg-white/10 px-5 py-2.5 text-sm font-semibold text-text-on-dark opacity-60 backdrop-blur-sm"
-          >
-            + Log measurement
-          </button>
-        </div>
+        {cta ? <div className="flex shrink-0 flex-col gap-3 sm:flex-row">{cta}</div> : null}
       </div>
     </section>
   );
