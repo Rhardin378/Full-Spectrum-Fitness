@@ -207,7 +207,9 @@ Also see `docs/brand_style_guide.md` and `docs/navigation-ia.md` (Fitness tabs).
 
 Create the Measurements tab content: log flow and recent history inside the light dashboard shell.
 
-Reference: `references/fsf-measurements-ideal-mockup.png`, `references/ref-empty-history.png`, `references/ref-log-measurements-modal.png` (weight + waist only).
+**Canonical log modal (v2 theme):** [`docs/mockups/slice_1_5_measurements/log-measurement-modal-v2.png`](../../mockups/slice_1_5_measurements/log-measurement-modal-v2.png) (+ `log-measurement-modal-v2.html` for regeneration). Use **charcoal + coral** tokens — not indigo/lavender from legacy refs.
+
+**Layout / history inspiration:** `references/fsf-measurements-ideal-mockup.png`, `references/ref-empty-history.png`, `references/ref-log-measurements-modal.png` (structure only; weight + waist scope).
 
 ### Scope
 
