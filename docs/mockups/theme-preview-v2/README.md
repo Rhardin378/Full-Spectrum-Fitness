@@ -37,7 +37,7 @@ Approved theme applied in code (`src/app/globals.css`, `src/lib/theme/colors.ts`
 
 | File | Target | Notes |
 |------|--------|-------|
-| `theme-preview-fitness-shell-v2.png` | `/fitness` (Measurements tab) | Future dashboard per [navigation-ia.md](../../navigation-ia.md) |
+| `theme-preview-fitness-shell-v2.png` | `/fitness` (Measurements tab) | **Slice 1.5 #21** — build `/dashboard` shell to match this; see [slice 1.5 tickets](../../vertical_slices/slice_1_5_measurements/tickets.md) §1.5.4 |
 | `theme-preview-navbar-logged-out-v2.png` | Global navbar | Visitor / marketing pages |
 | `theme-preview-navbar-logged-in-v2.png` | Global navbar | Authenticated app shell |
 

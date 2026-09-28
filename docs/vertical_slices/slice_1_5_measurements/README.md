@@ -37,7 +37,7 @@ Optional front / side / back photos for visual tracking are intentional product 
 
 ## UI / Dashboard home
 
-Measurements ship inside a **light dashboard shell** on `/dashboard`, not as a standalone top-level route. See `references/README.md` and `references/fsf-dashboard-header-stats-tabs.png` for the target layout.
+Measurements ship inside a **light dashboard shell** on `/dashboard`, not as a standalone top-level route. **Canonical UI reference:** [`docs/mockups/theme-preview-v2/`](../../mockups/theme-preview-v2/README.md) — especially `theme-preview-fitness-shell-v2.png` and `theme-preview-navbar-logged-in-v2.png`. Older PNGs under `references/` are optional layout inspiration only.
 
 ### In scope (this slice)
 
