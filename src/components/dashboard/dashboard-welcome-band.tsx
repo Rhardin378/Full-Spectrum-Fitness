@@ -23,11 +23,6 @@ function WelcomeBandCta({
         disabled={logMeasurementDisabled}
         aria-disabled={logMeasurementDisabled}
         onClick={onLogMeasurementClick}
-        title={
-          logMeasurementDisabled
-            ? "Log flow ships in ticket #15"
-            : undefined
-        }
         className="inline-flex items-center justify-center rounded-full bg-surface-card px-5 py-2.5 text-sm font-semibold text-brand-coral shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
       >
         + Log measurement
