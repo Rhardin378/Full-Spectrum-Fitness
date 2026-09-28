@@ -2,6 +2,8 @@
 
 **Canonical locked theme + dashboard shell:** use [`docs/mockups/theme-preview-v2/`](../../mockups/theme-preview-v2/README.md) when implementing tickets **#21** and later UI (especially `theme-preview-fitness-shell-v2.png`).
 
+**Log modal (v2 theme):** [`docs/mockups/slice_1_5_measurements/log-measurement-modal-v2.png`](../../mockups/slice_1_5_measurements/log-measurement-modal-v2.png) — use for **#15** instead of purple/indigo from `ref-log-measurements-modal.png`.
+
 The files below are **legacy inspiration** (layout patterns, empty states, modals). Do not copy indigo/navy colors from these PNGs — match v2 mockups + `docs/brand_style_guide.md` instead.
 
 ## Files
