@@ -112,6 +112,40 @@ Implement endpoint/action to return a user’s measurements with optional filter
 
 ---
 
+## Ticket 1.5.3b: Logged-in navbar avatar menu (prep for 1.5.4)
+
+**Type:** feature  
+**Priority:** P0  
+**Labels:** `slice-1.5`, `frontend`, `ui`  
+**GitHub:** #33
+
+### Description
+
+Align the authenticated global navbar with locked v2 mockups and [navigation-ia.md](../../navigation-ia.md) before the dashboard / Fitness shell (ticket 1.5.4 / #21).
+
+**Canonical mockup:** `docs/mockups/theme-preview-v2/theme-preview-navbar-logged-in-v2.png`.
+
+### Scope
+
+- Replace top-level Profile text link with avatar initials + display name (name hidden on small screens).
+- Update navbar logo lockup to match `theme-preview-navbar-logged-in-v2.png` (coral head mark + coral wordmark; use `public/brand-mark.png`, not full wordmark-in-circle `logo.png` at icon size).
+- Dropdown: Profile, Achievements (coming soon), Settings (coming soon), Sign out.
+- Mobile layout aligned with logged-in navbar mockup (domain links + avatar menu).
+- Remove duplicate Sign out from `/dashboard` page body.
+
+### Acceptance Criteria
+
+- Logged-in users can open the menu and reach Profile or Sign out.
+- Disabled items are visibly non-actionable.
+- Reasonable keyboard support (Escape closes menu).
+- Blocks nothing for measurements API; unblocks dashboard shell work.
+
+### Dependencies
+
+- Slice 1 auth/profile foundation
+
+---
+
 ## Ticket 1.5.4: Build light dashboard shell (Measurements home)
 
 **Type:** feature  
@@ -157,6 +191,7 @@ Also see `docs/brand_style_guide.md` and `docs/navigation-ia.md` (Fitness tabs).
 ### Dependencies
 
 - Slice 1 auth/profile foundation complete
+- Ticket 1.5.3b (#33)
 
 ---
 

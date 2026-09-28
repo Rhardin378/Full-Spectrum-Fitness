@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandLogo } from "@/components/brand-logo";
+import ProfileMenu from "@/components/profile/profile-menu";
 import { useProfile } from "@/components/profile/profile-provider";
 
 function NavLink({
@@ -21,7 +22,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`relative pb-0.5 text-sm font-medium transition-colors ${
+      className={`relative shrink-0 pb-0.5 text-sm font-medium transition-colors ${
         active
           ? "text-text-on-dark"
           : muted
@@ -57,13 +58,13 @@ export default function AppHeader() {
 
   return (
     <header className="bg-surface-header shadow-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <BrandLogo />
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+        <BrandLogo variant="on-dark" className="shrink-0" />
 
         {isAuthenticated ? (
           <nav
             aria-label="Main"
-            className="hidden items-center gap-5 md:flex lg:gap-6"
+            className="flex min-w-0 flex-1 items-center justify-center gap-4 overflow-x-auto px-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:justify-center sm:gap-5 lg:gap-6 [&::-webkit-scrollbar]:hidden"
           >
             <NavLink href="/dashboard" active={isFitness && !isMind}>
               Fitness
@@ -78,16 +79,13 @@ export default function AppHeader() {
               Community
             </NavLink>
           </nav>
-        ) : null}
+        ) : (
+          <div className="flex-1" />
+        )}
 
         <div className="flex shrink-0 items-center gap-3">
           {isAuthenticated ? (
-            <Link
-              href="/profile"
-              className="rounded-full px-3 py-1.5 text-sm font-medium text-text-on-dark-muted transition hover:bg-white/5 hover:text-text-on-dark"
-            >
-              {profile.display_name?.trim() || "Profile"}
-            </Link>
+            <ProfileMenu />
           ) : (
             <>
               <Link
