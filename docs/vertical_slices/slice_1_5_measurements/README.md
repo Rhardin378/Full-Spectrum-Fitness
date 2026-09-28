@@ -41,7 +41,7 @@ Measurements ship inside a **light dashboard shell** on `/dashboard`, not as a s
 
 ### In scope (this slice)
 
-- **Light shell:** indigo/navy brand header with welcome copy; tab bar below the header; **Measurements** as the default active tab and functional home for this slice.
+- **Light shell:** coral welcome gradient band + warm page chrome (see `docs/brand_style_guide.md`); tab bar below the welcome band; **Measurements** as the default active tab and functional home for this slice.
 - **Measurements tab content:** recent history card, weight trend card, “+ Log measurement” CTA, and empty state when no entries exist.
 - **Entry pattern:** modal or drawer for log flow (borrow layout/copy from `references/fsf-measurements-ideal-mockup.png` and `references/ref-log-measurements-modal.png`; scope stays weight + waist only).
 - **Type filter:** optional All / Weight / Waist filter above tab content (as shown in mockups).
@@ -79,4 +79,4 @@ Non-Measurements tabs may appear as disabled placeholders (“Coming soon”) or
 - `profiles` remains the source for stable user preferences/identity data.
 - `measurements` is the source of truth for metric history and trend calculations.
 - Schema may stay easy to extend later; UI for this slice only exposes weight and waist.
-- Brand: indigo/navy + coral CTA; supportive copy — not teal sports-tracker chrome (see `references/README.md`).
+- Brand: locked charcoal + coral v2 theme; supportive copy — not indigo/navy or teal sports-tracker chrome (see `references/README.md`, `docs/mockups/theme-preview-v2/`).

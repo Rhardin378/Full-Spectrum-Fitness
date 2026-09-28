@@ -127,8 +127,8 @@ Reference: `references/README.md`, `references/fsf-dashboard-header-stats-tabs.p
 ### Scope
 
 - Evolve `/dashboard` into a light shell:
-  - Indigo/navy brand header with welcome copy (use profile display name when available).
-  - Tab bar below the header with **Measurements** as the default active tab.
+  - **Welcome band** below the global nav using the locked **coral welcome gradient** and personalized copy (profile display name when available). Warm `surface-page` body; `surface-card` panels; `brand-coral` CTAs — per `docs/brand_style_guide.md`. **Do not** use retired indigo/navy dashboard chrome.
+  - Tab bar below the welcome band with **Measurements** as the default active tab.
   - Measurements tab panel layout ready for history + trend content (two-column card layout per mockups).
 - Non-Measurements tabs (Overview, Journal, Workouts, Insights, Achievements):
   - May render as disabled “Coming soon” placeholders, **or** be omitted until future slices.
@@ -143,7 +143,7 @@ Reference: `references/README.md`, `references/fsf-dashboard-header-stats-tabs.p
 
 - Authenticated user sees the light dashboard shell on `/dashboard`.
 - Measurements is the default/active tab and clear home for measurement workflows.
-- Shell matches brand direction (indigo/navy header, coral primary actions) without teal sports-tracker styling.
+- Shell matches locked v2 brand (charcoal nav via existing header, coral welcome gradient + coral CTAs, warm page background) — not indigo/navy or teal sports-tracker styling.
 - No fake stat-card data or functional non-Measurements tabs are required to ship.
 
 ### Dependencies
