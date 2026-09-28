@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log measurement modal — FSF v2 theme</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Inter, system-ui, sans-serif;
+        background: #f5f3f0;
+        padding: 32px;
+      }
+      .backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 26, 26, 0.45);
+      }
+      .modal {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 420px;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 24px 48px rgba(30, 30, 30, 0.18);
+        padding: 24px 24px 20px;
+      }
+      .modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .modal-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0;
+      }
+      .close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        color: #6b6560;
+        font-size: 22px;
+        line-height: 1;
+        border-radius: 8px;
+        cursor: default;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+      }
+      .field {
+        margin-bottom: 18px;
+      }
+      .segmented {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .segmented button {
+        border: none;
+        padding: 12px 16px;
+        font-size: 15px;
+        font-weight: 500;
+        font-family: inherit;
+        background: #fff;
+        color: #6b6560;
+      }
+      .segmented button.active {
+        background: #ffd4cc;
+        color: #1a1a1a;
+        box-shadow: inset 0 0 0 1px #e85a4f;
+      }
+      .value-row {
+        display: grid;
+        grid-template-columns: 1fr 88px;
+        gap: 10px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        font-family: inherit;
+        font-size: 15px;
+        color: #1a1a1a;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        padding: 12px 14px;
+        background: #fff;
+      }
+      textarea {
+        min-height: 88px;
+        resize: none;
+      }
+      .date-wrap {
+        position: relative;
+      }
+      .date-wrap input {
+        padding-right: 40px;
+      }
+      .cal {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        color: #6b6560;
+      }
+      .submit {
+        width: 100%;
+        margin-top: 8px;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        font-family: inherit;
+        color: #fff;
+        background: #d14a40;
+        box-shadow: 0 2px 8px rgba(209, 74, 64, 0.35);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true"></div>
+    <div class="modal" role="dialog" aria-labelledby="title">
+      <div class="modal-header">
+        <h1 id="title" class="modal-title">Log measurement</h1>
+        <button type="button" class="close" aria-label="Close">×</button>
+      </div>
+
+      <div class="field">
+        <label>Measurement type</label>
+        <div class="segmented">
+          <button type="button" class="active">Weight</button>
+          <button type="button">Waist</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="value">Value</label>
+        <div class="value-row">
+          <input id="value" type="text" value="182.4" readonly />
+          <select aria-label="Unit">
+            <option>lb</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="date">Date</label>
+        <div class="date-wrap">
+          <input id="date" type="text" value="Sep 15, 2026" readonly />
+          <svg class="cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M3 10h18M8 3v4M16 3v4" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="notes">Notes (optional)</label>
+        <textarea
+          id="notes"
+          placeholder="Anything worth remembering about this check-in..."
+          readonly
+        ></textarea>
+      </div>
+
+      <button type="button" class="submit">Save measurement</button>
+    </div>
+  </body>
+</html>
