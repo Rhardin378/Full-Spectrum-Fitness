@@ -42,6 +42,7 @@ Measurements ship inside a **light dashboard shell** on `/dashboard`, not as a s
 ### In scope (this slice)
 
 - **Light shell:** coral welcome gradient band + warm page chrome (see `docs/brand_style_guide.md`); tab bar below the welcome band; **Measurements** as the default active tab and functional home for this slice.
+- **Welcome-band CTAs:** **tab-aware** (one primary CTA per active Fitness tab — `navigation-ia.md`). Slice 1.5: band shows `+ Log measurement` only on the Measurements tab, not a permanent workout + measurement button pair.
 - **Measurements tab content:** recent history card, weight trend card, “+ Log measurement” CTA, and empty state when no entries exist.
 - **Entry pattern:** modal or drawer for log flow (borrow layout/copy from `references/fsf-measurements-ideal-mockup.png` and `references/ref-log-measurements-modal.png`; scope stays weight + waist only).
 - **Type filter:** optional All / Weight / Waist filter above tab content (as shown in mockups).

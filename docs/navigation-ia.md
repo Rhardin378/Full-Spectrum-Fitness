@@ -49,19 +49,34 @@ The app splits into two primary **domains**, each with its own tab bar:
 
 ### Layer 2 — Welcome band (per domain)
 
-Same shell layout as dashboard mockups; **copy, CTAs, and stat cards change by domain**.
+Same shell layout as dashboard mockups; **greeting + subtitle change by domain** (Fitness vs Mind). **Stat cards** change by domain when those slices ship.
 
-**Fitness**
-- Subtitle example: “Track training and baseline progress”
-- CTAs: **+ Log workout** · **+ Log measurement**
-- Stat cards: This week workouts, Streak, Weight now, PRs / consistency
+**Welcome-band CTAs (product decision):** use **one primary CTA that follows the active in-domain tab** (Option B). Do **not** show two fixed log buttons on every tab. Static mockups may show dual CTAs for layout exploration; implementation follows this table.
 
-**Mind**
+#### Fitness welcome band
+
+- **Subtitle (all Fitness tabs):** “Track training and baseline progress”
+- **Primary CTA by active Fitness tab:**
+
+| Active tab | Primary CTA | Notes |
+|------------|-------------|--------|
+| Overview | **+ Log workout** (when workouts slice ships) | Optional secondary **+ Log measurement** only when both flows are live |
+| Workouts | **+ Log workout** | — |
+| Measurements | **+ Log measurement** | Slice 1.5; same action as in-tab “+ Log measurement” in #15 |
+| Library | None or muted “Coming soon” | Until Slice 3.1 / library ships |
+
+- **Slice 1.5:** only the **Measurements** tab shows a welcome-band CTA (`+ Log measurement`). Other Fitness tabs show **no** log buttons in the band (coming-soon tab panels are fine).
+- **Stat cards (deferred):** This week workouts, Streak, Weight now, PRs / consistency — not required for Slice 1.5 shell.
+
+#### Mind welcome band (future)
+
 - Subtitle example: “Reflect across your life domains”
-- CTAs: **+ New journal entry** · **View prompts**
+- CTAs follow **Mind tabs** the same way (e.g. Journal → **+ New journal entry**), not Fitness CTAs.
 - Stat cards: Journal streak, Avg mood (7d), Domains touched, Last entry
 
-**Visual:** Coral linear gradient welcome band (lightened right stop `#FFC4B8`) over charcoal navbar — see `docs/mockups/navbar/README.md`.
+**Visual:** Coral linear gradient welcome band (`docs/brand_style_guide.md` / theme-preview v2) below charcoal navbar — see `docs/mockups/navbar/README.md`.
+
+**Implementation note:** Welcome band + Fitness tab bar share **active tab state** (client shell or URL). Band primary CTA must re-render when the tab changes.
 
 ### Layer 3 — Tabs (in-domain only)
 

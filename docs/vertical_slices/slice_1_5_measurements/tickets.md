@@ -170,7 +170,8 @@ Also see `docs/brand_style_guide.md` and `docs/navigation-ia.md` (Fitness tabs).
 
 - Evolve `/dashboard` into a light shell that **matches the locked v2 mockups above** (not retired indigo/navy chrome from older PNGs):
   - **Welcome band** below the global nav using the locked **coral welcome gradient** and personalized copy (profile display name when available). Warm `surface-page` body; `surface-card` panels; `brand-coral` CTAs.
-  - **Fitness-domain tab bar** below the welcome band per `navigation-ia.md`; **Measurements** is the default active tab for this slice.
+  - **Tab-aware welcome CTAs (Option B):** one primary band CTA per active Fitness tab — see `navigation-ia.md` Layer 2. **Slice 1.5:** show **only** `+ Log measurement` when **Measurements** is active; **no** dual fixed `+ Log workout` / `+ Log measurement` pair on every tab. Other tabs: no band log buttons until their slices ship.
+  - **Fitness-domain tab bar** below the welcome band per `navigation-ia.md`; **Measurements** is the default active tab for this slice. Welcome band and tab bar share active-tab state.
   - Measurements tab panel layout ready for history + trend content (card regions as shown in `theme-preview-fitness-shell-v2.png`).
 - Other Fitness tabs (Overview, Workouts, Library):
   - May render as disabled “Coming soon” placeholders, **or** be omitted until future slices.
@@ -186,6 +187,7 @@ Also see `docs/brand_style_guide.md` and `docs/navigation-ia.md` (Fitness tabs).
 - Authenticated user sees the light dashboard shell on `/dashboard`.
 - Measurements is the default/active tab and clear home for measurement workflows.
 - Shell visually aligns with `theme-preview-fitness-shell-v2.png` and `theme-preview-navbar-logged-in-v2.png` (charcoal nav, coral welcome gradient, warm page, coral CTAs) — not indigo/navy or teal sports-tracker styling.
+- Welcome band follows **tab-aware CTA** rules (Measurements tab only for log CTA in Slice 1.5).
 - No fake stat-card data or functional non-Measurements tabs are required to ship.
 
 ### Dependencies
@@ -210,6 +212,7 @@ Reference: `references/fsf-measurements-ideal-mockup.png`, `references/ref-empty
 ### Scope
 
 - Add “+ Log measurement” CTA in the Measurements tab (header and/or trend card per mockups).
+- Wire the **welcome-band** `+ Log measurement` (visible only when Measurements tab is active per `navigation-ia.md`) to the **same** log modal/drawer — one flow, two entry points.
 - Build entry form in a modal or drawer with type (`weight` / `waist`), value, unit, date, and optional notes.
 - Unit options update based on selected type.
 - Submit form to create measurement action/API.
