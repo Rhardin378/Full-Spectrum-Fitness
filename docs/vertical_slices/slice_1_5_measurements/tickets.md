@@ -323,6 +323,7 @@ Verify end-to-end behavior for measurements and the light dashboard shell; captu
 
 - Manual test: authenticated user lands on `/dashboard` with Measurements as the working home.
 - Manual test: create multiple weight and waist measurements across dates via the log modal/drawer.
+- Manual test (when **1.5.10** ships): edit an entry and confirm list/trend reflect changes; soft-delete an entry and confirm it no longer appears in history.
 - Manual test: filters by type/date return expected results in Recent history.
 - Manual test: unauthenticated access to `/dashboard` is blocked.
 - Manual test: weight trend card reflects entries; empty states render when no data.
@@ -340,3 +341,134 @@ Verify end-to-end behavior for measurements and the light dashboard shell; captu
 
 - Ticket 1.5.6
 - Ticket 1.5.7
+
+---
+
+## Ticket 1.5.9: Measurement update and soft delete (backend)
+
+**Type:** feature  
+**Priority:** P1  
+**Labels:** `slice-1.5`, `measurements`, `database`, `backend`, `api`
+
+### Description
+
+Let owners **correct mistakes** and **remove entries** without hard-deleting rows. Add owner-scoped **update** and **soft delete** (`deleted_at`) on `measurements`, plus server actions used by the history UI.
+
+**Product choice:** **soft delete only** in this follow-up (no `DELETE` grant / hard delete). Deleted rows are hidden from list and trend queries; support or admin purge can be a later concern.
+
+### Scope
+
+- **Migration**
+  - Add `deleted_at timestamptz null` to `public.measurements` (null = active).
+  - Partial index for active rows, e.g. `(user_id, measurement_type, measured_at desc) WHERE deleted_at IS NULL` (adjust if an existing index should be replaced or complemented).
+  - `GRANT UPDATE` on `measurements` to `authenticated` (still no hard `DELETE` for app role).
+  - RLS policy **`measurements_update_own`**: authenticated user may `UPDATE` only their rows (`auth.uid() = user_id`). Optionally restrict which columns change in app layer; DB still enforces ownership.
+  - **Select policy:** either keep current select-own (deleted rows still readable by owner) **or** document that list actions filter `deleted_at IS NULL` only — prefer **list/trend exclude soft-deleted** in application queries even if RLS allows select.
+- **`updateMeasurement(id, input)`** server action:
+  - Same validation rules as create (`createMeasurementSchema` fields; `id` UUID).
+  - Reject if row missing, not owned, or `deleted_at` is set.
+  - Return normalized measurement payload.
+- **`softDeleteMeasurement(id)`** server action:
+  - Set `deleted_at = now()` for owner row; idempotent if already deleted (return success or clear “already removed” — pick one and test).
+  - Reject unauthenticated / cross-user.
+- **`listMeasurements`** (and any future trend query):
+  - Default: **only** rows where `deleted_at IS NULL`.
+  - Do not expose soft-deleted rows in Recent history or #16 trend.
+- **Types:** extend `Measurement` (or row type) with `deleted_at: string | null` if selected from DB; optional for API responses if never returned after delete.
+- **Tests:** happy paths, validation, unauthorized, wrong owner, update/delete on soft-deleted row, list omits deleted.
+
+### Acceptance Criteria
+
+- Owner can update value, unit, `measured_at`, notes, and `measurement_type` (with unit rules) on an active entry.
+- Owner can soft-delete an entry; it disappears from `listMeasurements` results.
+- Another user cannot update or soft-delete a row they do not own.
+- Unauthenticated calls fail with the same error shape as create/list.
+- Migration applies cleanly in local/dev; RLS and grants match the above.
+
+### Dependencies
+
+- Ticket 1.5.1
+- Ticket 1.5.2
+- Ticket 1.5.3
+- Ticket 1.5.5 shipped (log + history UI) — recommended before UI ticket, but backend can land first
+
+### Suggested GitHub title
+
+`feat(measurements): update and soft-delete backend (#1.5.9)`
+
+---
+
+## Ticket 1.5.10: Measurement history edit and delete UI
+
+**Type:** feature  
+**Priority:** P1  
+**Labels:** `slice-1.5`, `measurements`, `frontend`, `ui`
+
+### Description
+
+Add **Edit** and **Delete** affordances on Recent history rows in the Measurements tab, wired to ticket **1.5.9** actions. Reuse the v2 log modal for edit; use a lightweight confirm step for delete.
+
+**Canonical styling:** same charcoal + coral tokens as `log-measurement-modal-v2` and history card in `theme-preview-fitness-shell-v2.png` (text buttons or icon+label; keep touch targets and contrast).
+
+### Scope
+
+- **History list** (`MeasurementsTabPanel` or child):
+  - Per row: **Edit** and **Delete** (visible on row hover/focus on desktop; always available on mobile — avoid hover-only-only UX).
+  - Delete opens **confirm dialog** (not the log modal): short copy, Cancel + destructive confirm (coral-outline or muted destructive per brand guide).
+  - On successful delete: refresh list + brief success/status message (same pattern as post-create banner).
+- **Edit flow:**
+  - Reuse `LogMeasurementModal` in **edit mode** (title e.g. “Edit measurement”, primary CTA “Save changes”) **or** shared `MeasurementFormModal` with `mode: 'create' | 'edit'`.
+  - Pre-fill type, value, unit, date, notes from selected row; submit calls `updateMeasurement`.
+  - On success: close modal, refresh list, optional success message.
+- **Loading / error:** disable actions while submit in flight; show field/server errors in modal or inline on delete failure.
+- **Accessibility:** dialog labels, focus trap on confirm modal, keyboard activation for row actions, `aria-live` for errors/success where appropriate.
+- **Out of scope:** bulk delete, undo restore, admin hard purge UI.
+
+### Acceptance Criteria
+
+- User can edit an existing weight or waist entry from Recent history; changes persist and list re-renders.
+- User can soft-delete an entry after confirmation; it no longer appears in history (any tab filter).
+- Welcome-band and in-tab **+ Log measurement** still open **create** flow only (not edit).
+- Empty, loading, and error states still behave after integrating row actions.
+- Visual treatment matches existing Measurements tab and log modal (v2 coral theme).
+
+### Dependencies
+
+- Ticket 1.5.9 (backend must be merged or available in dev)
+- Ticket 1.5.5
+
+### Suggested GitHub title
+
+`feat(measurements): edit and delete in history UI (#1.5.10)`
+
+---
+
+## Ticket 1.5.11: Tests for measurement update and soft delete
+
+**Type:** chore  
+**Priority:** P1  
+**Labels:** `slice-1.5`, `measurements`, `tests`, `quality`
+
+### Description
+
+Automated coverage for the edit/delete follow-up so regressions do not slip in before or after #16 trend work.
+
+### Scope
+
+- Extend backend tests for `updateMeasurement` and `softDeleteMeasurement` (mirror create/list test style).
+- Extend list tests to assert soft-deleted rows are excluded.
+- Frontend tests (if project adds component tests for measurements): edit modal pre-fill + submit mock; delete confirm invokes soft delete and refreshes list — **optional** if Slice 1.5.7 component scope is still open; otherwise include minimally here.
+
+### Acceptance Criteria
+
+- `npm test` passes with new cases for update, soft delete, and list exclusion.
+- No reduction in coverage for existing create/list paths.
+
+### Dependencies
+
+- Ticket 1.5.9
+- Ticket 1.5.10 (for any UI tests)
+
+### Suggested GitHub title
+
+`test(measurements): update and soft-delete coverage (#1.5.11)`
