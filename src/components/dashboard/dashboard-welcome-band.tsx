@@ -48,19 +48,13 @@ export function DashboardWelcomeBand({
     ? `Welcome back, ${displayName.trim()}`
     : "Welcome back";
 
-  const cta = (
-    <WelcomeBandCta
-      activeTab={activeTab}
-      onLogMeasurementClick={onLogMeasurementClick}
-      logMeasurementDisabled={logMeasurementDisabled}
-    />
-  );
+  const showBandCta = activeTab === "measurements";
 
   return (
     <section className="bg-gradient-welcome px-4 py-8 text-text-on-dark sm:px-6 sm:py-10">
       <div
         className={`mx-auto flex max-w-6xl flex-col gap-6 ${
-          cta ? "md:flex-row md:items-center md:justify-between" : ""
+          showBandCta ? "md:flex-row md:items-center md:justify-between" : ""
         }`}
       >
         <div>
@@ -72,7 +66,15 @@ export function DashboardWelcomeBand({
           </p>
         </div>
 
-        {cta ? <div className="flex shrink-0 flex-col gap-3 sm:flex-row">{cta}</div> : null}
+        {showBandCta ? (
+          <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+            <WelcomeBandCta
+              activeTab={activeTab}
+              onLogMeasurementClick={onLogMeasurementClick}
+              logMeasurementDisabled={logMeasurementDisabled}
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   );
