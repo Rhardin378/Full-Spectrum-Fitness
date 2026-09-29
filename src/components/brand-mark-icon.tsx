@@ -1,10 +1,29 @@
+type BrandMarkAppearance = "navbar" | "ring";
+
 type BrandMarkIconProps = {
   className?: string;
   title?: string;
+  /**
+   * `navbar` — logged-in mockup: head + baseline, no ring.
+   * `ring` — logged-out mockup: single ring around the mark.
+   */
+  appearance?: BrandMarkAppearance;
 };
 
-/** Line-art head + brain mark — stroke uses `currentColor` (e.g. `text-brand-coral`). */
-export function BrandMarkIcon({ className = "h-9 w-9", title }: BrandMarkIconProps) {
+const HEAD_PATH =
+  "M 52 56 C 52 48, 46 42, 40 40 C 36 38, 36 35, 37 31 C 39 30, 40 28, 40 26 C 40 24, 38 24, 37 24.5 C 38 20, 36 12, 28 12 C 20 12, 14 17, 14 25 C 14 32, 19 37, 21 41 C 22 43, 22 48, 22 56";
+
+const BRAIN_LOOP_PATH =
+  "M 31 18 C 34 18, 36 21, 34 24 C 32 27, 27 26, 26 23 C 25 20, 28 18, 31 18 Z";
+
+const BRAIN_FOLD_PATH = "M 28 26 C 30 29, 28 34, 23 33 C 19 32, 19 27, 22 25";
+
+/** Line-art head + brain — stroke uses `currentColor` (e.g. `text-brand-coral`). */
+export function BrandMarkIcon({
+  className = "h-9 w-9",
+  title,
+  appearance = "navbar",
+}: BrandMarkIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -19,13 +38,16 @@ export function BrandMarkIcon({ className = "h-9 w-9", title }: BrandMarkIconPro
       role={title ? "img" : undefined}
     >
       {title ? <title>{title}</title> : null}
-      <path
-        d="M 12 56 C 12 48, 18 42, 24 40 C 28 38, 28 35, 27 31 C 25 30, 24 28, 24 26 C 24 24, 26 24, 27 24.5 C 26 20, 28 12, 36 12 C 44 12, 50 17, 50 25 C 50 32, 45 37, 43 41 C 42 43, 42 48, 42 56"
-      />
-      <path
-        d="M 33 18 C 30 18, 28 21, 30 24 C 32 27, 37 26, 38 23 C 39 20, 36 18, 33 18 Z"
-      />
-      <path d="M 36 26 C 34 29, 36 34, 41 33 C 45 32, 45 27, 42 25" />
+      {appearance === "ring" ? <circle cx="32" cy="32" r="29" /> : null}
+      {appearance === "navbar" ? (
+        <>
+          <path d="M6 56 H22" />
+          <path d="M52 56 H58" />
+        </>
+      ) : null}
+      <path d={HEAD_PATH} />
+      <path d={BRAIN_LOOP_PATH} />
+      <path d={BRAIN_FOLD_PATH} />
     </svg>
   );
 }

@@ -90,7 +90,11 @@ export default function AppHeader() {
   return (
     <header className="relative z-50 bg-surface-header shadow-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 md:h-16">
-        <BrandLogo variant="on-dark" compactOnMobile className="shrink-0" />
+        <BrandLogo
+          variant={isAuthenticated ? "navbar" : "visitor"}
+          compactOnMobile
+          className="shrink-0"
+        />
 
         {isAuthenticated ? (
           <DomainNav isFitness={isFitness} isMind={isMind} />
