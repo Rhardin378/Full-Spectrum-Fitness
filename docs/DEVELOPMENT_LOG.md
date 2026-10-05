@@ -29,6 +29,34 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-05 — audit context closeout
+
+### Completed
+
+- Added `docs/AI_ENGINEERING_CONTEXT.md` only: FSF Senior Engineer audit of `eac09b8` on `main` (stack, shipped Slice 1 / 1.5 behavior, Phase 1 gaps, security notes, test gaps, recommended date-fix approach).
+- Opened [PR #43](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/43); merged as `ac6d2e9`. No other files in that diff.
+
+### Decisions
+
+- Audit notes stay recommendations. This session did not lock architecture and did not create or edit `ARCHITECTURE_DECISIONS.md`, the PRD, system design, or launch plan.
+- No application code, migrations, config, or dependency changes.
+- Product decisions locked later the same day are in the handoff-pack entry below (PR #44). This entry does not change them.
+
+### Issues
+
+- Not fixed here: measurement dates stored as UTC midnight and shown in local time; Next.js 16.1.6 advisories; no CI; ProfileProvider stale after client auth redirect (not browser-reproduced); `getOrCreateProfile()` on the root layout; auth callback, password reset, and password length still incomplete.
+- Production Supabase grants/RLS, Auth settings, and Vercel env vs `main` remain unverifiable from the repo.
+
+### Next
+
+- Close Slice 1.5. First user-visible item is the measurement calendar-date fix (`measured_on` plus timezone-aware tests). Do not start journal, workouts, or AI until 1.5 is closed (`LAUNCH_PLAN.md`).
+
+### AI Notes
+
+- Cursor Grok (cloud). Docs-only. The file below this entry already records the later handoff pack; it is not rewritten here.
+
+---
+
 ## 2026-10-05
 
 ### Completed
