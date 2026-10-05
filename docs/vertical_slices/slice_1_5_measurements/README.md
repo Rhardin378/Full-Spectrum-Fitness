@@ -89,7 +89,7 @@ Hard delete is intentionally out of scope; soft delete preserves auditability an
 
 ## Notes
 
-- Product sources of truth: [`docs/PRD.md`](../../PRD.md), [`docs/systemDesign.md`](../../systemDesign.md), [`docs/launch_plan.md`](../../launch_plan.md). This slice stays measurements-only.
+- Product sources of truth: [`docs/PRD.md`](../../PRD.md), [`docs/SYSTEM_DESIGN.md`](../../SYSTEM_DESIGN.md), [`docs/LAUNCH_PLAN.md`](../../LAUNCH_PLAN.md). This slice stays measurements-only.
 - `profiles` remains the source for stable user preferences/identity data.
 - `measurements` is the source of truth for metric history and trend calculations. Later analytics/coach slices will read this table; do not build those slices here.
 - Schema may stay easy to extend later; UI for this slice only exposes weight and waist.

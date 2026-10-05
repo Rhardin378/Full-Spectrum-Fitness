@@ -2,7 +2,7 @@
 
 Design notes for app navigation: global navbar, domain switcher, in-domain tabs, and cross-cutting features.
 
-**Sources of truth** for product and sequencing: [PRD](./PRD.md), [system design](./systemDesign.md), [launch plan](./launch_plan.md). This file is a **draft IA**, not a license to build Community, Achievements, or AI prompts in Phase 1.
+**Sources of truth** for product and sequencing: [PRD](./PRD.md), [system design](./SYSTEM_DESIGN.md), [launch plan](./LAUNCH_PLAN.md). This file is a **draft IA**, not a license to build Community, Achievements, or AI prompts in Phase 1.
 
 **Status:** Draft — Fitness measurements shell is in progress (Slice 1.5). Domain switcher, Mind tabs, and Insights routes are not implemented yet.
 
@@ -183,6 +183,6 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 ## Related docs
 
 - [PRD](./PRD.md) — feature scope
-- [launch_plan.md](./launch_plan.md) — phased delivery
+- [LAUNCH_PLAN.md](./LAUNCH_PLAN.md) — phased delivery
 - [docs/mockups/navbar/README.md](./mockups/navbar/README.md) — visual shell and color tokens
 - [Slice 1.5 dashboard shell](./vertical_slices/slice_1_5_measurements/README.md) — Measurements tab (Fitness domain)

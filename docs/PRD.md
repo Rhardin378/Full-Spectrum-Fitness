@@ -2,12 +2,16 @@
 
 **Role:** product source of truth — *what FSF is, what it must do, and what it must not become*.
 
+Handoff pack: [docs/README.md](./README.md).
+
 Read this with:
 
-- [`docs/launch_plan.md`](./launch_plan.md) — *when* each capability is built (current slice, Phase 1 vs later)
-- [`docs/systemDesign.md`](./systemDesign.md) — *how* layers, data, and AI are separated
+- [LAUNCH_PLAN.md](./LAUNCH_PLAN.md) — *when* each capability is built
+- [SYSTEM_DESIGN.md](./SYSTEM_DESIGN.md) — *how* layers are separated
+- [ARCHITECTURE_DECISIONS.md](./ARCHITECTURE_DECISIONS.md) — locked why
+- [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) — what actually shipped
 
-Vertical-slice tickets implement this PRD; they do not override it. If implementation needs a product change, update this file first.
+Vertical-slice tickets implement this PRD; they do not override it. If implementation needs a product change, update this file first and append the log.
 
 ---
 
@@ -127,7 +131,7 @@ Next week’s history is richer
 
 # Feature hierarchy
 
-Do not treat later rows as current work. Sequencing: [`docs/launch_plan.md`](./launch_plan.md).
+Do not treat later rows as current work. Sequencing: [LAUNCH_PLAN.md](./LAUNCH_PLAN.md).
 
 ### Core MVP (Phase 1)
 

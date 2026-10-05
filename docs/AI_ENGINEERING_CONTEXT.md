@@ -1,7 +1,7 @@
 # AI Engineering Context
 
 > **Status:** Recommendations and findings from FSF Senior Engineer audits.  
-> **Not approved architecture.** Product and architecture decisions live in `docs/PRD.md`, `docs/systemDesign.md`, and `docs/launch_plan.md`. Do not treat anything here as a requirement until it is promoted into those files.
+> **Not approved architecture.** Product and architecture decisions live in the [handoff pack](./README.md): `PRD.md`, `SYSTEM_DESIGN.md`, `LAUNCH_PLAN.md`, `ARCHITECTURE_DECISIONS.md`. Chronology: `DEVELOPMENT_LOG.md`. Do not treat anything here as a requirement until it is promoted into those files.
 
 **Last updated:** 2026-10-05  
 **Audited commit:** `eac09b8` on `main`  
@@ -9,7 +9,8 @@
 
 ## How to use this document
 
-- Treat **PRD / system design / launch plan** as product and architecture sources of truth.
+- Treat **PRD / system design / launch plan / architecture decisions** as product and architecture sources of truth.
+- Use **DEVELOPMENT_LOG.md** for what shipped, in order, regardless of who did the work.
 - Use this file for current engineering health, known bugs, and recommended next steps.
 - When code conflicts with docs, call out the conflict before a major change.
 - Keep Phase 1 MVP scope tight; do not introduce new tech or speculative features without justification.
@@ -78,7 +79,7 @@ Phase 1 in the PRD is **no longer** social + achievements + scattered AI prompts
 2. **Parallel / agent:** security + delivery baseline — upgrade `next`/`eslint-config-next` to 16.3.x, `npm audit fix`, GitHub Actions (lint/tsc/test/build), security headers, generic error messages. Open PR; do not merge without Ryan review.
 3. Close Slice 1.5: soft delete/edit (tickets 1.5.9–1.5.11), history "load more", component tests (#30, frontend half of #17), QA (#9, #18), close shipped-open issues #15/#16.
 4. Auth cleanup: `/auth/callback`, password reset, stronger password min, move profile bootstrap off root layout.
-5. **Product decisions locked** in PRD / systemDesign / launch_plan (2026-10-05). Do not re-open Phase 1 social/badges as MVP work.
+5. **Product decisions locked** in PRD / SYSTEM_DESIGN / LAUNCH_PLAN / ARCHITECTURE_DECISIONS (2026-10-05). Do not re-open Phase 1 social/badges as MVP work.
 6. After Slice 1.5: **journal (Slice 2) then workouts (Slice 3)**, then analytics (4), then Weekly Coach (5) — see launch plan.
 7. Real test pyramid: Playwright smoke + two-user RLS tests against local Supabase + component tests.
 

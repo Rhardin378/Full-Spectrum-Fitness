@@ -2,10 +2,14 @@
 
 **Role:** architecture source of truth — *how the system is layered, what is implemented, and what not to overbuild*.
 
+Handoff pack: [docs/README.md](./README.md).
+
 Read this with:
 
-- [`docs/PRD.md`](./PRD.md) — product requirements and data model
-- [`docs/launch_plan.md`](./launch_plan.md) — current slice and build order
+- [PRD.md](./PRD.md) — product requirements and data model
+- [LAUNCH_PLAN.md](./LAUNCH_PLAN.md) — current slice and build order
+- [ARCHITECTURE_DECISIONS.md](./ARCHITECTURE_DECISIONS.md) — locked why
+- [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) — what actually shipped
 
 This document exists to prevent architecture sprawl. Prefer a boring, correct layer over a new service.
 
@@ -190,7 +194,7 @@ The repository owns:
 
 Authentication, Storage, and application tables share one owner identity (`auth.uid()`), with **separate** policies per layer.
 
-Logical schema (implemented vs planned): [`docs/PRD.md`](./PRD.md) database section.
+Logical schema (implemented vs planned): [PRD.md](./PRD.md) database section. Locked choices: [ARCHITECTURE_DECISIONS.md](./ARCHITECTURE_DECISIONS.md).
 
 ---
 
@@ -407,4 +411,4 @@ Not because the architecture diagram looks more impressive.
 
 **Then** you will add a weekly check-in and a structured coach report.
 
-Everything else is expansion. If a new idea does not fit this order, change [`docs/launch_plan.md`](./launch_plan.md) first — do not sneak it into the current slice.
+Everything else is expansion. If a new idea does not fit this order, change [LAUNCH_PLAN.md](./LAUNCH_PLAN.md) first — do not sneak it into the current slice.

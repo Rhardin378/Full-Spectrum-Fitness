@@ -4,7 +4,7 @@ Use this as your default project-tracking structure in GitHub.
 
 ## Milestones
 
-Create one milestone per vertical slice. Names and order must match [`docs/launch_plan.md`](../launch_plan.md):
+Create one milestone per vertical slice. Names and order must match [`docs/LAUNCH_PLAN.md`](../LAUNCH_PLAN.md):
 
 - `Slice 1 - Auth & Profile Setup` (done)
 - `Slice 1.5 - Measurements & Baseline Tracking` (**current**)

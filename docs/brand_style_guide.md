@@ -2,7 +2,7 @@
 
 This document is the **canonical reference** for visual design, typography, color usage, iconography, and voice for the product UI.
 
-For system architecture, see [systemDesign.md](./systemDesign.md). For product scope, see [PRD.md](./PRD.md). For navigation structure, see [navigation-ia.md](./navigation-ia.md). For approved mockups, see [mockups/theme-preview-v2/](./mockups/theme-preview-v2/).
+For system architecture, see [SYSTEM_DESIGN.md](./SYSTEM_DESIGN.md). For product scope, see [PRD.md](./PRD.md). For navigation structure, see [navigation-ia.md](./navigation-ia.md). For approved mockups, see [mockups/theme-preview-v2/](./mockups/theme-preview-v2/).
 
 **Theme status:** **Locked in** (charcoal + coral, v2 gradient).
 

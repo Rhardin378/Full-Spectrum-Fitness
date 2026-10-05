@@ -4,9 +4,13 @@
 
 **Sources of truth (read these before adding features):**
 
+- [`docs/README.md`](./docs/README.md) — handoff pack index
 - [`docs/PRD.md`](./docs/PRD.md) — what the product is and must do
-- [`docs/systemDesign.md`](./docs/systemDesign.md) — architecture layers and what not to overbuild
-- [`docs/launch_plan.md`](./docs/launch_plan.md) — current slice, Phase 1 vs later
+- [`docs/SYSTEM_DESIGN.md`](./docs/SYSTEM_DESIGN.md) — architecture layers
+- [`docs/LAUNCH_PLAN.md`](./docs/LAUNCH_PLAN.md) — current slice, Phase 1 vs later
+- [`docs/ARCHITECTURE_DECISIONS.md`](./docs/ARCHITECTURE_DECISIONS.md) — locked decisions
+- [`docs/DEVELOPMENT_LOG.md`](./docs/DEVELOPMENT_LOG.md) — chronological record (append after sessions)
+- [`docs/AI_ENGINEERING_CONTEXT.md`](./docs/AI_ENGINEERING_CONTEXT.md) — bugs/audit notes, not product law
 
 **Current work:** Slice 1 (auth/profile) is done. **Slice 1.5 (measurements)** is in progress. Do not start journaling, workouts, AI, RAG, or social until the launch plan says so.
 
@@ -49,7 +53,7 @@ Help users see how training, body metrics, mood, and life context change togethe
 
 ## 📅 Development Roadmap
 
-Follow [`docs/launch_plan.md`](./docs/launch_plan.md). Short version:
+Follow [`docs/LAUNCH_PLAN.md`](./docs/LAUNCH_PLAN.md). Short version:
 
 ### Phase 1 — Proof of value
 
@@ -82,7 +86,7 @@ See the launch plan. Phase 1 cares about weekly check-ins plus training/measurem
 - `src/components/` — reusable UI
 - `src/lib/` — domain modules (profile, measurements; analytics/coach later)
 - `supabase/migrations/` — Postgres schema
-- `docs/` — PRD, system design, launch plan (sources of truth)
+- `docs/` — handoff pack (PRD, SYSTEM_DESIGN, LAUNCH_PLAN, ARCHITECTURE_DECISIONS, DEVELOPMENT_LOG, AI_ENGINEERING_CONTEXT)
 
 ### Key Principles
 

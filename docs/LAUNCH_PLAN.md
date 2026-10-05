@@ -2,12 +2,16 @@
 
 **Role:** sequencing source of truth — *what to build, in what order, and what not to start yet*.
 
+Handoff pack: [docs/README.md](./README.md).
+
 Read this with:
 
-- [`docs/PRD.md`](./PRD.md) — *what* the product is and must do
-- [`docs/systemDesign.md`](./systemDesign.md) — *how* the system is layered and what not to overbuild
+- [PRD.md](./PRD.md) — *what* the product is and must do
+- [SYSTEM_DESIGN.md](./SYSTEM_DESIGN.md) — *how* the system is layered
+- [ARCHITECTURE_DECISIONS.md](./ARCHITECTURE_DECISIONS.md) — locked why
+- [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) — what actually shipped
 
-If a later idea conflicts with this document, update these three files **before** starting a new slice.
+If a later idea conflicts with this document, update the handoff pack **before** starting a new slice.
 
 ---
 
