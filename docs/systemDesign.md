@@ -1,54 +1,105 @@
-# Full Spectrum Fitness
+# Full Spectrum Fitness — System Design
 
-## System Design Document (Current Scope)
+**Role:** architecture source of truth — *how the system is layered, what is implemented, and what not to overbuild*.
+
+Read this with:
+
+- [`docs/PRD.md`](./PRD.md) — product requirements and data model
+- [`docs/launch_plan.md`](./launch_plan.md) — current slice and build order
+
+This document exists to prevent architecture sprawl. Prefer a boring, correct layer over a new service.
 
 ---
 
-# 1. Purpose of This Document
+# 1. Purpose
 
 This document defines:
 
 - What the system is
 - What technologies are actually being used
-- How they connect
-- What is in scope right now
-- What is not in scope
-- Where AI fits (without overcomplicating it)
-
-This is a grounding document to prevent architecture sprawl.
+- How layers connect
+- What is in scope **right now** versus planned
+- Where AI fits without becoming the product
 
 ---
 
-# 2. What We Are Building (MVP Reality)
+# 2. What we are building
 
-Full Spectrum Fitness is a web application that allows users to:
+FSF is a web application for **longitudinal personal performance and wellbeing**.
 
-1. Create an account
-2. Log workouts
-3. Log structured mental health journal entries
-4. Associate journal entries with life domains
-5. View trend insights over time
-6. (Optional MVP+) Share selected updates socially
+**Thesis:** help the user understand the relationship between how they train, how they feel, and how they live.
 
-That’s it.
+**Phase 1 destination** (not all shipped): account, measurements, journal, workouts, deterministic insights, Weekly Coach Check-In with a structured report.
 
-It is NOT yet:
+**Implemented today:**
+
+1. Sign up / sign in (Supabase Auth)
+2. Profile create/update
+3. Weight and waist measurements with an in-dashboard trend (Slice 1.5)
+
+**Not yet implemented (do not pretend otherwise):** workouts, journal, insights app, weekly coach, RAG, social, achievements.
+
+It is **not**:
 
 - A marketplace
 - A wearable integration engine
-- A predictive AI health system
-- A social network competitor
-- A mobile native app
+- A predictive clinical or diagnostic system
+- A generic chatbot
+- A social network
+- A native mobile app
 
 ---
 
-# 3. High-Level Architecture
+# 3. Target architecture
 
-Frontend → Backend Logic → Database → (Optional AI Layer)
+```text
+Frontend (Next.js)
+        ↓
+Backend / API (server actions, route handlers)
+        ↓
+Structured database (Supabase Postgres + RLS)
+        ↓
+Deterministic analytics engine
+        ↓
+AI orchestration / Coaching Agent (when Slice 5+)
+        ↓
+Tools + evidence RAG (later)
+        ↓
+Structured AI output (Zod)
+        ↓
+Dashboard / Weekly Coach UI
+```
+
+### Deterministic systems
+
+- Store data
+- Validate data
+- Calculate metrics and trends
+- Detect explicit statistical or rule-based patterns
+
+### Probabilistic systems
+
+- Interpret patterns
+- Summarize journal / check-in context
+- Explain *possible* relationships
+- Retrieve relevant evidence
+- Generate reflections and recommendations
+
+The LLM is **not** responsible for calculating core user metrics. If the model is unavailable, capture and charts still work.
 
 ---
 
-# 4. Technology Stack (Current)
+# 4. High-level architecture (current)
+
+```text
+Frontend → Backend logic → Database → (AI only when a slice explicitly needs it)
+```
+
+Do not add a mesh of extra backends, queues, or vector stores for Slice 1.5–4.
+
+---
+
+# 5. Technology stack (current)
 
 ## Frontend
 
@@ -57,236 +108,77 @@ Frontend → Backend Logic → Database → (Optional AI Layer)
 - TypeScript
 - Tailwind CSS
 
-Purpose:
-
-- UI rendering
-- Client interactions
-- Forms
-- Charts
-- Dashboard views
-
----
+Purpose: UI, forms, charts, dashboard shells.
 
 ## Authentication
 
 - Supabase Auth
 
-Purpose:
+Purpose: signup, login, session, JWTs.
 
-- Handles login / signup
-- Manages user identity
-- Issues JWT tokens
-
-Important:
-Supabase Auth is ONLY for authentication.
-It is not your ORM.
-It is not your business logic layer.
-
----
+Supabase Auth is **only** authentication. It is not an ORM and not the business-logic layer.
 
 ## Database
 
 - Supabase Postgres
+- Row Level Security on exposed application tables
 
-Purpose:
+Purpose: structured relational storage for owner-scoped application data.
 
-- Stores application data
-- Structured relational storage
-- Secured with Row Level Security on exposed application tables
-
----
-
-## Data Access and Migrations
+## Data access and migrations
 
 - `supabase-js` / `@supabase/ssr`
-- Supabase SQL migrations
+- SQL files in `supabase/migrations`
 - Zod domain/input validation
 
-Purpose:
+The implemented application **does not use Prisma**. Application logic lives in server actions/routes and `src/lib/*` domain modules.
 
-- Authenticated server-side data access
-- Relationship modeling in Postgres
-- Migration management through `supabase/migrations`
-- Owner-scoped access enforced with Row Level Security
+## Storage
 
-Important:
-The implemented application does not use Prisma. Supabase manages Auth, Postgres, Storage, and the Data API; application business logic remains in server actions/routes and domain modules.
+- Supabase Storage when a slice needs private files (Slice 3.1 import PDFs). Not used for Slice 1.5 numeric measurements.
 
----
-
-## AI Layer (Optional for MVP)
+## AI (planned; not wired as product infrastructure today)
 
 - Provider-neutral server adapter
 - OpenAI as the initial configured provider
-- Supabase Edge Functions for asynchronous AI Workout Import processing
+- Supabase Edge Functions for the Slice 3.1 asynchronous import worker **when that slice starts**
 
-Purpose:
+AI may:
 
-- Generate weekly summaries
-- Generate reflection prompts
-- Summarize journal entries
-- Extract structured, reviewable workout drafts from server-extracted PDF text
+- Produce a **structured** weekly coach report from a provided snapshot
+- Extract a **reviewable** workout draft from server-extracted PDF text (Slice 3.1)
 
-AI does NOT:
+AI must not:
 
-- Store data
-- Control logic
-- Replace analytics
-- Save imported workouts without human confirmation
-
-It is just a service you call.
+- Store canonical application data
+- Replace the analytics engine
+- Write workout or coach tables without validation (and imports require human confirm)
+- Diagnose medical or mental-health conditions
 
 ---
 
-## Achievement Tracking (Gamification Layer)
+# 6. Layer responsibilities
 
-- Rule-based achievement detection
-- Badge state management
-- User achievement progress tracking
-
-Purpose:
-
-- Track milestone accomplishments
-- Unlock badges on criteria met
-- Display achievements in user profile
-- Optional social sharing of badges
-
-How it works:
-
-- After each workout or journal entry
-- Server runs achievement checks
-- Criteria: X workouts, Y day streaks, Z milestone PRs
-- If met, create user_achievement record
-- Trigger notification to user
-- Badge appears in profile
+| Layer | Owns | Does not own |
+|--------|------|----------------|
+| Frontend | Forms, charts, rendering of structured coach sections | Metric formulas, RLS |
+| Backend | AuthZ checks, Zod validation, orchestration, calling analytics then AI | Inventing SQL in the client |
+| Database | Truth, relationships, indexes, RLS | Interpretation |
+| Analytics (`src/lib/analytics` when Slice 4) | Versioned snapshots, aggregates, rule flags | Natural-language coaching |
+| Coach orchestration (`src/lib/coach` when Slice 5) | Prompt assembly, schema validation, persistence of reports | Recalculating volume from raw sets inside the LLM |
+| RAG (Slice 5.5) | Curated evidence chunks + citations | User PHI as the default corpus |
+| Exercise library | Canonical movements for logging/analytics/import | Scientific papers |
 
 ---
 
-## Achievement Detection Flow
-
-User logs workout / journal entry
-↓
-Server action processes input
-↓
-Supabase Postgres stores data
-↓
-**Achievement system evaluates criteria**
-
-- Check streak counts
-- Check total counts
-- Check PR detection
-- Check domain coverage
-  ↓
-  If criteria met:
-- Create user_achievement record
-- Trigger unlock notification
-- Mark as available for social sharing
-  ↓
-  Badge appears in profile
-
-# 5. System Flow
-
-## User Registration
-
-User → Supabase Auth → returns user ID → stored in database
-
-You store the Supabase user ID in owner-scoped Postgres tables.
-
----
-
-## Logging a Journal Entry
-
-Frontend form  
-↓  
-Server action / API route  
-↓  
-Supabase data access creates:
-
-- journal_entry
-- journal_domain_scores
-  ↓  
-  Stored in Postgres
-
----
-
-## Logging a Workout
-
-Frontend form  
-↓  
-Server action  
-↓  
-Supabase data access creates:
-
-- workout
-- exercises
-  ↓  
-  **Achievement system checks criteria** (4 consecutive workouts? PR? etc.)
-  ↓  
-  If criteria met, unlock achievement  
-  ↓  
-  Stored in Postgres
-
----
-
-## Viewing Dashboard
-
-Server query via `supabase-js`
-↓  
-Aggregate mood scores  
-↓  
-Aggregate workout frequency  
-↓  
-Send structured data to frontend  
-↓  
-Charts render
-
-No AI required.
-
----
-
-## AI Weekly Summary (Optional)
-
-Server job runs  
-↓  
-Server-side Supabase client fetches last 7 days of data
-↓  
-Constructs prompt  
-↓  
-Calls OpenAI  
-↓  
-Stores AI summary in database  
-↓  
-Displays to user
-
-AI is an enhancement, not core infrastructure.
-
----
-
-## AI Workout Import (Slice 3.1)
-
-```text
-Authenticated upload
-  → Private Supabase Storage + owner-scoped import record
-  → Server validates the PDF and extracts page-delimited text
-  → Supabase Edge Function calls the configured AI adapter
-  → Zod validates a structured, resumable review draft
-  → User edits and explicitly confirms
-  → Canonical manual-workout save path atomically creates reusable templates
-  → Transient PDF/text/model content is deleted
-```
-
-The AI provider never writes workout tables directly. If import processing is unavailable, manual workout creation remains fully functional.
-
----
-
-# 6. Database Ownership Model
+# 7. Database ownership model
 
 Supabase provides:
 
-- Authentication users
-- Postgres database
+- Auth users
+- Postgres
 - Private Storage
-- Row Level Security and Data API
+- RLS and Data API
 - Edge Functions
 
 The repository owns:
@@ -294,172 +186,225 @@ The repository owns:
 - SQL migrations and relational schema
 - Zod/domain validation
 - Server actions/routes and business logic
-- Storage lifecycle and AI orchestration
+- Storage lifecycle and AI orchestration when those slices exist
 
-Authentication, Storage, and application tables share one owner identity (`auth.uid()`), but each layer has separate access policies.
+Authentication, Storage, and application tables share one owner identity (`auth.uid()`), with **separate** policies per layer.
 
----
-
-# 7. Clear Layer Separation
-
-Frontend:
-
-- UI
-- Forms
-- Display logic
-
-Backend:
-
-- Business logic
-- Validation
-- Aggregation
-- AI prompt construction
-
-Database:
-
-- Pure data storage
-- Relationships
-- Indexing
-
-AI:
-
-- Structured generation behind validated server boundaries
-
-Keep these mentally separate.
+Logical schema (implemented vs planned): [`docs/PRD.md`](./PRD.md) database section.
 
 ---
 
-# 8. Current Feature Scope (Grounded)
+# 8. System flows
 
-You are currently building:
+## User registration (implemented)
 
-- Authentication
-- Profile setup
+User → Supabase Auth → `auth.users` id → `profiles` row (get-or-create) owner-scoped.
+
+## Logging a measurement (implemented)
+
+Frontend modal  
+→ server action  
+→ Zod validation  
+→ `measurements` insert (RLS)  
+→ list + deterministic weight trend in `src/lib/measurements/trend.ts`
+
+No AI.
+
+## Logging a journal entry (Slice 2 — planned)
+
+Frontend form  
+→ server action  
+→ `journal_entries` + `journal_domain_scores`  
+→ stored in Postgres  
+No AI required to save.
+
+## Logging a workout (Slice 3 — planned)
+
+Frontend form  
+→ server action  
+→ workout + set rows referencing `exercises`  
+→ stored in Postgres  
+Achievements are **not** in this flow for Phase 1.
+
+## Viewing Insights (Slice 4 — planned)
+
+Server loads owner data  
+→ analytics module builds a snapshot (pure functions + SQL aggregates)  
+→ frontend charts render snapshot fields  
+
+No AI required.
+
+## Weekly Coach Check-In (Slice 5 — planned)
+
+User submits check-in  
+→ persist `weekly_check_ins`  
+→ build analytics snapshot for the week  
+→ (optional) retrieve evidence chunks  
+→ LLM returns JSON  
+→ Zod validate  
+→ persist `coach_reports`  
+→ UI renders sections  
+
+If the model fails: show snapshot-only summary, keep the check-in.
+
+## AI Workout Import (Slice 3.1 — planned follow-on)
+
+```text
+Authenticated upload
+  → Private Storage + owner-scoped import record
+  → Server validates PDF and extracts page-delimited text
+  → Edge Function / worker calls AI adapter
+  → Zod validates a structured, resumable review draft
+  → User edits and explicitly confirms
+  → Same canonical save path as manual templates
+  → Alias match to exercise library where possible
+  → Transient PDF/text/model content deleted
+```
+
+The AI provider never writes workout tables directly. Manual logging remains available if import is down.
+
+---
+
+# 9. Current feature scope (grounded)
+
+**You are currently building Slice 1.5:**
+
+- Authentication (done)
+- Profile setup (done)
 - Baseline measurements (`weight`, `waist` time-series)
-- Journal entries
-- Life domain scoring
-- Workout logging
-- Manual workout/program templates
-- Dashboard trends
+- Light Fitness dashboard shell with Measurements as the working tab
 
-That is Phase 1.
+That is **now**. That is not the whole Phase 1 product.
 
-MVP+ follow-on after the manual workout foundation:
+**Phase 1 remaining slices (do not start until 1.5 is done):**
 
-- AI Workout Import (Slice 3.1; not a beta-launch dependency)
+- Journal + life domains
+- Workout logging + exercise identity
+- Deterministic analytics / Insights
+- Weekly Coach Check-In v1
+
+**Follow-on, not beta-blocking:**
+
+- AI Workout Import (Slice 3.1)
 
 ---
 
-# 9. What Is NOT Being Built Right Now
+# 10. What is not being built right now
 
-- RAG
-- Vector databases
+Do not introduce these while Slice 1.5 is open:
+
+- RAG / pgvector / document ingest
+- Coaching agent tool registry
+- Chat UI as the primary AI surface
+- Social feed, circles, posts
+- Achievements / badges / notifications
+- Stripe
+- Wearables
+- Progress photos
+- Extra body measurements
+- Scanned/image workout import
 - Predictive modeling
-- Wearable integrations
-- Progress photos (front/side/back visual tracking — deferred after Slice 1.5)
-- Scanned/image workout import and fully automated AI workout saving
-- Hardcore body measurements (chest, arms, legs, etc.)
-- Group challenges
-- Stripe subscriptions
 - Coaching marketplace
-- Push notification engine
 
-Those are future layers.
-
-Not today.
+Those are later layers. **Not today.**
 
 ---
 
-# 10. Folder Structure (Recommended)
+# 11. Folder structure
 
-app/
-dashboard/
-journal/
-workouts/
-social/
-api/
+**Present (keep growing by domain, not by layer soup):**
 
-lib/
-supabase/
-profile/
-workouts/
-workout-imports/
-ai.ts
-analytics.ts
+```text
+src/app/           # App Router
+src/components/    # UI
+src/lib/supabase/  # clients, middleware
+src/lib/profile/
+src/lib/measurements/
+supabase/migrations/
+```
 
-supabase/
-migrations/
-functions/
+**Add when the matching slice starts** (not before):
 
-components/
-charts/
-forms/
-ui/
+```text
+src/lib/journal/
+src/lib/workouts/
+src/lib/exercises/
+src/lib/analytics/    # snapshot + rules; no LLM
+src/lib/coach/        # orchestration + output schema
+src/lib/ai/           # provider adapter only
+src/lib/workout-imports/
+supabase/functions/   # Slice 3.1 worker
+```
 
-Keep provider-specific AI logic behind a server-only adapter. Keep canonical workout persistence independent from AI extraction.
+Keep provider-specific AI behind a server-only adapter. Keep canonical workout persistence independent from AI extraction. Do not put analytics formulas inside prompt strings.
+
+Avoid a `/social` tree until a later phase explicitly revives social.
 
 ---
 
-# 11. Mental Model Simplified
+# 12. Mental model
 
 You are building:
 
-A structured habit + reflection tracker with relational analytics.
+**A structured capture system with a deterministic analytics layer and an optional, schema-bound coach.**
 
 Not:
-An AI company.
-Not:
-A mental health platform replacement.
-Not:
-A fitness wearable competitor.
 
-It is a behavioral tracking SaaS.
+- An AI company
+- A mental-health treatment platform
+- A wearable competitor
+- A gamified social fitness network
 
 ---
 
-# 12. Architecture Philosophy
+# 13. Architecture philosophy
 
-Build stable layers.
+Build stable layers in order:
 
-1. Database must be correct.
-2. Business logic must be predictable.
-3. UI must be simple.
-4. AI must be optional.
+1. Database must be correct
+2. Business logic must be predictable
+3. UI must be simple
+4. Analytics must be testable without a model
+5. AI must be optional and validated
 
-If AI breaks, the product should still function.
+If AI breaks, the product still functions.
 
-That is good architecture.
+Do not overengineer the MVP: one Postgres, one Next.js app, RLS, slices. Add pgvector, extra workers, and Stripe **after** the coach loop exists and users exist.
 
 ---
 
-# 13. Scaling Strategy (Future)
+# 14. Scaling (future, after users)
 
 When needed:
 
-- Add pgvector for embeddings
-- Expand background jobs beyond the Slice 3.1 import worker
-- Add caching
-- Add rate limiting
-- Add Stripe
+- pgvector for evidence chunks
+- Background jobs beyond the Slice 3.1 import worker
+- Caching, rate limiting
+- Stripe
 
-But only after:
-Users exist.
+Not because the architecture diagram looks more impressive.
 
 ---
 
-# 14. Final Grounding Statement
+# 15. Safety notes (architecture)
 
-Right now you are building:
-
-A structured journaling + workout tracking web app
-with relational analytics
-using:
-Next.js + Supabase
-
-That is manageable.
-That is clear.
-That is shippable.
-
-Everything else is expansion.
+- Owner-scoped RLS on journals, measurements, check-ins, reports
+- Coach prompt assembly happens on the server
+- Analytics snapshot is the numeric source of truth in the coach prompt
+- Do not log raw wellbeing text
+- Import path: private storage, short retention, human confirm (Slice 3.1)
+- Exercise library ≠ knowledge base
 
 ---
+
+# 16. Grounding statement
+
+**Right now** you are finishing **measurements on Next.js + Supabase**.
+
+**Next** you will add journal and workouts as ordinary CRUD + RLS.
+
+**Then** you will compute snapshots in code.
+
+**Then** you will add a weekly check-in and a structured coach report.
+
+Everything else is expansion. If a new idea does not fit this order, change [`docs/launch_plan.md`](./launch_plan.md) first — do not sneak it into the current slice.

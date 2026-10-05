@@ -1,8 +1,12 @@
 # Navigation & Information Architecture
 
-Design notes for app navigation: global navbar, domain switcher, in-domain tabs, and cross-cutting features. Informed by the [PRD](./PRD.md), [README](../README.md), and dashboard mockups in `docs/mockups/navbar/`.
+Design notes for app navigation: global navbar, domain switcher, in-domain tabs, and cross-cutting features.
 
-**Status:** Draft for design review — not yet implemented in code.
+**Sources of truth** for product and sequencing: [PRD](./PRD.md), [system design](./systemDesign.md), [launch plan](./launch_plan.md). This file is a **draft IA**, not a license to build Community, Achievements, or AI prompts in Phase 1.
+
+**Status:** Draft — Fitness measurements shell is in progress (Slice 1.5). Domain switcher, Mind tabs, and Insights routes are not implemented yet.
+
+**Phase 1 nav implication:** Fitness | Mind | Insights are the real destinations. Community stays omitted or “Coming soon” and **must not** become a Phase 1 build. Achievements stay out of the navbar. Weekly Coach Check-In (Slice 5) should become a prominent Mind (or cross-domain) entry when that slice starts — prefer that over a Prompts tab.
 
 ---
 
@@ -13,7 +17,7 @@ The app splits into two primary **domains**, each with its own tab bar:
 | Domain | Purpose | PRD reference |
 |--------|---------|---------------|
 | **Fitness** | Workouts, measurements, templates, progress | §1.5, §3, §3.1 |
-| **Mind** | Mental health journaling, life domains, prompts | §2, §6 |
+| **Mind** | Wellbeing journaling, life domains, weekly check-in (Slice 5) | PRD §2, §2.5 |
 
 **Cross-domain** surfaces (Insights, Community, Achievements) sit outside domain tabs — see [Cross-domain placement](#cross-domain-placement).
 

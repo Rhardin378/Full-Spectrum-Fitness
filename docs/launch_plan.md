@@ -1,341 +1,241 @@
-# Full Spectrum Fitness — Phased Launch Plan
+# Full Spectrum Fitness — Launch Plan
 
-## Overview
+**Role:** sequencing source of truth — *what to build, in what order, and what not to start yet*.
 
-Full Spectrum Fitness is a holistic wellness SaaS designed to help users understand how their mental health and physical training influence each other. The platform combines workout tracking, mental health journaling, social accountability, and AI-powered insights — built intentionally in phases to support sustainable development and real user value.
+Read this with:
 
-This document outlines the phased launch strategy, feature scope, and development priorities.
+- [`docs/PRD.md`](./PRD.md) — *what* the product is and must do
+- [`docs/systemDesign.md`](./systemDesign.md) — *how* the system is layered and what not to overbuild
+
+If a later idea conflicts with this document, update these three files **before** starting a new slice.
 
 ---
 
-## Guiding Principles
+## How to use this document
 
-- Build **real value first**, not feature overload
-- Ship in **tight, testable increments**
+| Question | Answer |
+|----------|--------|
+| What am I building **this week**? | The **current slice** below |
+| What is Phase 1 allowed to include? | **Phase 1 — Proof of Value** |
+| Can I start AI, RAG, social, or PDF import now? | **No** — see [Do not start yet](#do-not-start-yet) |
+| Where does Weekly Coach enter? | After capture + deterministic analytics exist (Slice 5) |
+
+---
+
+## You are here
+
+| Slice | Status |
+|-------|--------|
+| Slice 1 — Authentication & Profile Setup | **Done** |
+| **Slice 1.5 — Measurements & Baseline Tracking** | **Current work** |
+| Slice 2 — Journaling & Life Domains | Next after 1.5 is complete |
+| Slice 3+ | Planned — do not start |
+
+Do not skip Slice 1.5. Measurements are the first longitudinal time-series in the product and feed later analytics and coaching. There is no architectural reason to reorder this slice.
+
+Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_1_5_measurements/`](./vertical_slices/slice_1_5_measurements/).
+
+---
+
+## Product thesis (locked)
+
+FSF is a **longitudinal personal performance and wellbeing** product.
+
+**Central question:** *Help me understand the relationship between how I train, how I feel, and how I live.*
+
+It is **not**:
+
+- A generic AI chatbot
+- A therapy or diagnosis app
+- Just another workout tracker
+- A generic AI workout generator
+- An app that requires enormous manual data entry
+
+The product should get **more useful as the user accumulates history**. The recurring close of the loop is the **Weekly Coach Check-In**, not a social feed and not open-ended chat.
+
+---
+
+## Guiding principles
+
+- Build **real capture and deterministic insight** before AI complexity
+- Ship **one vertical slice at a time**
 - Keep scope realistic for a **solo developer**
-- Validate user behavior before scaling AI complexity
-- Prioritize **self-awareness analytics** over gamification
+- Prefer **small, structured inputs** (weekly check-in + existing logs) over daily questionnaires
+- **Analytics calculate; AI interprets**
+- If AI is down, logging, history, and charts must still work
+- Do not add gamification or social features to “complete” an MVP that has not yet proven the coach loop
 
 ---
 
-## Phase 1 — Core MVP (Proof of Value)
+## Locked sequencing decisions
 
-**Goal:**  
-Validate that users care about linking mental health and workouts.
+These are product decisions, not suggestions. Change them here if they change.
 
-**Target:**  
-First public beta (Q3)
-
-This phase establishes the foundation of the platform.
-
----
-
-### Core Features
-
-#### 1. Workout Tracker
-
-Users can:
-
-- Log exercises
-- Track individual sets, reps/ranges, load, rest, RPE/RIR, and tempo
-- View workout history
-- Track PRs
-- See basic progress visualizations
-- Create reusable workout and multi-session program templates
-
-**MVP+ follow-on (Slice 3.1):**
-
-- Import one text-based workout PDF with AI
-- Review and edit extracted sessions, exercises, sets, and groupings
-- Confirm the result as reusable templates
-- Never auto-save AI output or create completed workout history
+1. **Finish Slice 1.5** before journaling, workouts, insights, or coaching work.
+2. **Capture before coach.** Weekly Coach is the Phase 1 *destination*, not the next coding task. It needs workouts, journal/check-in scores, measurements, and a deterministic analytics snapshot first.
+3. **Journal (Slice 2) before workouts (Slice 3)** is acceptable and preferred: wellbeing capture is as important as fitness, and Slice 2 is smaller than a full workout model. Do not reverse this without updating this file.
+4. **Manual workout logging before AI import.** Slice 3.1 (text PDF) starts only after Slice 3’s canonical model and editor path exist.
+5. **Deterministic Insights (Slice 4) before Weekly Coach (Slice 5).** The coach consumes a versioned analytics snapshot; the LLM must not invent core metrics.
+6. **Weekly Coach v1 is a structured report, not an agent platform.** Tool-calling coach and evidence RAG come *after* a working check-in + snapshot + validated report.
+7. **Social feed, accountability circles, and achievement/badge catalogs are out of Phase 1.** They are post-validation, optional, and must not delay the coach loop.
+8. **Evidence RAG is planned, not current.** Do not embed user journals as the knowledge base. Do not scrape commercial fitness sites.
+9. **Screenshot/spreadsheet program ingestion is later than Slice 3.1.** Reuse the same human-review pattern; do not pull it into Phase 1.
+10. **Personal timeline, wins, and life events** are near-term *after* Phase 1, not blockers for the first coach report (optional free-text on the weekly check-in covers context for v1).
 
 ---
 
-#### 2. Mental Health Check-Ins & Journaling
+## Core product loop (target)
 
-Lightweight, structured mental health tracking.
+```text
+Capture (ongoing, low friction)
+  workouts · measurements · optional journal
+        ↓
+Weekly Coach Check-In (small subjective input)
+        ↓
+Deterministic analytics snapshot
+        ↓
+Structured coach report (AI interprets the snapshot)
+        ↓
+User reviews, adjusts, continues logging
+        ↓
+History makes the next week more useful
+```
 
-Users can:
-
-- Log a daily mood rating
-- Write a short reflection
-- Tag entries with one or more life domains
-- Use optional guided prompts
-
----
-
-#### 3. Life Domain Tracking (Lite)
-
-Journal entries can be associated with one or more domains:
-
-- Emotional
-- Physical
-- Social
-- Environmental
-- Financial
-- Occupational
-- Spiritual
+Daily journaling is **optional**. The loop can close on **workouts + measurements + one weekly check-in**.
 
 ---
 
-#### 4. Basic Trend Insights (Rule-Based)
+## Phase 1 — Proof of Value (Core MVP)
 
-Early insight engine using deterministic logic (not heavy AI).
+**Goal:** A user can accumulate training, body, and wellbeing data and receive a **weekly, structured interpretation** of what changed — without social features, badges, RAG, or program import.
 
-Examples:
+**Phase 1 is complete when** the Definition of Done in the PRD is met — not when every idea in the backlog exists.
 
-- “You report better mood after strength training days.”
-- “You log workouts more consistently on days you journal.”
+### In Phase 1
 
----
+| Capability | Slice | Notes |
+|------------|-------|--------|
+| Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
+| Weight & waist time-series | 1.5 (current) | Deterministic weight trend in-tab; no unit conversion |
+| Journal + life domains + mood/stress/energy | 2 | Fast entry; AI prompts are **not** required in Slice 2 |
+| Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions |
+| Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
+| Weekly Coach Check-In v1 | 5 | Scores + optional reflection; server-built snapshot; Zod-validated report UI |
 
-#### 5. AI Prompts (Lite)
+### Explicitly not Phase 1
 
-Lightweight AI-powered prompting system for enhanced user engagement.
+- Social feed, friends, accountability circles
+- Achievement / badge system
+- Evidence RAG / pgvector
+- Coaching **agent tools** (beyond one server-assembled prompt)
+- AI Workout Import (Slice 3.1)
+- Image/screenshot/spreadsheet ingestion
+- Personal timeline, wins, and life-event objects (free-text context on the check-in is enough)
+- Wearables, Stripe, marketplace, native apps, notifications
+- Therapy, diagnosis, or clinical claims
 
-Features:
+### Phase 1 success metrics (keep small)
 
-- Weekly reflection summaries
-- Context-aware journaling prompts
-- Simple pattern flagging
-- Motivational nudges based on trends
+Track behavior that proves the thesis — not vanity or social KPIs.
 
-Examples:
+- Users who log **both** training (or measurements) **and** a weekly check-in
+- Weekly check-in completion among active users
+- 7-day retention among users who completed onboarding
+- Users who open a coach report or insights view after a check-in
 
-- "You tend to report lower anxiety on days following strength workouts."
-- "It's been 3 days since your last journal entry—how are you feeling about your physical domain this week?"
-
-#### 6. Social Feed (Lite)
-
-Designed for accountability, not performance flexing.
-
-Users can share:
-
-- Workout PRs
-- Streaks
-- Optional journal insights
-- Weekly summaries
-
-Privacy options:
-
-- Private
-- Friends only
-- Accountability circles
+Do not use free→paid conversion or social engagement as Phase 1 targets.
 
 ---
 
-#### 7. Achievement System & Badges
+## Phase 1.5 — Enrichment (after the coach loop works)
 
-Gameify user engagement through milestone tracking and badge collection.
+Start only after Phase 1 DoD is met (or a slice is unblocked and does not steal focus from Slice 1.5 → 5).
 
-Users unlock badges for:
-
-**Workout achievements:**
-
-- First strength workout
-- 4 consecutive workouts
-- 5 workouts in one week
-- Personal record milestone
-- 100 total workouts
-
-**Journal achievements:**
-
-- First journal entry
-- Exploring all life domains
-- 3-day journaling streak
-- 30-day journaling streak
-- 100 total entries
-
-**Trend achievements:**
-
-- Viewing first insight
-- Social achievements
-
-Badges are displayed in user profiles and optionally shareable to the social feed.
+| Slice | Purpose |
+|-------|---------|
+| 3.1 AI Workout Import (text PDF) | Faster template creation; human review required |
+| 5.5 Evidence RAG | Small curated corpus; citations on coach suggestions |
+| 6 Coach agent tools | Server-side tools wrapping analytics and reads |
+| 7 Wins & life events | Structured context for later weeks |
+| Exercise library UX | Aliases, substitutions, muscle metadata (schema starts in Slice 3) |
 
 ---
 
-### Phase 1 Success Metrics
+## Phase 2 — Longitudinal depth
 
-- Weekly active users
-- % of users logging both workouts and journals
-- 7-day retention
-- Social sharing usage
-
----
-
-## Phase 2 — Smart Coaching & AI Insights
-
-**Goal:**  
-Transform data into personalized insight and coaching.
-
-**Target:**  
-3–6 months after MVP validation
+- Adaptive (context-aware) reflection questions
+- Journal theme surfacing with inspectable source entries
+- Cross-domain overlays (e.g. volume vs energy)
+- Personal timeline
+- Image/screenshot program ingestion (same review/save path as 3.1)
+- Optional light achievements **if** they reinforce the loop without becoming the product
 
 ---
 
-### Features
+## Phase 3 — Scale (only with real users)
 
-#### AI Pattern Recognition
-
-- Natural language summaries of trends
-- Personalized coaching prompts
-- Habit insights and reflection summaries
-
-Example:
-“You tend to skip workouts when work stress spikes midweek.”
+- Wearables
+- Predictive / risk-style scores (treat as experimental; never as diagnosis)
+- Habit-stack builder
+- Community / coach marketplace
+- Paid tiers
 
 ---
 
-#### Advanced Journaling Intelligence
+## Vertical-slice build order
 
-AI-assisted features:
+Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tracking_setup.md).
 
-- Sentiment analysis
-- Detection of recurring stressors
-- Suggested mental exercises
-- Follow-up reflection prompts
+| Order | Slice | User value | Depends on | Deliberately deferred |
+|-------|-------|------------|------------|------------------------|
+| 1 | Auth & Profile | Account and goals | — | Circles, social privacy product |
+| **1.5** | **Measurements** | Body baseline over time | Slice 1 | Photos, extra tape measurements |
+| 2 | Journaling & Life Domains | Wellbeing capture | Slice 1 | LLM prompts, theme extraction |
+| 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest |
+| 4 | Deterministic Analytics & Insights | “What changed?” without AI | 1.5, 2, 3 | ML correlations presented as facts |
+| 5 | Weekly Coach Check-In | Recurring coach experience | Slice 4 | Tool-calling agent, RAG |
+| 3.1 | AI Workout Import | Import a text PDF as templates | Slice 3 | OCR, images, auto-save |
+| 5.5 | Evidence RAG | Cited training/recovery context | Slice 5 | Large crawled corpora |
+| 6 | Coach agent tools | Deeper, testable AI layer | 5, 5.5 | Client-side agents |
+| 7+ | Wins, events, timeline | Richer longitudinal story | Phase 1 | — |
 
----
-
-#### Advanced Visual Insights
-
-Correlation dashboards such as:
-
-- Mood vs training frequency
-- Stress vs workout consistency
-- Mental state vs PR progression
-
----
-
-#### Social Expansion
-
-- Group accountability challenges
-- Shared weekly prompts
-- Reaction-based support (no vanity metrics)
+**MVP+ (non-blocking for Phase 1 beta):** Slice 3.1. It must not start before Slice 3 is stable. It is not required to call Phase 1 done.
 
 ---
 
-## Phase 3 — Ecosystem & Scale
+## Do not start yet
 
-**Goal:**  
-Evolve into a full life optimization and habit platform.
+Until Slice 1.5 is done, do not implement:
 
-**Target:**  
-Year 2+
+- Journal or workout schemas “while measurements is finishing,” unless a tiny shared foundation is required (it is not)
+- AI provider integration
+- RAG / embeddings
+- Social or achievements
+- PDF import
 
----
+Until Slice 5 exists, do not implement:
 
-### Features
-
-#### Optional Wearables Integration
-
-- Apple Health
-- Garmin
-- Whoop
-- Fitbit
-
-(Only after product-market fit.)
+- A chatbot UI as the primary AI surface
+- Agent tool registries
+- Knowledge-base ingestion pipelines
 
 ---
 
-#### Predictive Coaching
-
-AI-assisted forecasting for:
-
-- Burnout risk
-- Training plateaus
-- Mood regression
-
----
-
-#### Habit Stack Builder
-
-Users can design:
-
-- Morning routines
-- Recovery rituals
-- Mental training cycles
-- Training programs
-
----
-
-#### Community Ecosystem
-
-- Coaches and mentors
-- Group programs
-- Guided challenges
-- Mental fitness tracks
-
----
-
-## Realistic Solo Developer Timeline
-
-- Phase 1: 4–6 months
-- Phase 2: 3–4 months
-- Phase 3: Scale with funding or additional contributors
-
----
-
-## Phase 1 Build Order (Critical)
-
-1. Authentication & user models
-2. Workout logging and manual template system
-3. Journaling & life domains
-4. Rule-based trend engine
-5. Achievement system & badge tracking
-6. Social feed (lite)
-7. Dashboard polish & beta launch
-
-### MVP+ Follow-on (Non-Blocking)
-
-- AI Workout Import (Slice 3.1) starts only after the manual workout/template foundation is stable.
-- Slice 3.1 is not required for the Phase 1 beta launch.
-
----
-
-## Explicitly Out of Scope (Early Phases)
-
-Do NOT build early:
-
-- Wearables integration
-- Full AI coaching
-- Scanned/image workout import and fully automated workout saving
-- Marketplaces
-- Complex group systems
-- Heavy gamification
-- Paid tiers before validation
-
----
-
-## Core Differentiator
+## Positioning
 
 Not fitness tracking.  
 Not journaling.  
-Not social features.
+Not social.  
+Not a chatbot.
 
-**The real product is self-awareness analytics.**
-
-Full Spectrum Fitness is:
-
-> Behavioral intelligence for personal growth.
+**The product is longitudinal intelligence:** structured history + deterministic analytics + a weekly coach that interprets — it does not invent — the numbers.
 
 ---
 
-## Positioning Statement
+## Final note
 
-“I designed and built a behavior-driven wellness SaaS that analyzes the relationship between mental state and physical performance.”
+Shipping Slice 1.5 with discipline matters more than designing Slice 6.
 
----
-
-## Final Note
-
-Shipping matters more than perfection.
-
-- Ship Phase 1 with discipline
-- Avoid feature creep
-- Learn from real users
-- Iterate intentionally
-
-This project is meant to grow with you — technically, professionally, and personally.
+- One slice in active execution
+- Update this file if the order changes
+- Do not grow Phase 1 to absorb Phase 2 ideas

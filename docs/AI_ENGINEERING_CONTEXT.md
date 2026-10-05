@@ -1,7 +1,7 @@
 # AI Engineering Context
 
 > **Status:** Recommendations and findings from FSF Senior Engineer audits.  
-> **Not approved architecture.** Ryan's approved decisions live in `ARCHITECTURE_DECISIONS.md`. Do not treat anything here as a requirement until Ryan promotes it.
+> **Not approved architecture.** Product and architecture decisions live in `docs/PRD.md`, `docs/systemDesign.md`, and `docs/launch_plan.md`. Do not treat anything here as a requirement until it is promoted into those files.
 
 **Last updated:** 2026-10-05  
 **Audited commit:** `eac09b8` on `main`  
@@ -9,16 +9,18 @@
 
 ## How to use this document
 
-- Treat PRD / system design / launch plan / ARCHITECTURE_DECISIONS as product and architecture sources of truth.
+- Treat **PRD / system design / launch plan** as product and architecture sources of truth.
 - Use this file for current engineering health, known bugs, and recommended next steps.
 - When code conflicts with docs, call out the conflict before a major change.
-- Keep Phase 1 MVP scope tight; do not introduce new tech or speculative features without justification and Ryan's approval.
+- Keep Phase 1 MVP scope tight; do not introduce new tech or speculative features without justification.
+
+**Product decisions (locked in the three sources of truth, 2026-10-05):** Phase 1 is capture + deterministic insights + Weekly Coach Check-In v1. Social, achievements, RAG, and PDF import are out of Phase 1. Slice 1.5 remains current. Slice 2 (journal) before Slice 3 (workouts). Weekly Coach is Slice 5, after analytics.
 
 ## Actual stack (as implemented)
 
 - Next.js 16.1.6 (App Router), React 19.2.3, TypeScript, Tailwind v4
 - `@supabase/ssr` + `supabase-js`, Zod 4, Vitest 4
-- Database: raw SQL migrations under `supabase/migrations/` (4 migrations). **No Prisma** (systemDesign.md already notes this; README still wrongly lists Prisma).
+- Database: raw SQL migrations under `supabase/migrations/` (4 migrations). **No Prisma**.
 - **Not present:** Prisma, shadcn/ui, AI SDK, Playwright, CI workflows, LICENSE, `.env.example`
 
 ## What is shipped
@@ -29,25 +31,24 @@
 
 ## Phase 1 status vs `docs/PRD.md`
 
+Phase 1 in the PRD is **no longer** social + achievements + scattered AI prompts. Compare against the current PRD Definition of Done.
+
 | Feature | Status |
 | --- | --- |
 | Email auth | Partially complete (no `/auth/callback`, no password reset, weak min length 6) |
-| OAuth | Missing |
-| Profile setup wizard | Partially complete (single optional `/profile` form) |
-| Goals / domain priorities / experience | Goals free-text stored; priorities + experience complete; no progress tracking |
-| Privacy / accountability circles | Preference stored but unused; circles missing |
-| Baseline measurements (weight, waist) | Partially complete; **date display broken for US timezones** |
-| Journaling (7 domains) | Missing |
-| Workout tracking | Missing ("coming soon" tab) |
-| Trend dashboard | Missing (only weight trend card) |
-| Social feed | Missing |
-| Light AI coaching | Missing (no AI code in `src/`) |
-| Achievements / badges | Missing |
+| OAuth | Missing (not a Slice 1.5 blocker) |
+| Profile setup | Partially complete (single optional `/profile` form) |
+| Goals / domain priorities / experience | Goals free-text stored; priorities + experience complete |
+| Accountability circles | Out of Phase 1; preference field may exist unused |
+| Baseline measurements (weight, waist) | Slice 1.5 in progress; **date display broken for US timezones** |
+| Journaling (7 domains) | Missing — Slice 2 |
+| Workout tracking | Missing — Slice 3 |
+| Deterministic insights | Missing — Slice 4 (only weight trend card) |
+| Weekly Coach Check-In | Missing — Slice 5 |
+| Social feed / achievements | Out of Phase 1 by design |
+| Evidence RAG / agent tools | After Slice 5 |
 
-**Doc conflicts to resolve with Ryan (not auto-fixed):**
-
-- PRD Phase 1 includes social + light AI + achievements; `systemDesign.md` treats social as Optional MVP+ and AI as optional; `launch_plan.md` includes all but says avoid heavy gamification; README puts AI in Phase 2 and still claims Prisma/shadcn/MIT license.
-- Draft `navigation-ia.md` routes (`/fitness`, `/mind`) do not match code (`/dashboard`).
+**Docs alignment:** PRD, system design, launch plan, and README were updated to agree (Weekly Coach destination, Slice 1.5 current, social/achievements deferred). Draft `navigation-ia.md` routes (`/fitness`, `/mind`) still do not match code (`/dashboard`).
 
 ## Critical / high findings
 
@@ -77,8 +78,8 @@
 2. **Parallel / agent:** security + delivery baseline — upgrade `next`/`eslint-config-next` to 16.3.x, `npm audit fix`, GitHub Actions (lint/tsc/test/build), security headers, generic error messages. Open PR; do not merge without Ryan review.
 3. Close Slice 1.5: soft delete/edit (tickets 1.5.9–1.5.11), history "load more", component tests (#30, frontend half of #17), QA (#9, #18), close shipped-open issues #15/#16.
 4. Auth cleanup: `/auth/callback`, password reset, stronger password min, move profile bootstrap off root layout.
-5. **Product decision needed:** trim Phase 1 (suggested: workouts → journaling → rule-based trends; defer social/badges/AI prompts) so PRD / systemDesign / launch_plan / README agree.
-6. Then build next MVP slice (launch_plan prefers workouts first; product thesis leans journaling—confirm with Ryan).
+5. **Product decisions locked** in PRD / systemDesign / launch_plan (2026-10-05). Do not re-open Phase 1 social/badges as MVP work.
+6. After Slice 1.5: **journal (Slice 2) then workouts (Slice 3)**, then analytics (4), then Weekly Coach (5) — see launch plan.
 7. Real test pyramid: Playwright smoke + two-user RLS tests against local Supabase + component tests.
 
 ## Suggested approach for the date fix (recommendation only)
