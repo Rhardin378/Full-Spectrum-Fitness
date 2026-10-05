@@ -4,26 +4,30 @@ Use this as your default project-tracking structure in GitHub.
 
 ## Milestones
 
-Create one milestone per vertical slice:
+Create one milestone per vertical slice. Names and order must match [`docs/LAUNCH_PLAN.md`](../LAUNCH_PLAN.md):
 
-- `Slice 1 - Auth & Profile Setup`
-- `Slice 1.5 - Measurements & Baseline Tracking`
+- `Slice 1 - Auth & Profile Setup` (done)
+- `Slice 1.5 - Measurements & Baseline Tracking` (**current**)
 - `Slice 2 - Journaling & Life Domains`
 - `Slice 3 - Workouts`
-- `Slice 3.1 - AI Workout Import`
-- `Slice 4 - Dashboard Insights`
-- `Slice 5 - Achievements`
-- `Slice 6 - AI + Social Lite`
+- `Slice 4 - Deterministic Analytics & Insights`
+- `Slice 5 - Weekly Coach Check-In`
+- `Slice 3.1 - AI Workout Import` (follow-on after Slice 3; not Phase 1 blocking)
+- `Slice 5.5 - Evidence RAG` (after Slice 5)
+- `Slice 6 - Coach Agent Tools` (after Slice 5)
+- `Slice 7 - Wins & Life Events` (after Phase 1)
+
+Do **not** create Phase 1 milestones for Achievements or Social Lite.
 
 Suggested due date pattern:
 
-- Set each milestone due date 1-2 weeks apart (or your preferred sprint cadence).
+- Set each milestone due date to your sprint cadence. Do not schedule Slice 5+ while Slice 1.5 is open.
 
 ## Labels
 
 Use a small, consistent set of labels:
 
-- `slice-1`, `slice-1.5`, `slice-2`, `slice-3`, `slice-3.1`, `slice-4`, `slice-5`, `slice-6`
+- `slice-1`, `slice-1.5`, `slice-2`, `slice-3`, `slice-3.1`, `slice-4`, `slice-5`, `slice-5.5`, `slice-6`, `slice-7`
 - `backend`
 - `frontend`
 - `database`

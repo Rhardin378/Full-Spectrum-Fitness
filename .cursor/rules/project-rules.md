@@ -47,3 +47,14 @@ Full Spectrum Fitness – Project Rules (React + TypeScript + shadcn/ui)
 
 - Keep files **focused**: avoid “god components” and giant utility files.
 - Add comments only for **non-obvious intent, trade-offs, or constraints**, not for trivial code.
+
+## Documentation handoff
+
+Product and sequencing live in `docs/` (see `docs/README.md`):
+
+- `LAUNCH_PLAN.md` — current slice; do not start later slices early
+- `PRD.md` / `SYSTEM_DESIGN.md` / `ARCHITECTURE_DECISIONS.md` — what and why
+- `DEVELOPMENT_LOG.md` — **append** a dated entry after every meaningful session (human or agent)
+- `AI_ENGINEERING_CONTEXT.md` — bugs and audit notes; not product law
+
+If a change locks a decision, update the ADR file and the matching source-of-truth doc in the same session as the log entry.

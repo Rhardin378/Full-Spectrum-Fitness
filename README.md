@@ -1,46 +1,32 @@
 # Full Spectrum Fitness
 
-**Full Spectrum Fitness** is a behavior-driven wellness platform that connects mental health journaling with fitness tracking to help users understand how mindset, lifestyle, and training influence overall growth. By combining structured journaling, workout tracking, and trend insights, the platform empowers users to build sustainable habits and achieve holistic personal growth.
+**Full Spectrum Fitness (FSF)** is a longitudinal personal performance and wellbeing product. It helps you understand the relationship between **how you train, how you feel, and how you live**.
+
+**Sources of truth (read these before adding features):**
+
+- [`docs/README.md`](./docs/README.md) — handoff pack index
+- [`docs/PRD.md`](./docs/PRD.md) — what the product is and must do
+- [`docs/SYSTEM_DESIGN.md`](./docs/SYSTEM_DESIGN.md) — architecture layers
+- [`docs/LAUNCH_PLAN.md`](./docs/LAUNCH_PLAN.md) — current slice, Phase 1 vs later
+- [`docs/ARCHITECTURE_DECISIONS.md`](./docs/ARCHITECTURE_DECISIONS.md) — locked decisions
+- [`docs/DEVELOPMENT_LOG.md`](./docs/DEVELOPMENT_LOG.md) — chronological record (append after sessions)
+- [`docs/AI_ENGINEERING_CONTEXT.md`](./docs/AI_ENGINEERING_CONTEXT.md) — bugs/audit notes, not product law
+
+**Current work:** Slice 1 (auth/profile) is done. **Slice 1.5 (measurements)** is in progress. Do not start journaling, workouts, AI, RAG, or social until the launch plan says so.
 
 ---
 
-## 🌟 Key Features
+## 🌟 Direction (summary)
 
-### 1. **Workout Tracking**
+The recurring experience is a **Weekly Coach Check-In** that combines a little subjective input with workouts, measurements, and journal data. **Analytics calculate metrics; AI interprets them.** RAG is an evidence layer for the coach, not a chatbot feature.
 
-- Log exercises, sets, reps, weight, and RPE.
-- Track personal records (PRs) and workout history.
-- Visualize progress with simple charts.
-
-### 2. **Mental Health Journaling**
-
-- Reflect on your day with structured journal entries.
-- Associate reflections with life domains:
-  - Emotional, Physical, Social, Environmental, Financial, Occupational, Spiritual.
-- Use guided prompts for deeper insights.
-
-### 3. **Trend Insights**
-
-- Discover correlations between workouts, mood, and lifestyle.
-- Example insights:
-  - "You report better mood after strength training days."
-  - "Stress levels spike during skipped workout weeks."
-
-### 4. **Social Accountability (Privacy-First)**
-
-- Share workout milestones, journaling streaks, and weekly summaries.
-- Privacy options: Private, Friends Only, Accountability Circles.
-
-### 5. **AI Coaching (Future Phases)**
-
-- Personalized insights and habit recommendations.
-- Weekly summaries and reflection prompts.
+Phase 1 is capture + deterministic insights + weekly coach v1. Social feed and achievements are **not** Phase 1. Details live in the PRD and launch plan.
 
 ---
 
 ## 🚀 Product Vision
 
-Enable users to build sustainable physical and mental growth habits by revealing patterns between lifestyle behaviors and performance outcomes.
+Help users see how training, body metrics, mood, and life context change together over time — without turning FSF into a therapy app, a generic chatbot, or just another workout logger.
 
 ---
 
@@ -54,45 +40,41 @@ Enable users to build sustainable physical and mental growth habits by revealing
 
 ### Backend
 
-- **Supabase** (PostgreSQL + Auth)
-- **Prisma** (ORM for type-safe database queries)
+- **Supabase** (PostgreSQL + Auth + Storage)
+- SQL migrations in `supabase/migrations` (this repo does **not** use Prisma)
+- Server actions / route handlers + Zod validation
 
-### AI Layer (Future)
+### AI Layer
 
-- **OpenAI API** for generating summaries and insights.
+- Provider-neutral server adapter (when Slice 5 / 3.1 start)
+- Structured coach output; LLM does not calculate core metrics
 
 ---
 
 ## 📅 Development Roadmap
 
-### **Phase 1 — Core MVP**
+Follow [`docs/LAUNCH_PLAN.md`](./docs/LAUNCH_PLAN.md). Short version:
 
-- Authentication & user profiles.
-- Workout logging system.
-- Journaling with life domains.
-- Rule-based trend insights.
-- Social feed (lite).
+### Phase 1 — Proof of value
 
-### **Phase 2 — Smart Coaching**
+- Auth & profiles (done)
+- Measurements (current)
+- Journaling & life domains
+- Workout logging
+- Deterministic insights
+- Weekly Coach Check-In v1
 
-- AI-powered insights and summaries.
-- Advanced journaling intelligence.
-- Correlation dashboards.
+### After Phase 1
 
-### **Phase 3 — Ecosystem & Scale**
-
-- Wearable integrations (e.g., Apple Health, Garmin).
-- Predictive coaching and habit stack builder.
-- Community-driven accountability and coaching.
+- Evidence RAG, coach tools, PDF import, wins/life events
+- Timeline, optional social/achievements
+- Wearables and marketplace only with real users
 
 ---
 
 ## 📊 Success Metrics
 
-- **Daily Active Users (DAU):** 30%+
-- **Weekly Journal Completion:** 40%+
-- **Workout Logging Retention (30-day):** 35%+
-- **Social Feature Engagement:** 25% of users.
+See the launch plan. Phase 1 cares about weekly check-ins plus training/measurement capture — not social engagement or paid conversion.
 
 ---
 
@@ -100,11 +82,11 @@ Enable users to build sustainable physical and mental growth habits by revealing
 
 ### Folder Structure
 
-- /app/ # Next.js app directory
-- /components/ # Reusable UI components
-- /lib/ # Utility functions (e.g., auth, AI, analytics)
-- /prisma/ # Database schema and migrations
-- /docs/ # Documentation (PRD, system design, launch plan)
+- `src/app/` — Next.js app directory
+- `src/components/` — reusable UI
+- `src/lib/` — domain modules (profile, measurements; analytics/coach later)
+- `supabase/migrations/` — Postgres schema
+- `docs/` — handoff pack (PRD, SYSTEM_DESIGN, LAUNCH_PLAN, ARCHITECTURE_DECISIONS, DEVELOPMENT_LOG, AI_ENGINEERING_CONTEXT)
 
 ### Key Principles
 
@@ -164,4 +146,4 @@ Contributions are welcome! If you'd like to contribute:
 
 ## 💡 Final Note
 
-Full Spectrum Fitness is designed to grow with its users. Whether you're tracking workouts, reflecting on your mental health, or discovering new insights about yourself, this platform is here to support your journey toward holistic wellness.
+Full Spectrum Fitness is designed to grow with its users. Track training, log how you feel, and let weekly coaching interpret the history you already have — not a mountain of extra forms.
