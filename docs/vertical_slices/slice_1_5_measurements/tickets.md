@@ -324,6 +324,7 @@ Verify end-to-end behavior for measurements and the light dashboard shell; captu
 - Manual test: authenticated user lands on `/dashboard` with Measurements as the working home.
 - Manual test: create multiple weight and waist measurements across dates via the log modal/drawer.
 - Manual test (when **1.5.10** ships): edit an entry and confirm list/trend reflect changes; soft-delete an entry and confirm it no longer appears in history.
+- Manual test (when **1.5.12** ships): calendar dates stay correct in a US timezone (e.g. America/Chicago), including after ~7 PM local; picker default is today, not tomorrow; history/trend show the day the user chose.
 - Manual test: filters by type/date return expected results in Recent history.
 - Manual test: unauthenticated access to `/dashboard` is blocked.
 - Manual test: weight trend card reflects entries; empty states render when no data.
@@ -341,6 +342,7 @@ Verify end-to-end behavior for measurements and the light dashboard shell; captu
 
 - Ticket 1.5.6
 - Ticket 1.5.7
+- Ticket 1.5.12 (date display/QA in a non-UTC timezone)
 
 ---
 
@@ -379,7 +381,7 @@ Let owners **correct mistakes** and **remove entries** without hard-deleting row
 
 ### Acceptance Criteria
 
-- Owner can update value, unit, `measured_at`, notes, and `measurement_type` (with unit rules) on an active entry.
+- Owner can update value, unit, calendar date, notes, and `measurement_type` (with unit rules) on an active entry. After **1.5.12**, that date is the calendar-date field (`measured_on` or successor), not UTC-midnight `measured_at`.
 - Owner can soft-delete an entry; it disappears from `listMeasurements` results.
 - Another user cannot update or soft-delete a row they do not own.
 - Unauthenticated calls fail with the same error shape as create/list.
@@ -472,3 +474,55 @@ Automated coverage for the edit/delete follow-up so regressions do not slip in b
 ### Suggested GitHub title
 
 `test(measurements): update and soft-delete coverage (#1.5.11)`
+
+---
+
+## Ticket 1.5.12: Fix measurement calendar-date timezone display
+
+**Type:** bug  
+**Priority:** P0  
+**Labels:** `slice-1.5`, `measurements`, `bug`, `database`, `backend`, `frontend`, `tests`  
+**Owner:** Ryan (user-visible date semantics; strong to implement and verify locally)
+
+### Description
+
+`measured_at` is stored as UTC midnight for date-only input (`validation.ts`) and formatted with `toLocaleDateString` in local time (`display.ts`). In America/Chicago, Oct 4 can show as Oct 3. After ~7 PM CT, `toDateInputValue()` (UTC `toISOString().slice(0, 10)`) can default the date picker to tomorrow.
+
+This is the highest user-visible bug on the only shipped measurements feature. Existing Vitest cases encode the UTC-midnight behavior and must be updated, not preserved.
+
+**Recommended approach** (from `docs/AI_ENGINEERING_CONTEXT.md`; not locked architecture — change the implementation if a simpler local-date design is cleaner, but keep calendar dates stable):
+
+- Migration: add `measured_on date`, backfill from `(measured_at at time zone 'UTC')::date`, `NOT NULL` + future-date check + index `(user_id, measured_on desc, created_at desc, id desc)`.
+- Zod: strict `YYYY-MM-DD`; reject dates more than 1 day past UTC today.
+- Shared helpers: `todayLocalISODate()`, `formatCalendarDate()` with `timeZone: "UTC"` (or equivalent) so display never shifts.
+- Bump pagination cursor version to use `measured_on`.
+- Verify under `TZ=America/Chicago`, `Pacific/Auckland`, and `UTC` with `vi.setSystemTime`; browser-check after 7 PM CT.
+
+### Scope
+
+- Persist and display a **calendar date** the user chose, independent of browser timezone.
+- Update create/list/trend (and update/soft-delete if **1.5.9** has landed) to read/write that date field.
+- Update log modal default and history/trend labels to use local-today / calendar-date helpers.
+- Replace tests that assert UTC-midnight `measured_at` from a `YYYY-MM-DD` input.
+- Add timezone-aware unit tests; do not rely on the runner's default TZ.
+- **Out of scope:** history “load more,” Next/CI, auth cleanup, unit conversion.
+
+### Acceptance Criteria
+
+- A date-only log of `2026-10-04` displays as Oct 4 (not Oct 3) when `TZ=America/Chicago`.
+- Date picker default is the user's local today, including after 7 PM US Central.
+- List filters, trend points, and pagination stay on the same calendar day the user entered.
+- `npm test` passes under at least `TZ=America/Chicago` and `TZ=UTC`.
+- Existing rows backfill to the UTC date they were stored as (document any known leftover skew).
+
+### Dependencies
+
+- Ticket 1.5.2
+- Ticket 1.5.3
+- Ticket 1.5.5 (log modal + history already shipped)
+- Ticket 1.5.6 (trend already shipped)
+- Coordinate with 1.5.9–1.5.11 if those land first (same date field)
+
+### Suggested GitHub title
+
+`[Slice 1.5] Fix measurement calendar-date timezone display (#1.5.12)`
