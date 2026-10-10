@@ -76,7 +76,7 @@ Phase 1 in the PRD is **no longer** social + achievements + scattered AI prompts
 ## Recommended next steps (priority)
 
 1. **Ryan personally:** end-to-end measurement calendar-date fix (`measured_on date` column + local date helpers + cursor bump + TZ-aware tests). Highest user-visible bug on the only shipped feature; strong portfolio/interview story.
-2. **Parallel / agent:** security + delivery baseline — upgrade `next`/`eslint-config-next` to 16.3.x, `npm audit fix`, GitHub Actions (lint/tsc/test/build), security headers, generic error messages. Open PR; do not merge without Ryan review.
+2. **Parallel / agent:** security + delivery baseline — tracked as repo governance tickets **RG.2** / **RG.3** in [`docs/vertical_slices/repo_governance/tickets.md`](./vertical_slices/repo_governance/tickets.md). Upgrade `next`, CI, headers, etc. **Always branch + PR**; ruleset hardening sit-down is **RG.1** (after next few Slice 1.5 tickets).
 3. Close Slice 1.5: soft delete/edit (tickets 1.5.9–1.5.11), history "load more", component tests (#30, frontend half of #17), QA (#9, #18), close shipped-open issues #15/#16.
 4. Auth cleanup: `/auth/callback`, password reset, stronger password min, move profile bootstrap off root layout.
 5. **Product decisions locked** in PRD / SYSTEM_DESIGN / LAUNCH_PLAN / ARCHITECTURE_DECISIONS (2026-10-05). Do not re-open Phase 1 social/badges as MVP work.
