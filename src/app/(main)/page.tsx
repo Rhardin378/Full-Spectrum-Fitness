@@ -75,7 +75,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <section className="bg-gradient-hero text-center text-text-on-dark">
-        <div className="mx-auto max-w-6xl px-6 py-6 sm:px-10 sm:py-10 lg:py-12">
+        <div className="mx-auto max-w-6xl px-6 pb-12 pt-6 sm:px-10 sm:py-10 lg:py-12">
           <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-center lg:gap-10">
             <div className="order-2 w-full lg:order-1 lg:w-[55%] lg:text-left">
               <h1 className="mx-auto w-full max-w-[9.6em] text-3xl font-bold leading-tight sm:text-4xl lg:mx-0 lg:text-5xl">
@@ -112,14 +112,14 @@ export default function Home() {
             </div>
 
             <div className="order-1 flex w-full justify-center lg:order-2 lg:w-[45%]">
-              <div className="relative h-[150px] w-[150px] shrink-0 overflow-hidden rounded-full bg-surface-header shadow-[0_14px_36px_rgba(30,30,30,0.35)] lg:h-[320px] lg:w-[320px]">
+              <div className="relative h-[150px] w-[150px] shrink-0 overflow-hidden rounded-full bg-surface-header shadow-[0_14px_36px_rgba(30,30,30,0.35)] lg:h-[360px] lg:w-[360px]">
                 <Image
                   src="/brand/hero-badge.svg"
                   alt="Full Spectrum Fitness — Strength of body and mind"
                   fill
                   unoptimized
                   priority
-                  sizes="(min-width: 1024px) 320px, 150px"
+                  sizes="(min-width: 1024px) 360px, 150px"
                   className="object-cover"
                 />
               </div>
@@ -128,9 +128,16 @@ export default function Home() {
         </div>
 
         <div className="bg-black/15 px-6 py-5 sm:px-10 sm:py-8">
-          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 text-center lg:grid-cols-4 lg:gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label}>
+          <div className="mx-auto grid max-w-6xl grid-cols-2 text-center lg:grid-cols-4">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.label}
+                className={`px-4 py-3 ${
+                  index % 2 === 1 ? "border-l border-white/20" : ""
+                } ${index >= 2 ? "border-t border-white/20 lg:border-t-0" : ""} ${
+                  index > 0 ? "lg:border-l lg:border-white/20" : ""
+                }`}
+              >
                 <p className="text-2xl font-bold sm:text-3xl">{stat.value}</p>
                 <p className="mt-1 text-sm text-white/80 sm:text-base">
                   {stat.label}
