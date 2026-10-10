@@ -24,6 +24,12 @@
     var(--brand-coral) 50%,
     var(--brand-coral-light) 100%
   );
+  --gradient-hero: linear-gradient(
+    90deg,
+    var(--brand-coral-dark) 0%,
+    var(--brand-coral) 50%,
+    #f08c80 100%
+  );
   --gradient-auth: linear-gradient(
     135deg,
     #1e1e1e 0%,
@@ -67,6 +73,10 @@ body {
 
 .bg-gradient-welcome {
   background: var(--gradient-welcome);
+}
+
+.bg-gradient-hero {
+  background: var(--gradient-hero);
 }
 
 .bg-gradient-auth {

@@ -21,6 +21,7 @@ export const colors = {
 export const gradients = {
   welcome:
     "linear-gradient(90deg, #C9453A 0%, #E85A4F 50%, #FFD4CC 100%)",
+  hero: "linear-gradient(90deg, #C9453A 0%, #E85A4F 50%, #F08C80 100%)",
   authBackground:
     "linear-gradient(135deg, #1E1E1E 0%, #3D2520 40%, #E85A4F 70%, #FFD4CC 100%)",
 } as const;
