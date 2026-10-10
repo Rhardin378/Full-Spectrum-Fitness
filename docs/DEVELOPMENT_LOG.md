@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-10 — PR-only workflow + deferred ruleset ticket
+
+### Completed
+
+- Documented **branch → PR → merge** for `main` (README, docs index, `.github/copilot-instructions.md`, launch plan).
+- Added [`docs/vertical_slices/repo_governance/`](./vertical_slices/repo_governance/) with ticket **RG.1** (ruleset sit-down after next few 1.5 tickets), **RG.2** (CI), **RG.3** (security baseline).
+
+### Decisions
+
+- Do not push directly to `main`; agents and humans use feature branches and PRs.
+- Full ruleset configuration (required checks, bypass list) waits until after **1.5.9–1.5.11** / QA or until **RG.2** CI exists — avoid requiring checks that do not exist yet.
+
+### Issues
+
+- GitHub may already require PRs; align required status checks with CI when **RG.2** lands.
+
+### Next
+
+- Production smoke test for 1.5.12; then 1.5.9 edit/soft-delete on a branch + PR.
+
+### AI Notes
+
+- Cursor: governance docs only; no GitHub settings changed from repo.
+
+---
+
 ## 2026-10-09 — measurement calendar-date fix (1.5.12)
 
 ### Completed

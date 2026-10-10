@@ -13,4 +13,6 @@
 
 Slice tickets, mockups, and brand live beside this pack. They do not override it.
 
+**Git workflow:** branch + PR into `main` (no direct pushes). Deferred GitHub ruleset/CI tickets: [vertical_slices/repo_governance/](./vertical_slices/repo_governance/).
+
 **Rule:** If code, a chat, or a slice README disagrees with the pack, update the pack (and log the change) before continuing implementation.

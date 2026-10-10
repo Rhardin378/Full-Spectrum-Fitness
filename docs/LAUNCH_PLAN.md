@@ -39,6 +39,8 @@ Do not skip Slice 1.5. Measurements are the first longitudinal time-series in th
 
 Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_1_5_measurements/`](./vertical_slices/slice_1_5_measurements/).
 
+**Repo governance (parallel, deferred):** use **branch + PR** for every merge to `main` now. Schedule a focused session for GitHub ruleset + CI after the next few Slice 1.5 tickets — see [`docs/vertical_slices/repo_governance/tickets.md`](./vertical_slices/repo_governance/tickets.md) (**RG.1**, **RG.2**).
+
 ---
 
 ## Product thesis (locked)

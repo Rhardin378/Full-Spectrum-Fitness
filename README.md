@@ -136,11 +136,14 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you'd like to contribute:
+**`main` is protected:** merge via pull request only — do not push directly to `main`.
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Submit a pull request with a detailed description.
+1. Fork the repository (if external) or create a branch from `main`.
+2. Implement on a feature branch (e.g. `feature/my-change` or `cursor/my-change`).
+3. Run `npm test` locally; open a PR with a clear description.
+4. Merge on GitHub after review (self-merge is fine for solo work).
+
+Repo ruleset hardening (CI, required checks) is tracked in [`docs/vertical_slices/repo_governance/`](./docs/vertical_slices/repo_governance/).
 
 ---
 
