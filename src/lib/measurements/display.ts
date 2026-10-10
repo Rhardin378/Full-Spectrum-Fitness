@@ -1,4 +1,10 @@
+import {
+  formatCalendarDate,
+  todayLocalISODate,
+} from "@/lib/measurements/calendar-date";
 import type { MeasurementType, MeasurementUnit } from "@/lib/types/measurement";
+
+export { formatCalendarDate, todayLocalISODate };
 
 export function measurementTypeLabel(type: MeasurementType): string {
   return type === "weight" ? "Weight" : "Waist";
@@ -12,20 +18,13 @@ export function formatMeasurementValue(value: number, unit: MeasurementUnit): st
   return `${formatted} ${unit}`;
 }
 
-export function formatMeasuredAtDisplay(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return iso;
-  }
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+export function formatMeasuredOnDisplay(isoDate: string): string {
+  return formatCalendarDate(isoDate);
 }
 
+/** Date-input value for the user's local calendar today. */
 export function toDateInputValue(date: Date = new Date()): string {
-  return date.toISOString().slice(0, 10);
+  return todayLocalISODate(date);
 }
 
 export function parsePositiveDecimal(value: string): number | null {

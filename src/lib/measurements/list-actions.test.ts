@@ -21,6 +21,7 @@ type MeasurementRow = {
   measurement_type: string;
   value: number | string;
   unit: string;
+  measured_on: string;
   measured_at: string;
   notes: string | null;
   created_at: string;
@@ -36,7 +37,8 @@ function makeMeasurementRow(
     measurement_type: "weight",
     value: "175.50",
     unit: "lb",
-    measured_at: "2026-09-23T08:00:00.000Z",
+    measured_on: "2026-09-23",
+    measured_at: "2026-09-23T00:00:00.000Z",
     notes: null,
     created_at: "2026-09-23T08:05:00.000Z",
     updated_at: "2026-09-23T08:05:00.000Z",
@@ -105,7 +107,6 @@ const DEFAULT_FILTER_KEY = JSON.stringify({
   measurement_type: null,
   start_date: null,
   end_date: null,
-  end_date_is_date_only: null,
 });
 
 describe("listMeasurements", () => {
@@ -134,7 +135,8 @@ describe("listMeasurements", () => {
         measurement_type: "waist",
         value: "32.25",
         unit: "in",
-        measured_at: "2026-09-22T08:00:00.000Z",
+        measured_on: "2026-09-22",
+        measured_at: "2026-09-22T00:00:00.000Z",
       }),
     ];
     const testClient = makeListClient(
@@ -152,15 +154,14 @@ describe("listMeasurements", () => {
         "measurement-2",
       ]);
       expect(result.measurements[0].value).toBe(175.5);
+      expect(result.measurements[0].measured_on).toBe("2026-09-23");
       expect(result.has_more).toBe(false);
       expect(result.next_cursor).toBeNull();
     }
     expect(testClient.spies.eq).toHaveBeenCalledWith("user_id", "user-1");
-    expect(testClient.spies.order).toHaveBeenNthCalledWith(
-      1,
-      "measured_at",
-      { ascending: false },
-    );
+    expect(testClient.spies.order).toHaveBeenNthCalledWith(1, "measured_on", {
+      ascending: false,
+    });
     expect(testClient.spies.order).toHaveBeenNthCalledWith(2, "created_at", {
       ascending: false,
     });
@@ -174,17 +175,17 @@ describe("listMeasurements", () => {
     const rows = [
       makeMeasurementRow({
         id: "11111111-1111-4111-8111-111111111111",
-        measured_at: "2026-09-23T08:00:00.000Z",
+        measured_on: "2026-09-23",
         created_at: "2026-09-23T08:06:00.000Z",
       }),
       makeMeasurementRow({
         id: "22222222-2222-4222-8222-222222222222",
-        measured_at: "2026-09-23T08:00:00.000Z",
+        measured_on: "2026-09-23",
         created_at: "2026-09-23T08:05:00.000Z",
       }),
       makeMeasurementRow({
         id: "33333333-3333-4333-8333-333333333333",
-        measured_at: "2026-09-22T08:00:00.000Z",
+        measured_on: "2026-09-22",
       }),
     ];
     const firstClient = makeListClient(
@@ -201,6 +202,8 @@ describe("listMeasurements", () => {
     expect(firstPage.has_more).toBe(true);
     expect(firstPage.next_cursor).not.toBeNull();
     expect(decodeMeasurementCursor(firstPage.next_cursor!)).toMatchObject({
+      version: 2,
+      measured_on: "2026-09-23",
       id: "22222222-2222-4222-8222-222222222222",
       sort_order: "newest",
       filter_key: DEFAULT_FILTER_KEY,
@@ -228,9 +231,9 @@ describe("listMeasurements", () => {
     }
     expect(secondClient.spies.or).toHaveBeenCalledWith(
       [
-        "measured_at.lt.2026-09-23T08:00:00.000Z",
-        "and(measured_at.eq.2026-09-23T08:00:00.000Z,created_at.lt.2026-09-23T08:05:00.000Z)",
-        "and(measured_at.eq.2026-09-23T08:00:00.000Z,created_at.eq.2026-09-23T08:05:00.000Z,id.lt.22222222-2222-4222-8222-222222222222)",
+        "measured_on.lt.2026-09-23",
+        "and(measured_on.eq.2026-09-23,created_at.lt.2026-09-23T08:05:00.000Z)",
+        "and(measured_on.eq.2026-09-23,created_at.eq.2026-09-23T08:05:00.000Z,id.lt.22222222-2222-4222-8222-222222222222)",
       ].join(","),
     );
   });
@@ -239,7 +242,7 @@ describe("listMeasurements", () => {
     const cursor = encodeMeasurementCursor(
       {
         id: "11111111-1111-4111-8111-111111111111",
-        measured_at: "2026-09-23T08:00:00.000Z",
+        measured_on: "2026-09-23",
         created_at: "2026-09-23T08:05:00.000Z",
       },
       "oldest",
@@ -255,7 +258,7 @@ describe("listMeasurements", () => {
 
     expect(result.success).toBe(true);
     expect(testClient.spies.or).toHaveBeenCalledWith(
-      expect.stringContaining("measured_at.gt."),
+      expect.stringContaining("measured_on.gt."),
     );
   });
 
@@ -263,7 +266,7 @@ describe("listMeasurements", () => {
     const cursor = encodeMeasurementCursor(
       {
         id: "11111111-1111-4111-8111-111111111111",
-        measured_at: "2026-09-23T08:00:00.000Z",
+        measured_on: "2026-09-23",
         created_at: "2026-09-23T08:05:00.000Z",
       },
       "newest",
@@ -287,7 +290,7 @@ describe("listMeasurements", () => {
     expect(testClient.spies.from).not.toHaveBeenCalled();
   });
 
-  it("applies type, date-only range, and oldest-first filters", async () => {
+  it("applies type and inclusive calendar-date range filters", async () => {
     const testClient = makeListClient({ id: "user-1" });
     createClientMock.mockResolvedValueOnce(testClient.client);
 
@@ -304,35 +307,17 @@ describe("listMeasurements", () => {
       "weight",
     );
     expect(testClient.spies.gte).toHaveBeenCalledWith(
-      "measured_at",
-      "2026-09-01T00:00:00.000Z",
+      "measured_on",
+      "2026-09-01",
     );
-    expect(testClient.spies.lt).toHaveBeenCalledWith(
-      "measured_at",
-      "2026-10-01T00:00:00.000Z",
-    );
-    expect(testClient.spies.lte).not.toHaveBeenCalled();
-    expect(testClient.spies.order).toHaveBeenNthCalledWith(
-      1,
-      "measured_at",
-      { ascending: true },
-    );
-  });
-
-  it("uses an inclusive end bound for an exact date-time", async () => {
-    const testClient = makeListClient({ id: "user-1" });
-    createClientMock.mockResolvedValueOnce(testClient.client);
-
-    const result = await listMeasurements({
-      end_date: "2026-09-23T17:00:00-04:00",
-    });
-
-    expect(result.success).toBe(true);
     expect(testClient.spies.lte).toHaveBeenCalledWith(
-      "measured_at",
-      "2026-09-23T21:00:00.000Z",
+      "measured_on",
+      "2026-09-30",
     );
     expect(testClient.spies.lt).not.toHaveBeenCalled();
+    expect(testClient.spies.order).toHaveBeenNthCalledWith(1, "measured_on", {
+      ascending: true,
+    });
   });
 
   it("returns field errors without querying invalid filters", async () => {

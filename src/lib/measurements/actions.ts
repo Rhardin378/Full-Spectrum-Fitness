@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { calendarDateToUtcMidnight } from "@/lib/measurements/calendar-date";
 import { normalizeMeasurement } from "@/lib/measurements/normalize";
 import {
   decodeMeasurementCursor,
@@ -42,7 +43,7 @@ export type ListMeasurementsResult =
     };
 
 const MEASUREMENT_COLUMNS =
-  "id, user_id, measurement_type, value, unit, measured_at, notes, created_at, updated_at";
+  "id, user_id, measurement_type, value, unit, measured_on, measured_at, notes, created_at, updated_at";
 
 function buildMeasurementCursorFilter(
   cursor: MeasurementCursor,
@@ -51,9 +52,9 @@ function buildMeasurementCursorFilter(
   const operator = ascending ? "gt" : "lt";
 
   return [
-    `measured_at.${operator}.${cursor.measured_at}`,
-    `and(measured_at.eq.${cursor.measured_at},created_at.${operator}.${cursor.created_at})`,
-    `and(measured_at.eq.${cursor.measured_at},created_at.eq.${cursor.created_at},id.${operator}.${cursor.id})`,
+    `measured_on.${operator}.${cursor.measured_on}`,
+    `and(measured_on.eq.${cursor.measured_on},created_at.${operator}.${cursor.created_at})`,
+    `and(measured_on.eq.${cursor.measured_on},created_at.eq.${cursor.created_at},id.${operator}.${cursor.id})`,
   ].join(",");
 }
 
@@ -95,7 +96,8 @@ export async function createMeasurement(
       measurement_type: parsed.data.measurement_type,
       value: parsed.data.value,
       unit: parsed.data.unit,
-      measured_at: parsed.data.measured_at,
+      measured_on: parsed.data.measured_on,
+      measured_at: calendarDateToUtcMidnight(parsed.data.measured_on),
       notes: parsed.data.notes ?? null,
     })
     .select(MEASUREMENT_COLUMNS)
@@ -148,9 +150,8 @@ export async function listMeasurements(
 
   const filterKey = JSON.stringify({
     measurement_type: parsed.data.measurement_type ?? null,
-    start_date: parsed.data.start_date?.value ?? null,
-    end_date: parsed.data.end_date?.value ?? null,
-    end_date_is_date_only: parsed.data.end_date?.dateOnly ?? null,
+    start_date: parsed.data.start_date ?? null,
+    end_date: parsed.data.end_date ?? null,
   });
   const cursor = parsed.data.cursor
     ? decodeMeasurementCursor(parsed.data.cursor)
@@ -181,13 +182,11 @@ export async function listMeasurements(
   }
 
   if (parsed.data.start_date) {
-    query = query.gte("measured_at", parsed.data.start_date.value);
+    query = query.gte("measured_on", parsed.data.start_date);
   }
 
   if (parsed.data.end_date) {
-    query = parsed.data.end_date.dateOnly
-      ? query.lt("measured_at", parsed.data.end_date.value)
-      : query.lte("measured_at", parsed.data.end_date.value);
+    query = query.lte("measured_on", parsed.data.end_date);
   }
 
   const ascending = parsed.data.sort_order === "oldest";
@@ -196,7 +195,7 @@ export async function listMeasurements(
   }
 
   const { data: measurements, error: selectError } = await query
-    .order("measured_at", { ascending })
+    .order("measured_on", { ascending })
     .order("created_at", { ascending })
     .order("id", { ascending })
     .limit(parsed.data.page_size + 1);

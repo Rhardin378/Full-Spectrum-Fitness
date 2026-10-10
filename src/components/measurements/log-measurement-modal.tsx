@@ -45,7 +45,7 @@ export function LogMeasurementModal({
     useState<MeasurementType>("weight");
   const [unit, setUnit] = useState<MeasurementUnit>("lb");
   const [valueInput, setValueInput] = useState("");
-  const [measuredAt, setMeasuredAt] = useState(() => toDateInputValue());
+  const [measuredOn, setMeasuredOn] = useState(() => toDateInputValue());
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -101,8 +101,8 @@ export function LogMeasurementModal({
       return;
     }
 
-    if (!measuredAt.trim()) {
-      setFieldErrors({ measured_at: "Measurement date is required." });
+    if (!measuredOn.trim()) {
+      setFieldErrors({ measured_on: "Measurement date is required." });
       return;
     }
 
@@ -112,7 +112,7 @@ export function LogMeasurementModal({
       measurement_type: measurementType,
       value: parsedValue,
       unit,
-      measured_at: measuredAt,
+      measured_on: measuredOn,
       notes: notes.trim() ? notes : null,
     });
 
@@ -284,14 +284,14 @@ export function LogMeasurementModal({
             <input
               id={`${titleId}-date`}
               type="date"
-              value={measuredAt}
-              onChange={(event) => setMeasuredAt(event.target.value)}
-              aria-invalid={Boolean(fieldErrors.measured_at)}
+              value={measuredOn}
+              onChange={(event) => setMeasuredOn(event.target.value)}
+              aria-invalid={Boolean(fieldErrors.measured_on)}
               className="w-full rounded-[10px] border border-black/10 bg-surface-card px-3.5 py-3 text-[15px] text-text-primary outline-none focus:border-brand-coral focus:ring-2 focus:ring-brand-coral/25"
             />
-            {fieldErrors.measured_at ? (
+            {fieldErrors.measured_on ? (
               <p className="mt-1.5 text-sm text-brand-coral-deep">
-                {fieldErrors.measured_at}
+                {fieldErrors.measured_on}
               </p>
             ) : null}
           </div>

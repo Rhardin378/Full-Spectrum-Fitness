@@ -6,39 +6,20 @@ import {
   WAIST_UNITS,
   WEIGHT_UNITS,
 } from "@/lib/types/measurement";
+import {
+  isValidCalendarDate,
+  maxAllowedMeasuredOn,
+} from "@/lib/measurements/calendar-date";
 import { decodeMeasurementCursor } from "@/lib/measurements/pagination";
 
-const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const ISO_DATETIME_PATTERN =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
-
-function isValidMeasuredAt(value: string): boolean {
-  if (DATE_ONLY_PATTERN.test(value)) {
-    const date = new Date(`${value}T00:00:00.000Z`);
-    return (
-      !Number.isNaN(date.getTime()) &&
-      date.toISOString().slice(0, 10) === value
-    );
-  }
-
-  return (
-    ISO_DATETIME_PATTERN.test(value) &&
-    !Number.isNaN(new Date(value).getTime())
-  );
-}
-
-const measuredAtSchema = z
+const measuredOnSchema = z
   .string({ message: "Measurement date must be a string." })
   .trim()
   .min(1, "Measurement date is required.")
+  .refine(isValidCalendarDate, "Enter a valid calendar date (YYYY-MM-DD).")
   .refine(
-    isValidMeasuredAt,
-    "Enter a valid date or ISO date-time with a timezone.",
-  )
-  .transform((value) =>
-    new Date(
-      DATE_ONLY_PATTERN.test(value) ? `${value}T00:00:00.000Z` : value,
-    ).toISOString(),
+    (value) => value <= maxAllowedMeasuredOn(),
+    "Measurement date cannot be in the future.",
   );
 
 const notesSchema = z.preprocess(
@@ -54,29 +35,11 @@ const notesSchema = z.preprocess(
     .optional(),
 );
 
-function dateFilterSchema(boundary: "start" | "end") {
-  return z
-    .string({ message: "Date filter must be a string." })
-    .trim()
-    .min(1, "Date filter cannot be empty.")
-    .refine(
-      isValidMeasuredAt,
-      "Enter a valid date or ISO date-time with a timezone.",
-    )
-    .transform((value) => {
-      const dateOnly = DATE_ONLY_PATTERN.test(value);
-      const date = new Date(dateOnly ? `${value}T00:00:00.000Z` : value);
-
-      if (dateOnly && boundary === "end") {
-        date.setUTCDate(date.getUTCDate() + 1);
-      }
-
-      return {
-        value: date.toISOString(),
-        dateOnly,
-      };
-    });
-}
+const dateFilterSchema = z
+  .string({ message: "Date filter must be a string." })
+  .trim()
+  .min(1, "Date filter cannot be empty.")
+  .refine(isValidCalendarDate, "Enter a valid calendar date (YYYY-MM-DD).");
 
 export const createMeasurementSchema = z
   .object({
@@ -95,7 +58,7 @@ export const createMeasurementSchema = z
     unit: z.enum(MEASUREMENT_UNITS, {
       message: "Unit must be lb, kg, in, or cm.",
     }),
-    measured_at: measuredAtSchema,
+    measured_on: measuredOnSchema,
     notes: notesSchema,
   })
   .strict()
@@ -122,8 +85,8 @@ export const listMeasurementsSchema = z
         message: "Measurement type must be weight or waist.",
       })
       .optional(),
-    start_date: dateFilterSchema("start").optional(),
-    end_date: dateFilterSchema("end").optional(),
+    start_date: dateFilterSchema.optional(),
+    end_date: dateFilterSchema.optional(),
     sort_order: z
       .enum(MEASUREMENT_SORT_ORDERS, {
         message: "Sort order must be newest or oldest.",
@@ -149,13 +112,7 @@ export const listMeasurementsSchema = z
   .superRefine((input, context) => {
     if (!input.start_date || !input.end_date) return;
 
-    const startTime = new Date(input.start_date.value).getTime();
-    const endTime = new Date(input.end_date.value).getTime();
-    const rangeIsInvalid = input.end_date.dateOnly
-      ? startTime >= endTime
-      : startTime > endTime;
-
-    if (rangeIsInvalid) {
+    if (input.start_date > input.end_date) {
       context.addIssue({
         code: "custom",
         message: "End date must be on or after start date.",

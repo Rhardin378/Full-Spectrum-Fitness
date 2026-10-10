@@ -17,6 +17,7 @@ type MeasurementRow = {
   measurement_type: string;
   value: number | string;
   unit: string;
+  measured_on: string;
   measured_at: string;
   notes: string | null;
   created_at: string;
@@ -32,6 +33,7 @@ function makeMeasurementRow(
     measurement_type: "weight",
     value: "175.50",
     unit: "lb",
+    measured_on: "2026-09-23",
     measured_at: "2026-09-23T00:00:00.000Z",
     notes: null,
     created_at: "2026-09-23T15:00:00.000Z",
@@ -79,7 +81,7 @@ describe("createMeasurement", () => {
       measurement_type: "weight",
       value: 175,
       unit: "lb",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     });
 
     expect(result).toMatchObject({
@@ -95,7 +97,7 @@ describe("createMeasurement", () => {
         measurement_type: "weight",
         value: 175.5,
         unit: "lb",
-        measured_at: "2026-09-23",
+        measured_on: "2026-09-23",
       } satisfies CreateMeasurementInput,
       row: makeMeasurementRow(),
     },
@@ -104,14 +106,14 @@ describe("createMeasurement", () => {
         measurement_type: "waist",
         value: 32.25,
         unit: "in",
-        measured_at: "2026-09-23T08:30:00Z",
+        measured_on: "2026-09-23",
         notes: "Morning",
       } satisfies CreateMeasurementInput,
       row: makeMeasurementRow({
         measurement_type: "waist",
         value: "32.25",
         unit: "in",
-        measured_at: "2026-09-23T08:30:00.000Z",
+        measured_on: "2026-09-23",
         notes: "Morning",
       }),
     },
@@ -131,6 +133,7 @@ describe("createMeasurement", () => {
         measurement_type: input.measurement_type,
         value: input.value,
         unit: input.unit,
+        measured_on: "2026-09-23",
       });
       expect(typeof result.measurement.value).toBe("number");
     }
@@ -141,10 +144,8 @@ describe("createMeasurement", () => {
       measurement_type: input.measurement_type,
       value: input.value,
       unit: input.unit,
-      measured_at:
-        input.measurement_type === "weight"
-          ? "2026-09-23T00:00:00.000Z"
-          : "2026-09-23T08:30:00.000Z",
+      measured_on: "2026-09-23",
+      measured_at: "2026-09-23T00:00:00.000Z",
       notes: input.notes ?? null,
     });
   });
@@ -157,7 +158,7 @@ describe("createMeasurement", () => {
       measurement_type: "weight",
       value: -1,
       unit: "cm",
-      measured_at: "not-a-date",
+      measured_on: "not-a-date",
     } as CreateMeasurementInput);
 
     expect(result.success).toBe(false);
@@ -166,7 +167,7 @@ describe("createMeasurement", () => {
       expect(result.fieldErrors).toMatchObject({
         value: "Value must be greater than zero.",
         unit: "Weight unit must be lb or kg.",
-        measured_at: "Enter a valid date or ISO date-time with a timezone.",
+        measured_on: "Enter a valid calendar date (YYYY-MM-DD).",
       });
     }
     expect(testClient.spies.from).not.toHaveBeenCalled();
@@ -180,7 +181,7 @@ describe("createMeasurement", () => {
       measurement_type: "height",
       value: 70,
       unit: "in",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     } as unknown as CreateMeasurementInput);
 
     expect(result.success).toBe(false);
@@ -202,7 +203,7 @@ describe("createMeasurement", () => {
       measurement_type: "weight",
       value: 175,
       unit: "lb",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     } as unknown as CreateMeasurementInput);
 
     expect(result.success).toBe(false);
@@ -223,7 +224,7 @@ describe("createMeasurement", () => {
       measurement_type: "weight",
       value: 175,
       unit: "kg",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     });
 
     expect(result).toEqual({

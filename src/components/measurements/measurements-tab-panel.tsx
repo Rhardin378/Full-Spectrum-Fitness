@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { listMeasurements } from "@/lib/measurements/actions";
 import {
-  formatMeasuredAtDisplay,
+  formatMeasuredOnDisplay,
   formatMeasurementValue,
   measurementTypeLabel,
 } from "@/lib/measurements/display";
@@ -202,7 +202,7 @@ export function MeasurementsTabPanel({
                       {measurementTypeLabel(entry.measurement_type)}
                     </p>
                     <p className="text-sm text-text-muted">
-                      {formatMeasuredAtDisplay(entry.measured_at)}
+                      {formatMeasuredOnDisplay(entry.measured_on)}
                     </p>
                     {entry.notes ? (
                       <p className="mt-1 text-sm text-text-muted">

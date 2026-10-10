@@ -29,6 +29,33 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-09 — measurement calendar-date fix (1.5.12)
+
+### Completed
+
+- Added `measured_on date` (backfill from UTC `measured_at`) so history, filters, and the date picker keep the calendar day the user chose.
+- Create/list/trend now read and write `measured_on`. Pagination cursors are version 2.
+- Future-date limit stays in Zod (no `current_date` CHECK). Tests cover Chicago, Auckland, and UTC calendar conversion.
+
+### Decisions
+
+- Calendar date is the product field. `measured_at` remains UTC midnight of that date for compatibility.
+- Date-only input only (`YYYY-MM-DD`); ISO date-times are rejected on create/list filters.
+
+### Issues
+
+- Migration must be applied to the linked Supabase project (`npm run db:push` via pooler if IPv6 is blocked).
+- Edit/soft-delete (1.5.9–1.5.11) still not started.
+
+### Next
+
+- Apply the `measured_on` migration in dev, then 1.5.9 update/soft-delete.
+
+### AI Notes
+
+- Cursor Grok implemented ticket 1.5.12 only (option B). Next.js upgrade still deferred.
+
+
 ## 2026-10-05 — audit context closeout
 
 ### Completed

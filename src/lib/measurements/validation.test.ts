@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createMeasurementSchema,
   formatMeasurementValidationErrors,
@@ -6,36 +6,74 @@ import {
 } from "@/lib/measurements/validation";
 
 describe("createMeasurementSchema", () => {
-  it("normalizes valid weight input", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("keeps a date-only log as the same calendar day", () => {
     const result = createMeasurementSchema.safeParse({
       measurement_type: "weight",
       value: 175.5,
       unit: "lb",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
       notes: "  Morning reading  ",
     });
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.measured_at).toBe("2026-09-23T00:00:00.000Z");
+      expect(result.data.measured_on).toBe("2026-09-23");
       expect(result.data.notes).toBe("Morning reading");
     }
   });
 
-  it("accepts and normalizes a valid waist date-time", () => {
+  it("rejects ISO date-times; calendar dates only", () => {
     const result = createMeasurementSchema.safeParse({
       measurement_type: "waist",
       value: 82.25,
       unit: "cm",
-      measured_at: "2026-09-23T08:30:00-04:00",
+      measured_on: "2026-09-23T08:30:00-04:00",
       notes: "",
     });
 
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.measured_at).toBe("2026-09-23T12:30:00.000Z");
-      expect(result.data.notes).toBeNull();
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        formatMeasurementValidationErrors(result.error).measured_on,
+      ).toBe("Enter a valid calendar date (YYYY-MM-DD).");
     }
+  });
+
+  it("rejects dates more than one day past UTC today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-04T18:00:00.000Z"));
+
+    const result = createMeasurementSchema.safeParse({
+      measurement_type: "weight",
+      value: 175,
+      unit: "lb",
+      measured_on: "2026-10-06",
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(
+        formatMeasurementValidationErrors(result.error).measured_on,
+      ).toBe("Measurement date cannot be in the future.");
+    }
+  });
+
+  it("allows UTC tomorrow to cover timezone lag", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-04T18:00:00.000Z"));
+
+    const result = createMeasurementSchema.safeParse({
+      measurement_type: "weight",
+      value: 175,
+      unit: "lb",
+      measured_on: "2026-10-05",
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it.each([
@@ -46,7 +84,7 @@ describe("createMeasurementSchema", () => {
       measurement_type: type,
       value: 100,
       unit,
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     });
 
     expect(result.success).toBe(false);
@@ -67,7 +105,7 @@ describe("createMeasurementSchema", () => {
       measurement_type: "weight",
       value,
       unit: "lb",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     });
 
     expect(result.success).toBe(false);
@@ -78,26 +116,24 @@ describe("createMeasurementSchema", () => {
     }
   });
 
-  it.each([
-    "not-a-date",
-    "2026-02-30",
-    "2026-09-23T08:30:00",
-    "",
-  ])("rejects invalid or ambiguous date %s", (measuredAt) => {
-    const result = createMeasurementSchema.safeParse({
-      measurement_type: "weight",
-      value: 175,
-      unit: "lb",
-      measured_at: measuredAt,
-    });
+  it.each(["not-a-date", "2026-02-30", "2026-09-23T08:30:00", ""])(
+    "rejects invalid or ambiguous date %s",
+    (measuredOn) => {
+      const result = createMeasurementSchema.safeParse({
+        measurement_type: "weight",
+        value: 175,
+        unit: "lb",
+        measured_on: measuredOn,
+      });
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(
-        formatMeasurementValidationErrors(result.error).measured_at,
-      ).toBeTruthy();
-    }
-  });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(
+          formatMeasurementValidationErrors(result.error).measured_on,
+        ).toBeTruthy();
+      }
+    },
+  );
 
   it("rejects a caller-supplied user_id", () => {
     const result = createMeasurementSchema.safeParse({
@@ -105,7 +141,7 @@ describe("createMeasurementSchema", () => {
       measurement_type: "weight",
       value: 175,
       unit: "lb",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
     });
 
     expect(result.success).toBe(false);
@@ -116,7 +152,7 @@ describe("createMeasurementSchema", () => {
       measurement_type: "waist",
       value: 32,
       unit: "in",
-      measured_at: "2026-09-23",
+      measured_on: "2026-09-23",
       notes: "x".repeat(501),
     });
 
@@ -142,7 +178,7 @@ describe("listMeasurementsSchema", () => {
     }
   });
 
-  it("normalizes type, date-only bounds, and oldest-first sorting", () => {
+  it("keeps date-only bounds as calendar dates, inclusive", () => {
     const result = listMeasurementsSchema.safeParse({
       measurement_type: "weight",
       start_date: "2026-09-01",
@@ -154,35 +190,10 @@ describe("listMeasurementsSchema", () => {
     if (result.success) {
       expect(result.data).toEqual({
         measurement_type: "weight",
-        start_date: {
-          value: "2026-09-01T00:00:00.000Z",
-          dateOnly: true,
-        },
-        end_date: {
-          value: "2026-10-01T00:00:00.000Z",
-          dateOnly: true,
-        },
+        start_date: "2026-09-01",
+        end_date: "2026-09-30",
         sort_order: "oldest",
         page_size: 25,
-      });
-    }
-  });
-
-  it("keeps date-time end bounds inclusive", () => {
-    const result = listMeasurementsSchema.safeParse({
-      start_date: "2026-09-23T08:00:00-04:00",
-      end_date: "2026-09-23T17:00:00-04:00",
-    });
-
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.start_date).toEqual({
-        value: "2026-09-23T12:00:00.000Z",
-        dateOnly: false,
-      });
-      expect(result.data.end_date).toEqual({
-        value: "2026-09-23T21:00:00.000Z",
-        dateOnly: false,
       });
     }
   });
@@ -191,6 +202,7 @@ describe("listMeasurementsSchema", () => {
     [{ measurement_type: "height" }, "measurement_type"],
     [{ sort_order: "largest" }, "sort_order"],
     [{ start_date: "not-a-date" }, "start_date"],
+    [{ start_date: "2026-09-23T08:00:00Z" }, "start_date"],
     [{ page_size: 0 }, "page_size"],
     [{ page_size: 101 }, "page_size"],
     [{ page_size: 1.5 }, "page_size"],

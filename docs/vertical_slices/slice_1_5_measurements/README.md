@@ -59,7 +59,7 @@ Non-Measurements tabs may appear as disabled placeholders (“Coming soon”) or
 ## Core Scope
 
 - Create `measurements` model/table linked to authenticated user.
-- Support core fields: `measurement_type`, `value`, `unit`, `measured_at`, optional `notes`.
+- Support core fields: `measurement_type`, `value`, `unit`, `measured_on` (calendar date), `measured_at` (compat timestamp), optional `notes`.
 - Constrain allowed types to `weight` and `waist`, with matching units above.
 - Build owner-scoped create and list backend actions/endpoints.
 - Evolve `/dashboard` from the Slice 1 placeholder into the light shell above, with Measurements as the working tab.
@@ -75,7 +75,7 @@ Tracked in [`tickets.md`](./tickets.md):
 | **1.5.9** | Backend: `updateMeasurement`, `softDeleteMeasurement`, `deleted_at` migration, RLS `UPDATE`, list excludes deleted |
 | **1.5.10** | UI: Edit / Delete on Recent history; edit via log modal; delete confirm dialog |
 | **1.5.11** | Automated tests for update, soft delete, and list behavior |
-| **1.5.12** | P0 bug: calendar dates stored as UTC midnight and shown local — US timezones can display the wrong day |
+| **1.5.12** | Calendar date field `measured_on` — log/history/trend use the day the user chose, not UTC midnight |
 
 Hard delete is intentionally out of scope; soft delete preserves auditability and simplifies RLS (update-only).
 

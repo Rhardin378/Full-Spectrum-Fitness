@@ -14,6 +14,9 @@ export type Measurement = {
   measurement_type: MeasurementType;
   value: number;
   unit: MeasurementUnit;
+  /** User-chosen calendar date (YYYY-MM-DD). */
+  measured_on: string;
+  /** UTC timestamp kept in sync as midnight of measured_on. */
   measured_at: string;
   notes: string | null;
   created_at: string;
@@ -24,7 +27,7 @@ export type CreateMeasurementInput = {
   measurement_type: MeasurementType;
   value: number;
   unit: MeasurementUnit;
-  measured_at: string;
+  measured_on: string;
   notes?: string | null;
 };
 

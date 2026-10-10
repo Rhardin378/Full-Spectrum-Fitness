@@ -492,7 +492,7 @@ This is the highest user-visible bug on the only shipped measurements feature. E
 
 **Recommended approach** (from `docs/AI_ENGINEERING_CONTEXT.md`; not locked architecture — change the implementation if a simpler local-date design is cleaner, but keep calendar dates stable):
 
-- Migration: add `measured_on date`, backfill from `(measured_at at time zone 'UTC')::date`, `NOT NULL` + future-date check + index `(user_id, measured_on desc, created_at desc, id desc)`.
+- Migration: add `measured_on date`, backfill from `(measured_at at time zone 'UTC')::date`, `NOT NULL` + index `(user_id, measured_on desc, created_at desc, id desc)`. Future-date limits stay in Zod (`current_date` is not a safe CHECK).
 - Zod: strict `YYYY-MM-DD`; reject dates more than 1 day past UTC today.
 - Shared helpers: `todayLocalISODate()`, `formatCalendarDate()` with `timeZone: "UTC"` (or equivalent) so display never shifts.
 - Bump pagination cursor version to use `measured_on`.

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatMeasuredOnDisplay,
   formatMeasurementValue,
   measurementTypeLabel,
   parsePositiveDecimal,
+  toDateInputValue,
 } from "@/lib/measurements/display";
+import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 
 describe("measurement display helpers", () => {
   it("labels measurement types", () => {
@@ -22,5 +25,14 @@ describe("measurement display helpers", () => {
     expect(parsePositiveDecimal("-1")).toBeNull();
     expect(parsePositiveDecimal("1.234")).toBeNull();
     expect(parsePositiveDecimal("")).toBeNull();
+  });
+
+  it("displays a calendar date without shifting the day", () => {
+    expect(formatMeasuredOnDisplay("2026-10-04")).toBe("Oct 4, 2026");
+  });
+
+  it("defaults the date picker to local today, not UTC today", () => {
+    const eveningUtc = new Date("2026-10-05T00:30:00.000Z");
+    expect(toDateInputValue(eveningUtc)).toBe(todayLocalISODate(eveningUtc));
   });
 });

@@ -535,7 +535,7 @@ Auth users live in Supabase Auth (`auth.users`). Application tables use `user_id
 
 **profiles** — `user_id`, `display_name`, `fitness_goal`, `wellness_goal`, `experience_level`, `sharing_preferences`, `domain_priorities`, timestamps.
 
-**measurements** — `user_id`, `measurement_type` (`weight` | `waist`), `value`, `unit`, `measured_at`, `notes`, timestamps; soft-delete via `deleted_at` per Slice 1.5 follow-up tickets.
+**measurements** — `user_id`, `measurement_type` (`weight` | `waist`), `value`, `unit`, `measured_on` (calendar date), `measured_at` (UTC midnight of that date), `notes`, timestamps; soft-delete via `deleted_at` per Slice 1.5 follow-up tickets.
 
 ### Phase 1 planned
 

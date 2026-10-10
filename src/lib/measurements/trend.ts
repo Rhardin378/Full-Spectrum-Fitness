@@ -1,10 +1,14 @@
-import { toDateInputValue } from "@/lib/measurements/display";
+import {
+  addUtcCalendarDays,
+  calendarDateTimestamp,
+  todayLocalISODate,
+} from "@/lib/measurements/calendar-date";
 import type { Measurement, MeasurementUnit } from "@/lib/types/measurement";
 
 export type WeightTrendPoint = {
   id: string;
   value: number;
-  measuredAt: string;
+  measuredOn: string;
   timestamp: number;
 };
 
@@ -18,24 +22,20 @@ export type WeightTrendSummary =
       delta: number | null;
     };
 
-/** Rolling 30 calendar days inclusive (today and prior 29 days), UTC date strings. */
+/** Rolling 30 local calendar days inclusive (today and prior 29 days). */
 export function getWeightTrendDateRange(referenceDate: Date = new Date()): {
   start_date: string;
   end_date: string;
 } {
-  const end = new Date(referenceDate);
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 29);
-
+  const end = todayLocalISODate(referenceDate);
   return {
-    start_date: toDateInputValue(start),
-    end_date: toDateInputValue(end),
+    start_date: addUtcCalendarDays(end, -29),
+    end_date: end,
   };
 }
 
 function compareMeasurementsAsc(a: Measurement, b: Measurement): number {
-  const measuredDiff =
-    new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime();
+  const measuredDiff = a.measured_on.localeCompare(b.measured_on);
   if (measuredDiff !== 0) {
     return measuredDiff;
   }
@@ -92,8 +92,8 @@ export function buildWeightTrendSummary(
     .map((entry) => ({
       id: entry.id,
       value: entry.value,
-      measuredAt: entry.measured_at,
-      timestamp: new Date(entry.measured_at).getTime(),
+      measuredOn: entry.measured_on,
+      timestamp: calendarDateTimestamp(entry.measured_on),
     }));
 
   if (points.length === 0) {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidCalendarDate } from "@/lib/measurements/calendar-date";
 import {
   MEASUREMENT_SORT_ORDERS,
   type Measurement,
@@ -12,11 +13,10 @@ const UUID_PATTERN =
 
 const measurementCursorSchema = z
   .object({
-    version: z.literal(1),
-    measured_at: z
+    version: z.literal(2),
+    measured_on: z
       .string()
-      .regex(ISO_TIMESTAMP_PATTERN)
-      .refine((value) => !Number.isNaN(new Date(value).getTime())),
+      .refine(isValidCalendarDate, "measured_on must be YYYY-MM-DD."),
     created_at: z
       .string()
       .regex(ISO_TIMESTAMP_PATTERN)
@@ -30,13 +30,13 @@ const measurementCursorSchema = z
 export type MeasurementCursor = z.infer<typeof measurementCursorSchema>;
 
 export function encodeMeasurementCursor(
-  measurement: Pick<Measurement, "id" | "measured_at" | "created_at">,
+  measurement: Pick<Measurement, "id" | "measured_on" | "created_at">,
   sortOrder: MeasurementSortOrder,
   filterKey: string,
 ): string {
   const cursor: MeasurementCursor = {
-    version: 1,
-    measured_at: new Date(measurement.measured_at).toISOString(),
+    version: 2,
+    measured_on: measurement.measured_on,
     created_at: new Date(measurement.created_at).toISOString(),
     id: measurement.id,
     sort_order: sortOrder,

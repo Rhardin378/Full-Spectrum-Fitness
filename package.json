@@ -11,9 +11,9 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "db:link": "supabase link --project-ref argiyojdnvhsmuyzzath",
-    "db:push": "bash -c 'set -a && source .env.local && set +a && supabase db push --db-url \"$DATABASE_URL\"'",
+    "db:push": "bash -c 'set -a && source .env.local && set +a && npx supabase db push --db-url \"$(bash scripts/supabase-db-url.sh)\"'",
     "db:reset": "supabase db reset",
-    "db:status": "bash -c 'set -a && source .env.local && set +a && supabase migration list --db-url \"$DATABASE_URL\"'"
+    "db:status": "bash -c 'set -a && source .env.local && set +a && npx supabase migration list --db-url \"$(bash scripts/supabase-db-url.sh)\"'"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
