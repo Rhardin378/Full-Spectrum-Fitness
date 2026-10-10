@@ -29,6 +29,8 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-10 — Test branch `test/new-logo`: navbar mark v3 and home hero badge (draft PR, do not merge).
+
 ## 2026-10-10 — PR-only workflow + deferred ruleset ticket
 
 ### Completed
