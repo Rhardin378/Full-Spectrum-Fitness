@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { FounderTeaser } from "@/components/founder-teaser";
 
@@ -73,28 +74,43 @@ function CheckIcon({ className }: { className?: string }) {
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <section className="bg-gradient-welcome px-6 py-20 text-center text-text-on-dark sm:px-10 sm:py-28">
-        <div className="mx-auto max-w-4xl">
-          <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
-            Strength of body and mind.
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-white/95 sm:text-xl">
-            The complete platform for fitness tracking and mental wellness.
-            Start your transformation today — completely free.
-          </p>
+      <section className="bg-gradient-hero px-6 py-8 text-center text-text-on-dark sm:px-10 sm:py-10 lg:py-14">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center lg:gap-12">
+            <div className="relative h-[150px] w-[150px] shrink-0 overflow-hidden rounded-full bg-surface-header shadow-[0_14px_36px_rgba(30,30,30,0.35)] lg:h-[280px] lg:w-[280px]">
+              <Image
+                src="/brand/hero-badge.svg"
+                alt="Full Spectrum Fitness — Strength of body and mind"
+                fill
+                unoptimized
+                priority
+                sizes="(min-width: 1024px) 280px, 150px"
+                className="object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
+                Strength of body and mind.
+              </h1>
+              <p className="mt-4 text-lg leading-relaxed text-white/95 sm:mt-6 sm:text-xl">
+                The complete platform for fitness tracking and mental wellness.
+                Start your transformation today — completely free.
+              </p>
 
-          <div className="mt-12 grid grid-cols-2 gap-8 sm:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl font-bold sm:text-3xl">{stat.value}</p>
-                <p className="mt-1 text-sm text-white/80 sm:text-base">
-                  {stat.label}
-                </p>
+              <div className="mt-6 grid grid-cols-2 gap-6 sm:mt-8 sm:grid-cols-4 sm:gap-8 lg:mt-10">
+                {stats.map((stat) => (
+                  <div key={stat.label}>
+                    <p className="text-2xl font-bold sm:text-3xl">{stat.value}</p>
+                    <p className="mt-1 text-sm text-white/80 sm:text-base">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row lg:mt-10">
             <Link
               href="/auth"
               className="inline-flex items-center justify-center rounded-full bg-surface-card px-6 py-3 text-sm font-semibold text-brand-coral-deep transition hover:bg-white/90 sm:text-base"
