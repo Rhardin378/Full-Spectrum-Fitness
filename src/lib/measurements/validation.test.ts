@@ -265,6 +265,30 @@ describe("updateMeasurementSchema", () => {
       );
     }
   });
+
+  it("rejects a unit that does not match measurement type", () => {
+    const result = updateMeasurementSchema.safeParse({
+      ...VALID_UPDATE,
+      measurement_type: "waist",
+      unit: "lb",
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(formatMeasurementValidationErrors(result.error).unit).toBe(
+        "Waist unit must be in or cm.",
+      );
+    }
+  });
+
+  it("rejects a caller-supplied user_id", () => {
+    const result = updateMeasurementSchema.safeParse({
+      ...VALID_UPDATE,
+      user_id: "user-2",
+    });
+
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("softDeleteMeasurementSchema", () => {

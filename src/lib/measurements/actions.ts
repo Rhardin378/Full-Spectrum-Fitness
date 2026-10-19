@@ -350,11 +350,19 @@ export async function updateMeasurement(
     .select(MEASUREMENT_COLUMNS)
     .maybeSingle();
 
-  if (updateError || !updatedMeasurement) {
+  if (updateError) {
     return {
       success: false,
       error: "database",
       message: "Unable to update your measurement. Please try again.",
+    };
+  }
+
+  if (!updatedMeasurement) {
+    return {
+      success: false,
+      error: "not_found",
+      message: "Measurement not found or was already removed.",
     };
   }
 
@@ -430,11 +438,19 @@ export async function softDeleteMeasurement(
     .select(MEASUREMENT_COLUMNS)
     .maybeSingle();
 
-  if (deleteError || !deletedMeasurement) {
+  if (deleteError) {
     return {
       success: false,
       error: "database",
       message: "Unable to remove your measurement. Please try again.",
+    };
+  }
+
+  if (!deletedMeasurement) {
+    return {
+      success: false,
+      error: "not_found",
+      message: "Measurement not found or was already removed.",
     };
   }
 

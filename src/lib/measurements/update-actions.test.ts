@@ -207,6 +207,11 @@ describe("updateMeasurement", () => {
       measured_at: "2026-09-24T00:00:00.000Z",
       notes: "Corrected",
     });
+    expect(testClient.spies.mutate.eq).toHaveBeenCalledWith("id", MEASUREMENT_ID);
+    expect(testClient.spies.mutate.eq).toHaveBeenCalledWith(
+      "user_id",
+      "user-1",
+    );
     expect(testClient.spies.mutate.is).toHaveBeenCalledWith("deleted_at", null);
   });
 
@@ -267,6 +272,24 @@ describe("updateMeasurement", () => {
       message: "Unable to update your measurement. Please try again.",
     });
   });
+
+  it("maps an empty update write to not_found", async () => {
+    const testClient = makeClient(
+      { id: "user-1" },
+      {
+        lookup: { data: makeMeasurementRow(), error: null },
+        mutate: { data: null, error: null },
+      },
+    );
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await updateMeasurement(VALID_UPDATE);
+
+    expect(result).toMatchObject({
+      success: false,
+      error: "not_found",
+    });
+  });
 });
 
 describe("softDeleteMeasurement", () => {
@@ -309,6 +332,7 @@ describe("softDeleteMeasurement", () => {
         /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
       ),
     });
+    expect(testClient.spies.mutate.eq).toHaveBeenCalledWith("id", MEASUREMENT_ID);
     expect(testClient.spies.mutate.eq).toHaveBeenCalledWith(
       "user_id",
       "user-1",
@@ -350,6 +374,24 @@ describe("softDeleteMeasurement", () => {
       error: "not_found",
     });
     expect(testClient.spies.mutate.update).not.toHaveBeenCalled();
+  });
+
+  it("maps an empty delete write to not_found", async () => {
+    const testClient = makeClient(
+      { id: "user-1" },
+      {
+        lookup: { data: makeMeasurementRow(), error: null },
+        mutate: { data: null, error: null },
+      },
+    );
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await softDeleteMeasurement({ id: MEASUREMENT_ID });
+
+    expect(result).toMatchObject({
+      success: false,
+      error: "not_found",
+    });
   });
 
   it("rejects an invalid id without querying", async () => {

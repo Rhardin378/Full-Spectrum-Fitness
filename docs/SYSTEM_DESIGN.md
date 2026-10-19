@@ -214,6 +214,16 @@ Frontend modal
 
 No AI.
 
+## Updating or removing a measurement (implemented)
+
+Frontend (Slice 1.5.10 UI not shipped yet)  
+→ `updateMeasurement` / `softDeleteMeasurement` server actions  
+→ Zod (same calendar-date and unit-vs-type rules as create)  
+→ owner-scoped `UPDATE` RLS on active rows (`deleted_at is null`)  
+→ list + trend hide soft-deleted rows (`deleted_at IS NULL` in the query)
+
+Hard `DELETE` is not granted. Column-level `UPDATE` covers measurement fields and `deleted_at` only.
+
 ## Logging a journal entry (Slice 2 — planned)
 
 Frontend form  

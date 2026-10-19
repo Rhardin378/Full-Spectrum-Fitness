@@ -46,42 +46,51 @@ const dateFilterSchema = z
   .min(1, "Date filter cannot be empty.")
   .refine(isValidCalendarDate, "Enter a valid calendar date (YYYY-MM-DD).");
 
-export const createMeasurementSchema = z
-  .object({
-    measurement_type: z.enum(MEASUREMENT_TYPES, {
-      message: "Measurement type must be weight or waist.",
-    }),
-    value: z
-      .number({ message: "Value must be a number." })
-      .gt(0, "Value must be greater than zero.")
-      .max(999999.99, "Value must be 999999.99 or less.")
-      .refine(
-        (value) =>
-          Math.abs(value * 100 - Math.round(value * 100)) < 0.00000001,
-        "Value must have no more than two decimal places.",
-      ),
-    unit: z.enum(MEASUREMENT_UNITS, {
-      message: "Unit must be lb, kg, in, or cm.",
-    }),
-    measured_on: measuredOnSchema,
-    notes: notesSchema,
-  })
-  .strict()
-  .superRefine((input, context) => {
-    const validUnits =
-      input.measurement_type === "weight" ? WEIGHT_UNITS : WAIST_UNITS;
+const measurementBodyFields = {
+  measurement_type: z.enum(MEASUREMENT_TYPES, {
+    message: "Measurement type must be weight or waist.",
+  }),
+  value: z
+    .number({ message: "Value must be a number." })
+    .gt(0, "Value must be greater than zero.")
+    .max(999999.99, "Value must be 999999.99 or less.")
+    .refine(
+      (value) => Math.abs(value * 100 - Math.round(value * 100)) < 0.00000001,
+      "Value must have no more than two decimal places.",
+    ),
+  unit: z.enum(MEASUREMENT_UNITS, {
+    message: "Unit must be lb, kg, in, or cm.",
+  }),
+  measured_on: measuredOnSchema,
+  notes: notesSchema,
+};
 
-    if (!validUnits.includes(input.unit as never)) {
-      context.addIssue({
-        code: "custom",
-        message:
-          input.measurement_type === "weight"
-            ? "Weight unit must be lb or kg."
-            : "Waist unit must be in or cm.",
-        path: ["unit"],
-      });
-    }
-  });
+function refineMeasurementUnitMatch(
+  input: {
+    measurement_type: (typeof MEASUREMENT_TYPES)[number];
+    unit: (typeof MEASUREMENT_UNITS)[number];
+  },
+  context: z.RefinementCtx,
+) {
+  const validUnits =
+    input.measurement_type === "weight" ? WEIGHT_UNITS : WAIST_UNITS;
+
+  if (!validUnits.includes(input.unit as never)) {
+    context.addIssue({
+      code: "custom",
+      message:
+        input.measurement_type === "weight"
+          ? "Weight unit must be lb or kg."
+          : "Waist unit must be in or cm.",
+      path: ["unit"],
+    });
+  }
+}
+
+export const createMeasurementSchema = z
+  .object(measurementBodyFields)
+  .strict()
+  .superRefine(refineMeasurementUnitMatch);
 
 export const listMeasurementsSchema = z
   .object({
@@ -126,11 +135,13 @@ export const listMeasurementsSchema = z
     }
   });
 
-export const updateMeasurementSchema = createMeasurementSchema.and(
-  z.object({
+export const updateMeasurementSchema = z
+  .object({
     id: measurementIdSchema,
-  }),
-);
+    ...measurementBodyFields,
+  })
+  .strict()
+  .superRefine(refineMeasurementUnitMatch);
 
 export const softDeleteMeasurementSchema = z
   .object({

@@ -29,6 +29,35 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-19 — 1.5.9 update/soft-delete backend (PR #50)
+
+### Completed
+
+- Backend for measurement **update** and **soft delete**: `deleted_at`, column-level `GRANT UPDATE`, RLS `measurements_update_own` on active rows, `updateMeasurement` / `softDeleteMeasurement`.
+- List (and trend) hide `deleted_at IS NULL`. Calendar date stays `measured_on`.
+- Update Zod uses the same `.strict()` + unit-vs-type refine as create (not `.and()`).
+
+### Decisions
+
+- Soft delete only; no `DELETE` grant.
+- Policy `USING` requires `deleted_at is null`; `WITH CHECK` does not, so setting `deleted_at` is allowed. Select stays unfiltered for lookup/RETURNING.
+- Authenticated may update only measurement fields + `deleted_at` (not `user_id` / `created_at`).
+
+### Issues
+
+- Migration not applied to hosted Supabase until after merge (`db:push` from desktop bash).
+- 1.5.10 UI not started.
+
+### Next
+
+- Review/merge PR #50, apply migration, then 1.5.10 history Edit/Delete UI.
+
+### AI Notes
+
+- Cursor Grok: ticket 1.5.9 on `cursor/measurements-soft-delete-fa4a`. Review feedback (schema `.and()` drop, grant/policy tightness, empty write → `not_found`) applied before merge.
+
+---
+
 ## 2026-10-10 — Test branch `test/new-logo`: navbar mark v3 and home hero badge (draft PR, do not merge).
 
 ## 2026-10-10 — PR-only workflow + deferred ruleset ticket
