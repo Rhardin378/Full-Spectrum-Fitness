@@ -12,11 +12,15 @@ import {
   createMeasurementSchema,
   formatMeasurementValidationErrors,
   listMeasurementsSchema,
+  softDeleteMeasurementSchema,
+  updateMeasurementSchema,
 } from "@/lib/measurements/validation";
 import type {
   CreateMeasurementInput,
   ListMeasurementsInput,
   Measurement,
+  SoftDeleteMeasurementInput,
+  UpdateMeasurementInput,
 } from "@/lib/types/measurement";
 
 export type CreateMeasurementResult =
@@ -42,8 +46,26 @@ export type ListMeasurementsResult =
       fieldErrors?: Record<string, string>;
     };
 
+export type UpdateMeasurementResult =
+  | { success: true; measurement: Measurement }
+  | {
+      success: false;
+      error: "unauthorized" | "validation" | "not_found" | "database";
+      message: string;
+      fieldErrors?: Record<string, string>;
+    };
+
+export type SoftDeleteMeasurementResult =
+  | { success: true }
+  | {
+      success: false;
+      error: "unauthorized" | "validation" | "not_found" | "database";
+      message: string;
+      fieldErrors?: Record<string, string>;
+    };
+
 const MEASUREMENT_COLUMNS =
-  "id, user_id, measurement_type, value, unit, measured_on, measured_at, notes, created_at, updated_at";
+  "id, user_id, measurement_type, value, unit, measured_on, measured_at, notes, created_at, updated_at, deleted_at";
 
 function buildMeasurementCursorFilter(
   cursor: MeasurementCursor,
@@ -175,7 +197,8 @@ export async function listMeasurements(
   let query = supabase
     .from("measurements")
     .select(MEASUREMENT_COLUMNS)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .is("deleted_at", null);
 
   if (parsed.data.measurement_type) {
     query = query.eq("measurement_type", parsed.data.measurement_type);
@@ -228,4 +251,192 @@ export async function listMeasurements(
         : null,
     has_more: hasMore,
   };
+}
+
+type OwnedMeasurementLookup =
+  | { status: "ok"; row: Measurement }
+  | { status: "missing" }
+  | { status: "database" };
+
+async function findOwnedMeasurement(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  id: string,
+  userId: string,
+): Promise<OwnedMeasurementLookup> {
+  const { data, error } = await supabase
+    .from("measurements")
+    .select(MEASUREMENT_COLUMNS)
+    .eq("id", id)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    return { status: "database" };
+  }
+
+  if (!data) {
+    return { status: "missing" };
+  }
+
+  return { status: "ok", row: normalizeMeasurement(data) };
+}
+
+export async function updateMeasurement(
+  input: UpdateMeasurementInput,
+): Promise<UpdateMeasurementResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      error: "unauthorized",
+      message: "You must be signed in to update a measurement.",
+    };
+  }
+
+  const parsed = updateMeasurementSchema.safeParse(input);
+
+  if (!parsed.success) {
+    const fieldErrors = formatMeasurementValidationErrors(parsed.error);
+
+    return {
+      success: false,
+      error: "validation",
+      message:
+        fieldErrors._form ?? "Please fix the highlighted measurement fields.",
+      fieldErrors,
+    };
+  }
+
+  const existing = await findOwnedMeasurement(
+    supabase,
+    parsed.data.id,
+    user.id,
+  );
+
+  if (existing.status === "database") {
+    return {
+      success: false,
+      error: "database",
+      message: "Unable to update your measurement. Please try again.",
+    };
+  }
+
+  if (existing.status === "missing" || existing.row.deleted_at) {
+    return {
+      success: false,
+      error: "not_found",
+      message: "Measurement not found or was already removed.",
+    };
+  }
+
+  const { data: updatedMeasurement, error: updateError } = await supabase
+    .from("measurements")
+    .update({
+      measurement_type: parsed.data.measurement_type,
+      value: parsed.data.value,
+      unit: parsed.data.unit,
+      measured_on: parsed.data.measured_on,
+      measured_at: calendarDateToUtcMidnight(parsed.data.measured_on),
+      notes: parsed.data.notes ?? null,
+    })
+    .eq("id", parsed.data.id)
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
+    .select(MEASUREMENT_COLUMNS)
+    .maybeSingle();
+
+  if (updateError || !updatedMeasurement) {
+    return {
+      success: false,
+      error: "database",
+      message: "Unable to update your measurement. Please try again.",
+    };
+  }
+
+  return {
+    success: true,
+    measurement: normalizeMeasurement(updatedMeasurement),
+  };
+}
+
+export async function softDeleteMeasurement(
+  input: SoftDeleteMeasurementInput,
+): Promise<SoftDeleteMeasurementResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      error: "unauthorized",
+      message: "You must be signed in to remove a measurement.",
+    };
+  }
+
+  const parsed = softDeleteMeasurementSchema.safeParse(input);
+
+  if (!parsed.success) {
+    const fieldErrors = formatMeasurementValidationErrors(parsed.error);
+
+    return {
+      success: false,
+      error: "validation",
+      message:
+        fieldErrors._form ?? "Please fix the highlighted measurement fields.",
+      fieldErrors,
+    };
+  }
+
+  const existing = await findOwnedMeasurement(
+    supabase,
+    parsed.data.id,
+    user.id,
+  );
+
+  if (existing.status === "database") {
+    return {
+      success: false,
+      error: "database",
+      message: "Unable to remove your measurement. Please try again.",
+    };
+  }
+
+  if (existing.status === "missing") {
+    return {
+      success: false,
+      error: "not_found",
+      message: "Measurement not found or was already removed.",
+    };
+  }
+
+  if (existing.row.deleted_at) {
+    return { success: true };
+  }
+
+  const { data: deletedMeasurement, error: deleteError } = await supabase
+    .from("measurements")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", parsed.data.id)
+    .eq("user_id", user.id)
+    .is("deleted_at", null)
+    .select(MEASUREMENT_COLUMNS)
+    .maybeSingle();
+
+  if (deleteError || !deletedMeasurement) {
+    return {
+      success: false,
+      error: "database",
+      message: "Unable to remove your measurement. Please try again.",
+    };
+  }
+
+  return { success: true };
 }

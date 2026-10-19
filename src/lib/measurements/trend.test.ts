@@ -19,6 +19,7 @@ function weightRow(
     measured_at: `${overrides.measured_on}T00:00:00.000Z`,
     created_at: `${overrides.measured_on}T00:00:00.000Z`,
     updated_at: `${overrides.measured_on}T00:00:00.000Z`,
+    deleted_at: null,
     ...overrides,
   };
 }
@@ -57,6 +58,7 @@ describe("buildWeightTrendSummary", () => {
           notes: null,
           created_at: "2026-09-01T00:00:00.000Z",
           updated_at: "2026-09-01T00:00:00.000Z",
+          deleted_at: null,
         },
       ]).status,
     ).toBe("empty");

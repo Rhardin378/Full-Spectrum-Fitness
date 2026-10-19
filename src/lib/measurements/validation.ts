@@ -35,6 +35,11 @@ const notesSchema = z.preprocess(
     .optional(),
 );
 
+const measurementIdSchema = z
+  .string({ message: "Measurement id must be a string." })
+  .trim()
+  .uuid("Measurement id must be a valid UUID.");
+
 const dateFilterSchema = z
   .string({ message: "Date filter must be a string." })
   .trim()
@@ -121,8 +126,24 @@ export const listMeasurementsSchema = z
     }
   });
 
+export const updateMeasurementSchema = createMeasurementSchema.and(
+  z.object({
+    id: measurementIdSchema,
+  }),
+);
+
+export const softDeleteMeasurementSchema = z
+  .object({
+    id: measurementIdSchema,
+  })
+  .strict();
+
 export type ValidatedCreateMeasurementInput = z.infer<
   typeof createMeasurementSchema
+>;
+
+export type ValidatedUpdateMeasurementInput = z.infer<
+  typeof updateMeasurementSchema
 >;
 
 export function formatMeasurementValidationErrors(

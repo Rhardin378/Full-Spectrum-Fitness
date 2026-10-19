@@ -16,6 +16,7 @@ export type MeasurementRow = {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  deleted_at?: string | null;
 };
 
 function toCalendarDate(value: string): string {
@@ -38,5 +39,6 @@ export function normalizeMeasurement(row: MeasurementRow): Measurement {
     notes: row.notes,
     created_at: row.created_at,
     updated_at: row.updated_at,
+    deleted_at: row.deleted_at ?? null,
   };
 }

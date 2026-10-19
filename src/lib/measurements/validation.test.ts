@@ -3,6 +3,8 @@ import {
   createMeasurementSchema,
   formatMeasurementValidationErrors,
   listMeasurementsSchema,
+  softDeleteMeasurementSchema,
+  updateMeasurementSchema,
 } from "@/lib/measurements/validation";
 
 describe("createMeasurementSchema", () => {
@@ -228,5 +230,55 @@ describe("listMeasurementsSchema", () => {
         "End date must be on or after start date.",
       );
     }
+  });
+});
+
+const VALID_UPDATE = {
+  id: "11111111-1111-4111-8111-111111111111",
+  measurement_type: "weight" as const,
+  value: 176,
+  unit: "lb" as const,
+  measured_on: "2026-09-24",
+};
+
+describe("updateMeasurementSchema", () => {
+  it("accepts create fields plus a UUID id", () => {
+    const result = updateMeasurementSchema.safeParse(VALID_UPDATE);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.id).toBe(VALID_UPDATE.id);
+      expect(result.data.measured_on).toBe("2026-09-24");
+    }
+  });
+
+  it("rejects a non-UUID id", () => {
+    const result = updateMeasurementSchema.safeParse({
+      ...VALID_UPDATE,
+      id: "measurement-1",
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(formatMeasurementValidationErrors(result.error).id).toBe(
+        "Measurement id must be a valid UUID.",
+      );
+    }
+  });
+});
+
+describe("softDeleteMeasurementSchema", () => {
+  it("accepts a UUID id", () => {
+    const result = softDeleteMeasurementSchema.safeParse({
+      id: VALID_UPDATE.id,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a missing id", () => {
+    const result = softDeleteMeasurementSchema.safeParse({});
+
+    expect(result.success).toBe(false);
   });
 });
