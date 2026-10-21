@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { listMeasurements } from "@/lib/measurements/actions";
 import {
   formatMeasuredOnDisplay,
@@ -25,6 +25,12 @@ const STATUS_BANNER_COPY: Record<HistoryStatusBanner, string> = {
 const ROW_ACTION_CLASS_NAME =
   "inline-flex min-h-11 min-w-11 -my-2 items-center justify-center rounded-lg px-3 text-xs font-semibold transition disabled:opacity-60";
 
+const HISTORY_INITIAL_VISIBLE = 5;
+const HISTORY_VISIBLE_STEP = 10;
+
+const HISTORY_WINDOW_BUTTON_CLASS_NAME =
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-black/10 bg-surface-page px-4 text-sm font-semibold text-text-primary transition hover:border-brand-coral/40 hover:bg-brand-coral-light hover:text-brand-coral-deep";
+
 function historyActionName(
   action: "Edit" | "Delete",
   entry: Measurement,
@@ -45,6 +51,125 @@ const FILTER_OPTIONS: { id: TypeFilter; label: string }[] = [
   { id: "waist", label: "Waist" },
 ];
 
+type HistoryListProps = {
+  measurements: Measurement[];
+  totalCount: number;
+  editingId: string | null;
+  deletingId: string | null;
+  showMoreRef: RefObject<HTMLButtonElement | null>;
+  showLessRef: RefObject<HTMLButtonElement | null>;
+  onEdit: (entry: Measurement) => void;
+  onDelete: (entry: Measurement) => void;
+  onShowMore: () => void;
+  onShowLess: () => void;
+};
+
+function HistoryList({
+  measurements,
+  totalCount,
+  editingId,
+  deletingId,
+  showMoreRef,
+  showLessRef,
+  onEdit,
+  onDelete,
+  onShowMore,
+  onShowLess,
+}: HistoryListProps) {
+  const shownCount = measurements.length;
+  const canShowMore = shownCount < totalCount;
+  const canShowLess = shownCount > HISTORY_INITIAL_VISIBLE;
+
+  return (
+    <>
+      <ul id="measurement-history-list" className="divide-y divide-black/5">
+        {measurements.map((entry) => {
+          const rowBusy = editingId === entry.id || deletingId === entry.id;
+          return (
+            <li
+              key={entry.id}
+              className="group flex flex-col gap-3 py-3 first:pt-0 sm:flex-row sm:items-start sm:justify-between"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-text-primary">
+                  {measurementTypeLabel(entry.measurement_type)}
+                </p>
+                <p className="text-sm text-text-muted">
+                  {formatMeasuredOnDisplay(entry.measured_on)}
+                </p>
+                {entry.notes ? (
+                  <p className="mt-1 text-sm text-text-muted">{entry.notes}</p>
+                ) : null}
+              </div>
+              <div className="flex flex-col items-start gap-2 sm:items-end">
+                <p className="text-sm font-semibold tabular-nums text-text-primary">
+                  {formatMeasurementValue(entry.value, entry.unit)}
+                </p>
+                {/* Hidden until hover or focus only when a pointer can hover. */}
+                <div className="flex flex-wrap gap-2 transition-opacity can-hover:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
+                  <button
+                    type="button"
+                    aria-label={historyActionName("Edit", entry)}
+                    disabled={rowBusy}
+                    onClick={() => onEdit(entry)}
+                    className={`${ROW_ACTION_CLASS_NAME} text-brand-coral hover:bg-brand-coral-light hover:text-brand-coral-deep`}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={historyActionName("Delete", entry)}
+                    disabled={rowBusy}
+                    onClick={() => onDelete(entry)}
+                    className={`${ROW_ACTION_CLASS_NAME} text-text-muted hover:bg-surface-page hover:text-brand-coral-deep`}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-4 flex flex-col gap-3">
+        <p id="measurement-history-count" className="text-sm text-text-muted">
+          Showing {shownCount} of {totalCount}
+        </p>
+        {canShowMore || canShowLess ? (
+          <div className="flex flex-wrap gap-2">
+            {canShowMore ? (
+              <button
+                type="button"
+                ref={showMoreRef}
+                onClick={onShowMore}
+                aria-controls="measurement-history-list"
+                aria-describedby="measurement-history-count"
+                className={HISTORY_WINDOW_BUTTON_CLASS_NAME}
+              >
+                Show more
+                <span className="sr-only"> measurements</span>
+              </button>
+            ) : null}
+            {canShowLess ? (
+              <button
+                type="button"
+                ref={showLessRef}
+                onClick={onShowLess}
+                aria-controls="measurement-history-list"
+                aria-describedby="measurement-history-count"
+                className={HISTORY_WINDOW_BUTTON_CLASS_NAME}
+              >
+                Show less
+                <span className="sr-only"> measurements</span>
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+    </>
+  );
+}
+
 export function MeasurementsTabPanel({
   onLogMeasurementClick,
   refreshToken,
@@ -62,9 +187,13 @@ export function MeasurementsTabPanel({
   const [statusBanner, setStatusBanner] = useState<HistoryStatusBanner | null>(
     null,
   );
+  const [visibleLimit, setVisibleLimit] = useState(HISTORY_INITIAL_VISIBLE);
   const statusTimerRef = useRef<number | null>(null);
   const focusFrameRef = useRef<number | null>(null);
   const historyHeadingRef = useRef<HTMLHeadingElement>(null);
+  const showMoreButtonRef = useRef<HTMLButtonElement>(null);
+  const showLessButtonRef = useRef<HTMLButtonElement>(null);
+  const windowButtonFocusRef = useRef<"more" | "less" | null>(null);
 
   useEffect(() => {
     return () => {
@@ -98,6 +227,32 @@ export function MeasurementsTabPanel({
       focusFrameRef.current = null;
       historyHeadingRef.current?.focus();
     });
+  }
+
+  useEffect(() => {
+    const intent = windowButtonFocusRef.current;
+    if (intent === null) {
+      return;
+    }
+    windowButtonFocusRef.current = null;
+    const target =
+      intent === "less" ? showLessButtonRef.current : showMoreButtonRef.current;
+    target?.focus();
+  }, [visibleLimit]);
+
+  function revealMoreHistory() {
+    const nextLimit = visibleLimit + HISTORY_VISIBLE_STEP;
+    if (nextLimit >= measurements.length) {
+      windowButtonFocusRef.current = "less";
+    }
+    setVisibleLimit(nextLimit);
+  }
+
+  function collapseHistory() {
+    if (measurements.length > HISTORY_INITIAL_VISIBLE) {
+      windowButtonFocusRef.current = "more";
+    }
+    setVisibleLimit(HISTORY_INITIAL_VISIBLE);
   }
 
   function handleEditSaved() {
@@ -309,59 +464,18 @@ export function MeasurementsTabPanel({
                 </button>
               </div>
             ) : (
-              <ul className="divide-y divide-black/5">
-                {measurements.map((entry) => {
-                  const rowBusy =
-                    editingMeasurement?.id === entry.id ||
-                    deletingMeasurement?.id === entry.id;
-                  return (
-                    <li
-                      key={entry.id}
-                      className="group flex flex-col gap-3 py-3 first:pt-0 sm:flex-row sm:items-start sm:justify-between"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-text-primary">
-                          {measurementTypeLabel(entry.measurement_type)}
-                        </p>
-                        <p className="text-sm text-text-muted">
-                          {formatMeasuredOnDisplay(entry.measured_on)}
-                        </p>
-                        {entry.notes ? (
-                          <p className="mt-1 text-sm text-text-muted">
-                            {entry.notes}
-                          </p>
-                        ) : null}
-                      </div>
-                      <div className="flex flex-col items-start gap-2 sm:items-end">
-                        <p className="text-sm font-semibold tabular-nums text-text-primary">
-                          {formatMeasurementValue(entry.value, entry.unit)}
-                        </p>
-                        {/* Hidden until hover or focus only when a pointer can hover. */}
-                        <div className="flex flex-wrap gap-2 transition-opacity can-hover:opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
-                          <button
-                            type="button"
-                            aria-label={historyActionName("Edit", entry)}
-                            disabled={rowBusy}
-                            onClick={() => setEditingMeasurement(entry)}
-                            className={`${ROW_ACTION_CLASS_NAME} text-brand-coral hover:bg-brand-coral-light hover:text-brand-coral-deep`}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            aria-label={historyActionName("Delete", entry)}
-                            disabled={rowBusy}
-                            onClick={() => setDeletingMeasurement(entry)}
-                            className={`${ROW_ACTION_CLASS_NAME} text-text-muted hover:bg-surface-page hover:text-brand-coral-deep`}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+              <HistoryList
+                measurements={measurements.slice(0, visibleLimit)}
+                totalCount={measurements.length}
+                editingId={editingMeasurement?.id ?? null}
+                deletingId={deletingMeasurement?.id ?? null}
+                showMoreRef={showMoreButtonRef}
+                showLessRef={showLessButtonRef}
+                onEdit={setEditingMeasurement}
+                onDelete={setDeletingMeasurement}
+                onShowMore={revealMoreHistory}
+                onShowLess={collapseHistory}
+              />
             )}
           </div>
         </section>
