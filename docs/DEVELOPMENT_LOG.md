@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-21 — Recent history window (5 rows, Show more) ([PR #52](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/52))
+
+### Completed
+
+- Recent history renders the 5 newest loaded rows by default, with a count such as “Showing 5 of 23”.
+- Show more reveals 10 more rows per click. Show less collapses back to 5. A control is hidden when it would not change the list.
+- The window is client-side only. Edit, delete, and focus return to the history heading are unchanged. Refresh keeps the expanded window and the rendered count clamps to the rows that remain.
+
+### Decisions
+
+- No inner scroll region, and no change to list page size, server actions, or schema. The window applies to rows already loaded for the card (page size 25).
+
+### Issues
+
+- Show more cannot reveal entries past that loaded page.
+
+### Next
+
+- Review the history window on a phone-width measurements tab.
+
+### AI Notes
+
+- Cursor Grok: client-side history window in `MeasurementsTabPanel`, with Vitest/RTL coverage.
+
+---
+
 ## 2026-10-21 — 1.5.10 history edit/delete review fixes (PR #51)
 
 ### Completed
