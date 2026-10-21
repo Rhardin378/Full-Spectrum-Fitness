@@ -7,15 +7,20 @@ import {
   formatMeasurementValue,
   measurementTypeLabel,
 } from "@/lib/measurements/display";
+import { DeleteMeasurementDialog } from "@/components/measurements/delete-measurement-dialog";
+import { LogMeasurementModal } from "@/components/measurements/log-measurement-modal";
 import { WeightTrendCard } from "@/components/measurements/weight-trend-card";
 import type { Measurement, MeasurementType } from "@/lib/types/measurement";
 
 type TypeFilter = "all" | MeasurementType;
 
+type HistoryStatusBanner = "updated" | "deleted" | null;
+
 type MeasurementsTabPanelProps = {
   onLogMeasurementClick: () => void;
   refreshToken: number;
   showSaveSuccess?: boolean;
+  onHistoryRefresh: () => void;
 };
 
 const FILTER_OPTIONS: { id: TypeFilter; label: string }[] = [
@@ -28,11 +33,37 @@ export function MeasurementsTabPanel({
   onLogMeasurementClick,
   refreshToken,
   showSaveSuccess = false,
+  onHistoryRefresh,
 }: MeasurementsTabPanelProps) {
   const [filter, setFilter] = useState<TypeFilter>("all");
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingMeasurement, setEditingMeasurement] =
+    useState<Measurement | null>(null);
+  const [deletingMeasurement, setDeletingMeasurement] =
+    useState<Measurement | null>(null);
+  const [statusBanner, setStatusBanner] = useState<HistoryStatusBanner>(null);
+
+  function showStatusBanner(kind: HistoryStatusBanner) {
+    if (!kind) {
+      return;
+    }
+    setStatusBanner(kind);
+    window.setTimeout(() => setStatusBanner(null), 5000);
+  }
+
+  function handleEditSaved() {
+    onHistoryRefresh();
+    showStatusBanner("updated");
+    setEditingMeasurement(null);
+  }
+
+  function handleDeleteConfirmed() {
+    onHistoryRefresh();
+    showStatusBanner("deleted");
+    setDeletingMeasurement(null);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -94,6 +125,24 @@ export function MeasurementsTabPanel({
   }
 
   return (
+    <>
+      <LogMeasurementModal
+        key={editingMeasurement?.id ?? "edit-closed"}
+        mode="edit"
+        measurement={editingMeasurement}
+        open={editingMeasurement !== null}
+        onClose={() => setEditingMeasurement(null)}
+        onSaved={handleEditSaved}
+      />
+
+      <DeleteMeasurementDialog
+        key={deletingMeasurement?.id ?? "delete-closed"}
+        measurement={deletingMeasurement}
+        open={deletingMeasurement !== null}
+        onClose={() => setDeletingMeasurement(null)}
+        onDeleted={handleDeleteConfirmed}
+      />
+
     <div className="grid gap-6 lg:grid-cols-2">
       <section
         className="rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm"
@@ -154,6 +203,24 @@ export function MeasurementsTabPanel({
           </p>
         ) : null}
 
+        {statusBanner === "updated" ? (
+          <p
+            role="status"
+            className="mt-4 rounded-lg border border-brand-coral/25 bg-brand-coral-light/50 px-3 py-2 text-sm text-text-primary"
+          >
+            Measurement updated.
+          </p>
+        ) : null}
+
+        {statusBanner === "deleted" ? (
+          <p
+            role="status"
+            className="mt-4 rounded-lg border border-brand-coral/25 bg-brand-coral-light/50 px-3 py-2 text-sm text-text-primary"
+          >
+            Measurement removed from your history.
+          </p>
+        ) : null}
+
         <div className="mt-4">
           {loading ? (
             <p className="text-sm text-text-muted" aria-live="polite">
@@ -192,29 +259,56 @@ export function MeasurementsTabPanel({
             </div>
           ) : (
             <ul className="divide-y divide-black/5">
-              {measurements.map((entry) => (
-                <li
-                  key={entry.id}
-                  className="flex flex-col gap-1 py-3 first:pt-0 sm:flex-row sm:items-baseline sm:justify-between"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-text-primary">
-                      {measurementTypeLabel(entry.measurement_type)}
-                    </p>
-                    <p className="text-sm text-text-muted">
-                      {formatMeasuredOnDisplay(entry.measured_on)}
-                    </p>
-                    {entry.notes ? (
-                      <p className="mt-1 text-sm text-text-muted">
-                        {entry.notes}
+              {measurements.map((entry) => {
+                const rowBusy =
+                  editingMeasurement?.id === entry.id ||
+                  deletingMeasurement?.id === entry.id;
+                return (
+                  <li
+                    key={entry.id}
+                    className="group flex flex-col gap-3 py-3 first:pt-0 sm:flex-row sm:items-start sm:justify-between"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-text-primary">
+                        {measurementTypeLabel(entry.measurement_type)}
                       </p>
-                    ) : null}
-                  </div>
-                  <p className="text-sm font-semibold tabular-nums text-text-primary sm:text-right">
-                    {formatMeasurementValue(entry.value, entry.unit)}
-                  </p>
-                </li>
-              ))}
+                      <p className="text-sm text-text-muted">
+                        {formatMeasuredOnDisplay(entry.measured_on)}
+                      </p>
+                      {entry.notes ? (
+                        <p className="mt-1 text-sm text-text-muted">
+                          {entry.notes}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-col items-start gap-2 sm:items-end">
+                      <p className="text-sm font-semibold tabular-nums text-text-primary">
+                        {formatMeasurementValue(entry.value, entry.unit)}
+                      </p>
+                      <div
+                        className="flex flex-wrap gap-2 opacity-100 sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
+                      >
+                        <button
+                          type="button"
+                          disabled={rowBusy}
+                          onClick={() => setEditingMeasurement(entry)}
+                          className="rounded-lg px-2 py-1.5 text-xs font-semibold text-brand-coral transition hover:bg-brand-coral-light hover:text-brand-coral-deep disabled:opacity-60"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          disabled={rowBusy}
+                          onClick={() => setDeletingMeasurement(entry)}
+                          className="rounded-lg px-2 py-1.5 text-xs font-semibold text-text-muted transition hover:bg-surface-page hover:text-brand-coral-deep disabled:opacity-60"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
@@ -225,5 +319,6 @@ export function MeasurementsTabPanel({
         onLogMeasurementClick={onLogMeasurementClick}
       />
     </div>
+    </>
   );
 }

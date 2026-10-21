@@ -78,11 +78,14 @@ export default function FitnessDashboardShell({
     setLogModalOpen(true);
   }, []);
   const closeLogModal = useCallback(() => setLogModalOpen(false), []);
-  const handleMeasurementSaved = useCallback(() => {
+  const refreshHistory = useCallback(() => {
     setHistoryRefreshToken((token) => token + 1);
+  }, []);
+  const handleMeasurementSaved = useCallback(() => {
+    refreshHistory();
     setShowSaveSuccess(true);
     window.setTimeout(() => setShowSaveSuccess(false), 5000);
-  }, []);
+  }, [refreshHistory]);
 
   const activeTabMeta = FITNESS_TABS.find((tab) => tab.id === activeTab)!;
 
@@ -143,6 +146,7 @@ export default function FitnessDashboardShell({
               onLogMeasurementClick={openLogModal}
               refreshToken={historyRefreshToken}
               showSaveSuccess={showSaveSuccess}
+              onHistoryRefresh={refreshHistory}
             />
           ) : (
             <ComingSoonPanel tabLabel={activeTabMeta.label} />
