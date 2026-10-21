@@ -142,12 +142,12 @@ function HistoryList({
                 type="button"
                 ref={showMoreRef}
                 onClick={onShowMore}
+                aria-label="Show more measurements"
                 aria-controls="measurement-history-list"
                 aria-describedby="measurement-history-count"
                 className={HISTORY_WINDOW_BUTTON_CLASS_NAME}
               >
                 Show more
-                <span className="sr-only"> measurements</span>
               </button>
             ) : null}
             {canShowLess ? (
@@ -155,12 +155,12 @@ function HistoryList({
                 type="button"
                 ref={showLessRef}
                 onClick={onShowLess}
+                aria-label="Show less measurements"
                 aria-controls="measurement-history-list"
                 aria-describedby="measurement-history-count"
                 className={HISTORY_WINDOW_BUTTON_CLASS_NAME}
               >
                 Show less
-                <span className="sr-only"> measurements</span>
               </button>
             ) : null}
           </div>

@@ -61,8 +61,12 @@ function renderPanel() {
   );
 }
 
+function historyList() {
+  return within(screen.getByRole("list"));
+}
+
 function historyItems() {
-  return within(screen.getByRole("list")).getAllByRole("listitem");
+  return historyList().getAllByRole("listitem");
 }
 
 function showMoreButton() {
@@ -84,9 +88,9 @@ describe("measurement history window", () => {
 
     expect(await screen.findByText("Showing 5 of 23")).toBeInTheDocument();
     expect(historyItems()).toHaveLength(5);
-    expect(screen.getByText("100 lb")).toBeInTheDocument();
-    expect(screen.getByText("104 lb")).toBeInTheDocument();
-    expect(screen.queryByText("105 lb")).not.toBeInTheDocument();
+    expect(historyList().getByText("100 lb")).toBeInTheDocument();
+    expect(historyList().getByText("104 lb")).toBeInTheDocument();
+    expect(historyList().queryByText("105 lb")).not.toBeInTheDocument();
     expect(showMoreButton()).toHaveClass("min-h-11");
     expect(
       screen.queryByRole("button", { name: "Show less measurements" }),
@@ -101,8 +105,8 @@ describe("measurement history window", () => {
 
     expect(screen.getByText("Showing 15 of 23")).toBeInTheDocument();
     expect(historyItems()).toHaveLength(15);
-    expect(screen.getByText("114 lb")).toBeInTheDocument();
-    expect(screen.queryByText("115 lb")).not.toBeInTheDocument();
+    expect(historyList().getByText("114 lb")).toBeInTheDocument();
+    expect(historyList().queryByText("115 lb")).not.toBeInTheDocument();
     expect(showMoreButton()).toHaveClass("min-h-11");
     expect(showLessButton()).toHaveClass("min-h-11");
 
@@ -110,7 +114,7 @@ describe("measurement history window", () => {
 
     expect(screen.getByText("Showing 23 of 23")).toBeInTheDocument();
     expect(historyItems()).toHaveLength(23);
-    expect(screen.getByText("122 lb")).toBeInTheDocument();
+    expect(historyList().getByText("122 lb")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Show more measurements" }),
     ).not.toBeInTheDocument();
@@ -127,7 +131,7 @@ describe("measurement history window", () => {
 
     expect(screen.getByText("Showing 5 of 23")).toBeInTheDocument();
     expect(historyItems()).toHaveLength(5);
-    expect(screen.queryByText("105 lb")).not.toBeInTheDocument();
+    expect(historyList().queryByText("105 lb")).not.toBeInTheDocument();
     expect(showMoreButton()).toHaveFocus();
     expect(
       screen.queryByRole("button", { name: "Show less measurements" }),
@@ -197,9 +201,9 @@ describe("measurement history window", () => {
       expect(screen.getByText("Showing 7 of 7")).toBeInTheDocument();
     });
     expect(historyItems()).toHaveLength(7);
-    expect(screen.queryByText("100 lb")).not.toBeInTheDocument();
-    expect(screen.getByText("101 lb")).toBeInTheDocument();
-    expect(screen.getByText("107 lb")).toBeInTheDocument();
+    expect(historyList().queryByText("100 lb")).not.toBeInTheDocument();
+    expect(historyList().getByText("101 lb")).toBeInTheDocument();
+    expect(historyList().getByText("107 lb")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Show more measurements" }),
     ).not.toBeInTheDocument();
@@ -214,7 +218,7 @@ describe("measurement history window", () => {
 
     expect(screen.getByText("Showing 5 of 7")).toBeInTheDocument();
     expect(historyItems()).toHaveLength(5);
-    expect(screen.queryByText("106 lb")).not.toBeInTheDocument();
+    expect(historyList().queryByText("106 lb")).not.toBeInTheDocument();
     expect(showMoreButton()).toHaveFocus();
   });
 });

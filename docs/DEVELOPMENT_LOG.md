@@ -29,7 +29,7 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
-## 2026-10-21 — Recent history window (5 rows, Show more)
+## 2026-10-21 — Recent history window (5 rows, Show more) ([PR #52](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/52))
 
 ### Completed
 
