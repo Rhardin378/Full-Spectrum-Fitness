@@ -21,6 +21,8 @@ export type Measurement = {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  /** Null means active. Set when the owner soft-deletes the row. */
+  deleted_at: string | null;
 };
 
 export type CreateMeasurementInput = {
@@ -29,6 +31,14 @@ export type CreateMeasurementInput = {
   unit: MeasurementUnit;
   measured_on: string;
   notes?: string | null;
+};
+
+export type UpdateMeasurementInput = CreateMeasurementInput & {
+  id: string;
+};
+
+export type SoftDeleteMeasurementInput = {
+  id: string;
 };
 
 export type ListMeasurementsInput = {

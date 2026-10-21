@@ -360,12 +360,12 @@ Let owners **correct mistakes** and **remove entries** without hard-deleting row
 
 ### Scope
 
-- **Migration**
+- **Migration** (`20261019123631_add_measurements_deleted_at.sql`, PR #50)
   - Add `deleted_at timestamptz null` to `public.measurements` (null = active).
-  - Partial index for active rows, e.g. `(user_id, measurement_type, measured_at desc) WHERE deleted_at IS NULL` (adjust if an existing index should be replaced or complemented).
-  - `GRANT UPDATE` on `measurements` to `authenticated` (still no hard `DELETE` for app role).
-  - RLS policy **`measurements_update_own`**: authenticated user may `UPDATE` only their rows (`auth.uid() = user_id`). Optionally restrict which columns change in app layer; DB still enforces ownership.
-  - **Select policy:** either keep current select-own (deleted rows still readable by owner) **or** document that list actions filter `deleted_at IS NULL` only — prefer **list/trend exclude soft-deleted** in application queries even if RLS allows select.
+  - Partial index for active rows: `(user_id, measurement_type, measured_on desc) WHERE deleted_at IS NULL`.
+  - `GRANT UPDATE` to `authenticated` on `measurement_type`, `value`, `unit`, `measured_on`, `measured_at`, `notes`, `deleted_at` only (still no hard `DELETE`).
+  - RLS policy **`measurements_update_own`**: `USING` owner + `deleted_at is null`; `WITH CHECK` owner only (so soft delete can set `deleted_at`).
+  - **Select policy:** keep select-own unfiltered so lookup/RETURNING of a just-deleted row still works; **list/trend exclude** `deleted_at IS NULL` in application queries.
 - **`updateMeasurement(id, input)`** server action:
   - Same validation rules as create (`createMeasurementSchema` fields; `id` UUID).
   - Reject if row missing, not owned, or `deleted_at` is set.

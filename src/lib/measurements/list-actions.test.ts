@@ -57,6 +57,7 @@ function makeListClient(
     select: ReturnType<typeof vi.fn>;
     eq: ReturnType<typeof vi.fn>;
     gte: ReturnType<typeof vi.fn>;
+    is: ReturnType<typeof vi.fn>;
     lt: ReturnType<typeof vi.fn>;
     lte: ReturnType<typeof vi.fn>;
     or: ReturnType<typeof vi.fn>;
@@ -70,6 +71,7 @@ function makeListClient(
     select: vi.fn(),
     eq: vi.fn(),
     gte: vi.fn(),
+    is: vi.fn(),
     lt: vi.fn(),
     lte: vi.fn(),
     or: vi.fn(),
@@ -81,6 +83,7 @@ function makeListClient(
   builder.select.mockReturnValue(builder);
   builder.eq.mockReturnValue(builder);
   builder.gte.mockReturnValue(builder);
+  builder.is.mockReturnValue(builder);
   builder.lt.mockReturnValue(builder);
   builder.lte.mockReturnValue(builder);
   builder.or.mockReturnValue(builder);
@@ -159,6 +162,7 @@ describe("listMeasurements", () => {
       expect(result.next_cursor).toBeNull();
     }
     expect(testClient.spies.eq).toHaveBeenCalledWith("user_id", "user-1");
+    expect(testClient.spies.is).toHaveBeenCalledWith("deleted_at", null);
     expect(testClient.spies.order).toHaveBeenNthCalledWith(1, "measured_on", {
       ascending: false,
     });
