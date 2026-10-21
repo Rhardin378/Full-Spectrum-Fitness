@@ -404,7 +404,8 @@ Let owners **correct mistakes** and **remove entries** without hard-deleting row
 
 **Type:** feature  
 **Priority:** P1  
-**Labels:** `slice-1.5`, `measurements`, `frontend`, `ui`
+**Labels:** `slice-1.5`, `measurements`, `frontend`, `ui`  
+**Status:** In review — [PR #51](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/51)
 
 ### Description
 

@@ -73,8 +73,8 @@ Tracked in [`tickets.md`](./tickets.md):
 | Ticket | Summary |
 |--------|---------|
 | **1.5.9** | Backend: `updateMeasurement`, `softDeleteMeasurement`, `deleted_at` migration, column-level `UPDATE` + RLS on active rows, list excludes deleted ([PR #50](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/50)) |
-| **1.5.10** | UI: Edit / Delete on Recent history; edit via log modal; delete confirm dialog |
-| **1.5.11** | Automated tests for update, soft delete, and list behavior |
+| **1.5.10** | UI: Edit / Delete on Recent history; edit via log modal; delete confirm dialog ([PR #51](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/51)) |
+| **1.5.11** | Automated tests for update, soft delete, and list behavior (backend in #50; history UI component tests in [PR #51](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/51)) |
 | **1.5.12** | Calendar date field `measured_on` — log/history/trend use the day the user chose, not UTC midnight |
 
 Hard delete is intentionally out of scope; soft delete preserves auditability and simplifies RLS (update-only).

@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { createMeasurement } from "@/lib/measurements/actions";
+import {
+  createMeasurement,
+  updateMeasurement,
+} from "@/lib/measurements/actions";
 import {
   parsePositiveDecimal,
   toDateInputValue,
 } from "@/lib/measurements/display";
 import type {
+  Measurement,
   MeasurementType,
   MeasurementUnit,
 } from "@/lib/types/measurement";
@@ -17,7 +21,14 @@ type LogMeasurementModalProps = {
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
+  /** Edit only: row is gone, so the parent should refresh and close. */
+  onNotFound?: () => void;
+  mode?: "create" | "edit";
+  measurement?: Measurement | null;
 };
+
+const UNEXPECTED_SAVE_MESSAGE =
+  "Unable to save your measurement. Please try again.";
 
 const TYPE_OPTIONS: { id: MeasurementType; label: string }[] = [
   { id: "weight", label: "Weight" },
@@ -32,21 +43,63 @@ function unitsForType(type: MeasurementType): readonly MeasurementUnit[] {
   return type === "weight" ? WEIGHT_UNITS : WAIST_UNITS;
 }
 
+function formatValueInput(value: number): string {
+  if (Math.abs(value * 10 - Math.round(value * 10)) < 0.00000001) {
+    return value.toString();
+  }
+  return value.toFixed(2).replace(/\.?0+$/, "");
+}
+
+function buildInitialFormState(
+  mode: "create" | "edit",
+  measurement: Measurement | null,
+): {
+  measurementType: MeasurementType;
+  unit: MeasurementUnit;
+  valueInput: string;
+  measuredOn: string;
+  notes: string;
+} {
+  if (mode === "edit" && measurement) {
+    return {
+      measurementType: measurement.measurement_type,
+      unit: measurement.unit,
+      valueInput: formatValueInput(measurement.value),
+      measuredOn: measurement.measured_on,
+      notes: measurement.notes ?? "",
+    };
+  }
+
+  return {
+    measurementType: "weight",
+    unit: "lb",
+    valueInput: "",
+    measuredOn: toDateInputValue(),
+    notes: "",
+  };
+}
+
 export function LogMeasurementModal({
   open,
   onClose,
   onSaved,
+  onNotFound,
+  mode = "create",
+  measurement = null,
 }: LogMeasurementModalProps) {
+  const isEdit = mode === "edit";
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   useModalFocusTrap(dialogRef, open);
 
-  const [measurementType, setMeasurementType] =
-    useState<MeasurementType>("weight");
-  const [unit, setUnit] = useState<MeasurementUnit>("lb");
-  const [valueInput, setValueInput] = useState("");
-  const [measuredOn, setMeasuredOn] = useState(() => toDateInputValue());
-  const [notes, setNotes] = useState("");
+  const initialForm = buildInitialFormState(mode, measurement);
+  const [measurementType, setMeasurementType] = useState<MeasurementType>(
+    initialForm.measurementType,
+  );
+  const [unit, setUnit] = useState<MeasurementUnit>(initialForm.unit);
+  const [valueInput, setValueInput] = useState(initialForm.valueInput);
+  const [measuredOn, setMeasuredOn] = useState(initialForm.measuredOn);
+  const [notes, setNotes] = useState(initialForm.notes);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -89,14 +142,18 @@ export function LogMeasurementModal({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
+    if (submitting) {
+      return;
+    }
+
     setFormError(null);
     setFieldErrors({});
 
     const parsedValue = parsePositiveDecimal(valueInput);
     if (parsedValue === null) {
       setFieldErrors({
-        value:
-          "Enter a positive number with up to two decimal places.",
+        value: "Enter a positive number with up to two decimal places.",
       });
       return;
     }
@@ -106,28 +163,52 @@ export function LogMeasurementModal({
       return;
     }
 
+    if (isEdit && !measurement) {
+      setFormError(
+        "This measurement could not be loaded. Close and try again.",
+      );
+      return;
+    }
+
     setSubmitting(true);
 
-    const result = await createMeasurement({
+    const payload = {
       measurement_type: measurementType,
       value: parsedValue,
       unit,
       measured_on: measuredOn,
       notes: notes.trim() ? notes : null,
-    });
+    };
 
-    setSubmitting(false);
+    try {
+      const result = isEdit
+        ? await updateMeasurement({
+            id: measurement!.id,
+            ...payload,
+          })
+        : await createMeasurement(payload);
 
-    if (!result.success) {
-      if (result.fieldErrors) {
-        setFieldErrors(result.fieldErrors);
+      if (!result.success) {
+        if (result.error === "not_found") {
+          onNotFound?.();
+          onClose();
+          return;
+        }
+
+        if (result.fieldErrors) {
+          setFieldErrors(result.fieldErrors);
+        }
+        setFormError(result.message);
+        return;
       }
-      setFormError(result.message);
-      return;
-    }
 
-    onSaved();
-    onClose();
+      onSaved();
+      onClose();
+    } catch {
+      setFormError(UNEXPECTED_SAVE_MESSAGE);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (!open) {
@@ -161,7 +242,7 @@ export function LogMeasurementModal({
             id={titleId}
             className="text-xl font-semibold text-text-primary sm:text-[22px]"
           >
-            Log measurement
+            {isEdit ? "Edit measurement" : "Log measurement"}
           </h2>
           <button
             type="button"
@@ -324,7 +405,11 @@ export function LogMeasurementModal({
             disabled={submitting}
             className="mt-2 w-full rounded-xl bg-brand-coral-deep px-5 py-3.5 text-base font-semibold text-white shadow-[0_2px_8px_rgba(209,74,64,0.35)] transition hover:bg-brand-coral-dark disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {submitting ? "Saving…" : "Save measurement"}
+            {submitting
+              ? "Saving…"
+              : isEdit
+                ? "Save changes"
+                : "Save measurement"}
           </button>
         </form>
       </div>
