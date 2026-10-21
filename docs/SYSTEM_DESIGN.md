@@ -216,8 +216,7 @@ No AI.
 
 ## Updating or removing a measurement (implemented)
 
-Frontend (Slice 1.5.10 UI not shipped yet)  
-→ `updateMeasurement` / `softDeleteMeasurement` server actions  
+Recent history **Edit** reuses the log modal (`updateMeasurement`). **Delete** confirms, then calls `softDeleteMeasurement`.  
 → Zod (same calendar-date and unit-vs-type rules as create)  
 → owner-scoped `UPDATE` RLS on active rows (`deleted_at is null`)  
 → list + trend hide soft-deleted rows (`deleted_at IS NULL` in the query)

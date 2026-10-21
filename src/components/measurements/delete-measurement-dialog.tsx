@@ -15,13 +15,18 @@ type DeleteMeasurementDialogProps = {
   open: boolean;
   onClose: () => void;
   onDeleted: () => void;
+  onNotFound: () => void;
 };
+
+const UNEXPECTED_DELETE_MESSAGE =
+  "Unable to remove your measurement. Please try again.";
 
 export function DeleteMeasurementDialog({
   measurement,
   open,
   onClose,
   onDeleted,
+  onNotFound,
 }: DeleteMeasurementDialogProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -53,24 +58,34 @@ export function DeleteMeasurementDialog({
   }, [open, onClose, submitting]);
 
   async function handleConfirm() {
-    if (!measurement) {
+    if (!measurement || submitting) {
       return;
     }
 
     setSubmitting(true);
     setErrorMessage(null);
 
-    const result = await softDeleteMeasurement({ id: measurement.id });
+    try {
+      const result = await softDeleteMeasurement({ id: measurement.id });
 
-    setSubmitting(false);
+      if (!result.success) {
+        if (result.error === "not_found") {
+          onNotFound();
+          onClose();
+          return;
+        }
 
-    if (!result.success) {
-      setErrorMessage(result.message);
-      return;
+        setErrorMessage(result.message);
+        return;
+      }
+
+      onDeleted();
+      onClose();
+    } catch {
+      setErrorMessage(UNEXPECTED_DELETE_MESSAGE);
+    } finally {
+      setSubmitting(false);
     }
-
-    onDeleted();
-    onClose();
   }
 
   if (!open || !measurement) {

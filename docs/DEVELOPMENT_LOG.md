@@ -29,6 +29,36 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-10-21 — 1.5.10 history edit/delete review fixes (PR #51)
+
+### Completed
+
+- Review follow-up on the Recent history Edit/Delete UI ([PR #51](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/51)).
+- Thrown `updateMeasurement` / `softDeleteMeasurement` calls show a generic error and always clear the submitting state, so Escape, the backdrop, and Cancel stay usable.
+- `not_found` closes the edit modal or delete dialog, refreshes history, and shows a status message instead of leaving a stale row.
+- Row Edit/Delete targets are at least 44px, stay visible on devices that cannot hover, and have distinct names such as “Edit Weight on Oct 4, 2026”.
+- Component tests cover prefill, confirm/cancel/escape, refresh, thrown actions, and `not_found`.
+
+### Decisions
+
+- No undo, optimistic updates, or new product copy beyond the error and missing-row messages.
+- Hide row actions with `can-hover` (`@media (hover: hover)`) rather than the `sm` breakpoint, so touch tablets are not hover-only.
+
+### Issues
+
+- Phone preview of edit/delete on the Vercel deployment is still manual.
+- Edit/delete against hosted data still depends on the 1.5.9 migration being applied there.
+
+### Next
+
+- Review/merge PR #51, then 1.5.8 QA (edit and soft-delete on a real account, including a US timezone).
+
+### AI Notes
+
+- Cursor Grok: review fixes on `cursor/measurements-edit-delete-ui-fa4a`. UI half of ticket 1.5.11 (history component tests) is included here; backend update/delete tests remain from #50.
+
+---
+
 ## 2026-10-19 — 1.5.9 update/soft-delete backend (PR #50)
 
 ### Completed

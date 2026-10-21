@@ -21,9 +21,14 @@ type LogMeasurementModalProps = {
   open: boolean;
   onClose: () => void;
   onSaved: () => void;
+  /** Edit only: row is gone, so the parent should refresh and close. */
+  onNotFound?: () => void;
   mode?: "create" | "edit";
   measurement?: Measurement | null;
 };
+
+const UNEXPECTED_SAVE_MESSAGE =
+  "Unable to save your measurement. Please try again.";
 
 const TYPE_OPTIONS: { id: MeasurementType; label: string }[] = [
   { id: "weight", label: "Weight" },
@@ -78,6 +83,7 @@ export function LogMeasurementModal({
   open,
   onClose,
   onSaved,
+  onNotFound,
   mode = "create",
   measurement = null,
 }: LogMeasurementModalProps) {
@@ -136,14 +142,18 @@ export function LogMeasurementModal({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
+    if (submitting) {
+      return;
+    }
+
     setFormError(null);
     setFieldErrors({});
 
     const parsedValue = parsePositiveDecimal(valueInput);
     if (parsedValue === null) {
       setFieldErrors({
-        value:
-          "Enter a positive number with up to two decimal places.",
+        value: "Enter a positive number with up to two decimal places.",
       });
       return;
     }
@@ -154,7 +164,9 @@ export function LogMeasurementModal({
     }
 
     if (isEdit && !measurement) {
-      setFormError("This measurement could not be loaded. Close and try again.");
+      setFormError(
+        "This measurement could not be loaded. Close and try again.",
+      );
       return;
     }
 
@@ -168,25 +180,35 @@ export function LogMeasurementModal({
       notes: notes.trim() ? notes : null,
     };
 
-    const result = isEdit
-      ? await updateMeasurement({
-          id: measurement!.id,
-          ...payload,
-        })
-      : await createMeasurement(payload);
+    try {
+      const result = isEdit
+        ? await updateMeasurement({
+            id: measurement!.id,
+            ...payload,
+          })
+        : await createMeasurement(payload);
 
-    setSubmitting(false);
+      if (!result.success) {
+        if (result.error === "not_found") {
+          onNotFound?.();
+          onClose();
+          return;
+        }
 
-    if (!result.success) {
-      if (result.fieldErrors) {
-        setFieldErrors(result.fieldErrors);
+        if (result.fieldErrors) {
+          setFieldErrors(result.fieldErrors);
+        }
+        setFormError(result.message);
+        return;
       }
-      setFormError(result.message);
-      return;
-    }
 
-    onSaved();
-    onClose();
+      onSaved();
+      onClose();
+    } catch {
+      setFormError(UNEXPECTED_SAVE_MESSAGE);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (!open) {
