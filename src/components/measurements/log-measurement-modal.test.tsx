@@ -89,9 +89,11 @@ describe("LogMeasurementModal (create)", () => {
       expect(createMeasurement).toHaveBeenCalled();
     });
 
-    expect(within(dialog).getByRole("alert")).toHaveTextContent(
-      "That unit does not match this measurement type.",
-    );
+    await waitFor(() => {
+      expect(within(dialog).getByRole("alert")).toHaveTextContent(
+        "That unit does not match this measurement type.",
+      );
+    });
     expect(within(dialog).getByText("Use lb or kg for weight.")).toBeInTheDocument();
   });
 

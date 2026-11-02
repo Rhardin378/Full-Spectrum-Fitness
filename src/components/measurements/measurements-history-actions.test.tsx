@@ -22,6 +22,10 @@ vi.mock("@/lib/measurements/actions", () => ({
 }));
 
 import { MeasurementsTabPanel } from "@/components/measurements/measurements-tab-panel";
+import {
+  findHistoryRowAction,
+  historyActionLabel,
+} from "@/components/measurements/measurements-panel-test-helpers";
 
 const weightEntry: Measurement = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -64,8 +68,10 @@ function renderHistory() {
   return { onHistoryRefresh, onLogMeasurementClick };
 }
 
-async function openDeleteDialog(name: string) {
-  fireEvent.click(await screen.findByRole("button", { name }));
+async function openDeleteDialog(entry: Measurement) {
+  fireEvent.click(
+    await findHistoryRowAction("Delete", entry, listMeasurements),
+  );
   return screen.findByRole("alertdialog");
 }
 
@@ -87,17 +93,19 @@ describe("measurement history row actions", () => {
   it("names each row action and keeps a 44px target visible without hover", async () => {
     renderHistory();
 
-    const editWeight = await screen.findByRole("button", {
-      name: "Edit Weight on Oct 4, 2026",
-    });
+    const editWeight = await findHistoryRowAction(
+      "Edit",
+      weightEntry,
+      listMeasurements,
+    );
     const deleteWeight = screen.getByRole("button", {
-      name: "Delete Weight on Oct 4, 2026",
+      name: historyActionLabel("Delete", weightEntry),
     });
     const editWaist = screen.getByRole("button", {
-      name: "Edit Waist on Oct 1, 2026",
+      name: historyActionLabel("Edit", waistEntry),
     });
     const deleteWaist = screen.getByRole("button", {
-      name: "Delete Waist on Oct 1, 2026",
+      name: historyActionLabel("Delete", waistEntry),
     });
 
     for (const button of [editWeight, deleteWeight, editWaist, deleteWaist]) {
@@ -120,7 +128,7 @@ describe("measurement history row actions", () => {
     const { onHistoryRefresh } = renderHistory();
 
     fireEvent.click(
-      await screen.findByRole("button", { name: "Edit Weight on Oct 4, 2026" }),
+      await findHistoryRowAction("Edit", weightEntry, listMeasurements),
     );
 
     const dialog = await screen.findByRole("dialog", {
@@ -160,7 +168,7 @@ describe("measurement history row actions", () => {
     softDeleteMeasurement.mockResolvedValue({ success: true });
     const { onHistoryRefresh } = renderHistory();
 
-    const dialog = await openDeleteDialog("Delete Weight on Oct 4, 2026");
+    const dialog = await openDeleteDialog(weightEntry);
     fireEvent.click(
       within(dialog).getByRole("button", { name: "Remove measurement" }),
     );
@@ -182,7 +190,7 @@ describe("measurement history row actions", () => {
 
   it("closes delete from Cancel without calling soft delete", async () => {
     renderHistory();
-    const dialog = await openDeleteDialog("Delete Weight on Oct 4, 2026");
+    const dialog = await openDeleteDialog(weightEntry);
     fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
 
     expect(softDeleteMeasurement).not.toHaveBeenCalled();
@@ -191,7 +199,7 @@ describe("measurement history row actions", () => {
 
   it("closes delete from Escape without calling soft delete", async () => {
     renderHistory();
-    await openDeleteDialog("Delete Waist on Oct 1, 2026");
+    await openDeleteDialog(waistEntry);
     fireEvent.keyDown(document, { key: "Escape" });
 
     expect(softDeleteMeasurement).not.toHaveBeenCalled();
@@ -202,7 +210,7 @@ describe("measurement history row actions", () => {
     softDeleteMeasurement.mockRejectedValue(new Error("socket hang up"));
     const { onHistoryRefresh } = renderHistory();
 
-    const dialog = await openDeleteDialog("Delete Weight on Oct 4, 2026");
+    const dialog = await openDeleteDialog(weightEntry);
     fireEvent.click(
       within(dialog).getByRole("button", { name: "Remove measurement" }),
     );
@@ -228,7 +236,7 @@ describe("measurement history row actions", () => {
     const { onHistoryRefresh } = renderHistory();
 
     fireEvent.click(
-      await screen.findByRole("button", { name: "Edit Waist on Oct 1, 2026" }),
+      await findHistoryRowAction("Edit", waistEntry, listMeasurements),
     );
     const dialog = await screen.findByRole("dialog", {
       name: "Edit measurement",
@@ -264,7 +272,7 @@ describe("measurement history row actions", () => {
     });
     const { onHistoryRefresh } = renderHistory();
 
-    const dialog = await openDeleteDialog("Delete Weight on Oct 4, 2026");
+    const dialog = await openDeleteDialog(weightEntry);
     fireEvent.click(
       within(dialog).getByRole("button", { name: "Remove measurement" }),
     );
@@ -293,7 +301,7 @@ describe("measurement history row actions", () => {
     const { onHistoryRefresh } = renderHistory();
 
     fireEvent.click(
-      await screen.findByRole("button", { name: "Edit Weight on Oct 4, 2026" }),
+      await findHistoryRowAction("Edit", weightEntry, listMeasurements),
     );
     const dialog = await screen.findByRole("dialog", {
       name: "Edit measurement",
@@ -323,7 +331,7 @@ describe("measurement history row actions", () => {
     });
     const { onHistoryRefresh } = renderHistory();
 
-    const dialog = await openDeleteDialog("Delete Waist on Oct 1, 2026");
+    const dialog = await openDeleteDialog(waistEntry);
     fireEvent.click(
       within(dialog).getByRole("button", { name: "Remove measurement" }),
     );
@@ -343,12 +351,14 @@ describe("measurement history row actions", () => {
       measurement: waistEntry,
     });
     renderHistory();
-    await screen.findByRole("button", { name: "Delete Weight on Oct 4, 2026" });
+    await findHistoryRowAction("Delete", weightEntry, listMeasurements);
 
     vi.useFakeTimers();
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Delete Weight on Oct 4, 2026" }),
+      screen.getByRole("button", {
+        name: historyActionLabel("Delete", weightEntry),
+      }),
     );
     fireEvent.click(screen.getByRole("button", { name: "Remove measurement" }));
     await act(async () => {
@@ -363,7 +373,9 @@ describe("measurement history row actions", () => {
     });
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Edit Waist on Oct 1, 2026" }),
+      screen.getByRole("button", {
+        name: historyActionLabel("Edit", waistEntry),
+      }),
     );
     fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
     await act(async () => {

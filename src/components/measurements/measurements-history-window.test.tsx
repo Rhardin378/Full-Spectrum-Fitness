@@ -16,6 +16,7 @@ vi.mock("@/lib/measurements/actions", () => ({
 }));
 
 import { MeasurementsTabPanel } from "@/components/measurements/measurements-tab-panel";
+import { waitForHistoryReady } from "@/components/measurements/measurements-panel-test-helpers";
 
 function shiftIsoDate(isoDate: string, days: number): string {
   const date = new Date(`${isoDate}T00:00:00.000Z`);
@@ -85,6 +86,7 @@ beforeEach(() => {
 describe("measurement history window", () => {
   it("shows the 5 most recent rows and a count", async () => {
     renderPanel();
+    await waitForHistoryReady(listMeasurements);
 
     expect(await screen.findByText("Showing 5 of 23")).toBeInTheDocument();
     expect(historyItems()).toHaveLength(5);
