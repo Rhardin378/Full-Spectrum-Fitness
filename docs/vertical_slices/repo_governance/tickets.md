@@ -2,6 +2,8 @@
 
 Use when you are ready to harden the repo. **Workflow policy is already in effect** (branch + PR); **RG.1** is the scheduled “sit down and configure GitHub” session.
 
+**2026-11-03:** Implementation detail for **RG.2** (CI) and **RG.3** (Next.js) now lives in [`docs/vertical_slices/cleanup_backlog/tickets.md`](../cleanup_backlog/tickets.md) as **CU.2** and **CU.1**. RG.3’s “patched 16.3.x / 16.3.8” pin is stale — the app is still on 16.1.6, and the patched 16.x line to re-check is 16.4.5 or newer. **RG.1** is repeated with current evidence as cleanup ticket **CU.6**. Do not open a second, conflicting CI or upgrade issue from the old pin.
+
 ---
 
 ## Ticket RG.1: Configure GitHub ruleset for `main` (deferred)
@@ -81,6 +83,8 @@ Add `.github/workflows/ci.yml` (or similar) running on PRs to `main`: `npm run l
 - Ruleset **RG.1** updated to require those check names.
 - No secrets in workflow except public env; Supabase not needed for unit tests.
 
+Follow cleanup ticket **CU.2** for the workflow file, the missing `typecheck` script, and the root-layout env issue. Do not open a second CI issue from this section.
+
 ### Dependencies
 
 - Recommended after Slice 1.5 core feature tickets; can parallel Next.js security upgrade PR.
@@ -99,7 +103,9 @@ Add `.github/workflows/ci.yml` (or similar) running on PRs to `main`: `npm run l
 
 ### Description
 
-Upgrade Next.js / eslint-config-next to patched 16.3.x, run `npm audit fix` where safe, security headers, generic API error messages. **Always via PR**, never direct to `main`.
+Upgrade Next.js / eslint-config-next to the latest patched 16.x, run `npm audit fix` where safe, security headers, generic API error messages. **Always via PR**, never direct to `main`.
+
+The old 16.3.x / 16.3.8 target is stale. Follow cleanup ticket **CU.1** (16.4.5 or newer as of 2026-11-03; re-check before upgrading). Do not open a separate issue from this section.
 
 ### Dependencies
 
