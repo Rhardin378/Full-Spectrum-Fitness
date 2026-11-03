@@ -1,15 +1,19 @@
 import type { WeightTrendPoint } from "@/lib/measurements/trend";
 
-type WeightTrendChartProps = {
+interface WeightTrendChartProps {
   points: WeightTrendPoint[];
-};
+  rangeDescription: string;
+}
 
 const WIDTH = 320;
 const HEIGHT = 120;
 const PAD_X = 14;
 const PAD_Y = 16;
 
-export function WeightTrendChart({ points }: WeightTrendChartProps) {
+export function WeightTrendChart({
+  points,
+  rangeDescription,
+}: WeightTrendChartProps) {
   if (points.length === 0) {
     return null;
   }
@@ -46,7 +50,7 @@ export function WeightTrendChart({ points }: WeightTrendChartProps) {
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       className="mt-4 h-32 w-full text-brand-coral"
       role="img"
-      aria-label="Weight trend line chart for the last 30 days"
+      aria-label={`Weight trend line chart for ${rangeDescription}`}
     >
       {linePoints ? (
         <polyline

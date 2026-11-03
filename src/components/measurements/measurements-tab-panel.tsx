@@ -358,7 +358,7 @@ export function MeasurementsTabPanel({
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section
-          className="rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm"
+          className="order-2 rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm lg:order-1"
           aria-labelledby="recent-history-heading"
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -481,6 +481,7 @@ export function MeasurementsTabPanel({
         </section>
 
         <WeightTrendCard
+          className="order-1 lg:order-2"
           refreshToken={refreshToken}
           onLogMeasurementClick={onLogMeasurementClick}
         />

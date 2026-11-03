@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  addUtcCalendarMonths,
   calendarDateInTimeZone,
   formatCalendarDate,
   isValidCalendarDate,
@@ -43,5 +44,15 @@ describe("calendar dates", () => {
 
   it("allows at most one day past UTC today", () => {
     expect(maxAllowedMeasuredOn(eveningUtc)).toBe("2026-10-06");
+  });
+
+  it("shifts calendar months in UTC and clamps short months", () => {
+    expect(addUtcCalendarMonths("2026-11-03", -6)).toBe("2026-05-03");
+    expect(addUtcCalendarMonths("2026-11-03", -12)).toBe("2025-11-03");
+    expect(addUtcCalendarMonths("2026-03-31", -6)).toBe("2025-09-30");
+    expect(addUtcCalendarMonths("2026-03-31", -1)).toBe("2026-02-28");
+    expect(addUtcCalendarMonths("2024-02-29", -12)).toBe("2023-02-28");
+    expect(addUtcCalendarMonths("2024-02-29", 12)).toBe("2025-02-28");
+    expect(addUtcCalendarMonths("2026-01-15", -6)).toBe("2025-07-15");
   });
 });
