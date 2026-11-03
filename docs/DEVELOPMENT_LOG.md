@@ -29,7 +29,7 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
-## 2026-11-03 — Weight trend range toggle
+## 2026-11-03 — Weight trend range toggle ([PR #58](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/58))
 
 ### Completed
 
