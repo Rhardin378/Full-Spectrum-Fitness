@@ -93,8 +93,8 @@ describe("buildWeightTrendSummary", () => {
     expect(summary.latestValue).toBe(182.4);
     expect(summary.points).toHaveLength(2);
     expect(summary.delta).toBe(-0.7);
-    expect(formatWeightTrendDelta(summary.delta!, "lb")).toBe(
-      "-0.7 lb vs 30 days",
+    expect(formatWeightTrendDelta(summary.delta!, "lb", "30 days")).toBe(
+      "-0.7 lb over 30 days",
     );
   });
 

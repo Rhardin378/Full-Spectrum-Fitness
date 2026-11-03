@@ -29,6 +29,35 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-03 — Weight trend range toggle
+
+### Completed
+
+- Measurements weight trend card has a 30D / 90D / 6M / 1Y / All control. 90D is the default.
+- The chart, subtitle, change, and weigh-in count follow the selected range. The recent history list does not.
+- Range changes filter measurements already loaded in the browser. The card still uses `listMeasurements` and does not add a query, migration, or server action.
+- On viewports below the `lg` breakpoint the chart sits above recent history. From `lg` up, history stays on the left and the chart on the right.
+
+### Decisions
+
+- Windows are inclusive calendar days on `measured_on` (YYYY-MM-DD), compared as dates rather than timestamps, so a UTC midnight cannot shift a logged day.
+- 30D and 90D are today plus the previous 29 or 89 days. 6M and 1Y step calendar months and clamp short months (Mar 31 back 6 months starts Sep 30). All keeps every loaded weigh-in.
+- The card pages through existing weight results (page size 100) once per refresh, then filters locally.
+
+### Issues
+
+- A very long history stops after 50 pages (5,000 weigh-ins) and charts what was loaded.
+
+### Next
+
+- Review the segmented control on a phone-width measurements tab.
+
+### AI Notes
+
+- Cursor Grok: client-side range filter in `src/lib/measurements/trend-range.ts`, toggle on the weight trend card, Vitest coverage for boundaries and toggle behavior.
+
+---
+
 ## 2026-10-21 — Recent history window (5 rows, Show more) ([PR #52](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/52))
 
 ### Completed

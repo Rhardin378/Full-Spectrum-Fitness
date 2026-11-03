@@ -1,8 +1,8 @@
 import {
-  addUtcCalendarDays,
   calendarDateTimestamp,
   todayLocalISODate,
 } from "@/lib/measurements/calendar-date";
+import { weightTrendRangeStartDate } from "@/lib/measurements/trend-range";
 import type { Measurement, MeasurementUnit } from "@/lib/types/measurement";
 
 export type WeightTrendPoint = {
@@ -29,7 +29,7 @@ export function getWeightTrendDateRange(referenceDate: Date = new Date()): {
 } {
   const end = todayLocalISODate(referenceDate);
   return {
-    start_date: addUtcCalendarDays(end, -29),
+    start_date: weightTrendRangeStartDate("30d", end) ?? end,
     end_date: end,
   };
 }
@@ -68,8 +68,9 @@ function formatSignedDelta(value: number): string {
 export function formatWeightTrendDelta(
   delta: number,
   unit: MeasurementUnit,
+  periodLabel: string,
 ): string {
-  return `${formatSignedDelta(delta)} ${unit} vs 30 days`;
+  return `${formatSignedDelta(delta)} ${unit} over ${periodLabel}`;
 }
 
 export function buildWeightTrendSummary(

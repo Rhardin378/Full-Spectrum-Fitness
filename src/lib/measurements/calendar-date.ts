@@ -21,6 +21,32 @@ export function addUtcCalendarDays(isoDate: string, days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
+/**
+ * Shift a YYYY-MM-DD by whole calendar months in UTC.
+ * The day clamps to the target month (Mar 31 minus 1 month is Feb 28/29)
+ * so the result stays a real calendar day in every timezone.
+ */
+export function addUtcCalendarMonths(isoDate: string, months: number): string {
+  if (!isValidCalendarDate(isoDate) || !Number.isInteger(months)) {
+    return isoDate;
+  }
+
+  const year = Number(isoDate.slice(0, 4));
+  const monthIndex = Number(isoDate.slice(5, 7)) - 1;
+  const day = Number(isoDate.slice(8, 10));
+  const targetMonthIndex = monthIndex + months;
+  const targetYear = year + Math.floor(targetMonthIndex / 12);
+  const normalizedMonth = ((targetMonthIndex % 12) + 12) % 12;
+  const lastDay = new Date(
+    Date.UTC(targetYear, normalizedMonth + 1, 0),
+  ).getUTCDate();
+  const clampedDay = Math.min(day, lastDay);
+
+  return new Date(Date.UTC(targetYear, normalizedMonth, clampedDay))
+    .toISOString()
+    .slice(0, 10);
+}
+
 export function calendarDateInTimeZone(
   now: Date,
   timeZone: string,
