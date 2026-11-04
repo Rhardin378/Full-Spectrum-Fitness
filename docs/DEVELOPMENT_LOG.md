@@ -29,6 +29,34 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-04 — Check-in notes and weight link (docs only, [PR #59](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/59))
+
+### Completed
+
+- Ticket 2.1: optional nullable `notes` on `weekly_check_ins`, max 1000 characters, database check constraint, owner RLS. Zod validation is ticket 2.2.
+- Ticket 2.4: optional final notes field with the approved prompt. Notes show in check-in history. Nothing replies. Slice 5 reads notes as context later (ADR-004) with no new data model.
+- Ticket 2.7: secondary link “Log this week’s weight” to the existing `/dashboard` measurements log. No new feature.
+- ADR-013 consequences and the Slice 2 README note the field. Future ideas, not built: diet adherence / appetite tracking, and coach Q&A replies to notes. Progress photos stay backlog #54.
+- Tickets 2.2, 2.8, and 2.10 record empty notes, the length limit, and RLS ownership. No application code.
+
+### Decisions
+
+- Notes are the owner’s memory of the week, not a message to a coach.
+
+### Issues
+
+- None new. The handoff pack is still ticket 2.9.
+
+### Next
+
+- Review PR #59.
+
+### AI Notes
+
+- Cursor Grok: docs only, on the existing PR branch.
+
+---
+
 ## 2026-11-04 — ADR-013 proposed (docs only, [PR #59](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/59))
 
 ### Completed
