@@ -85,17 +85,20 @@ Mockup: [`journal-desktop.png`](../../mockups/slice_2_journal_checkin/journal-de
 
 One row per user per check-in `week_start`. A second submit for that week is rejected. This slice does not edit a submitted check-in.
 
-Screen order matches [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desktop.png):
+Screen order matches [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desktop.png) through the next intention. The PNG does not show the notes field. The list here is the approved order.
 
 1. **Your week so far** — deterministic recap of journal rows whose `entry_on` falls on the seven days of the check-in week (not a rolling window that includes today). Average mood to one decimal, days journaled as “N of 7”, top two tagged domains with counts, mood sparkline. Hollow point = no entry. Caption may say “Mood, last 7 days”. Empty week: honest empty copy, not zeros.
 2. **Last week’s intention** — the `weekly_intentions` row whose `week_start` equals this check-in week. “Did you do it?” maps Yes → `done`, Partly → `partly`, No → `not_done`. Hidden when that row does not exist (first check-in). Required when it exists.
 3. **Stress and energy** — each integer 1–10. Copy: “1 = low, 10 = high”.
 4. **Life domains** — seven required scores plus optional Habits. Copy: “1 = struggling, 10 = thriving”.
 5. **Intention for next week** — exactly one. Domain required, preselected to the lowest required score (Habits counts only if it was scored). Ties use canonical order. The user can change the domain before submit. Text required, 1–200 characters. Copy: “One concrete thing. Your lowest domain this week: {Label}.”
+6. **Notes** — optional, last field before submit. Prompt: “How did your training, energy and life go this week? Anything to remember?” Nullable text, at most 1000 characters. Empty is allowed and stores null. This is not a message to a coach. Nothing replies, and there is no Q&A. The Slice 5 coach report reads `notes` as context later (ADR-004). That read does not need a new column or table.
 
 The new intention’s `week_start` is `currentIntentionWeekStart(today)`. `created_from_checkin_id` points at the check-in that created it. `outcome` starts null. `editable_until` is the validated create date plus 3 days.
 
-Check-in, outcome update, and intention insert commit together (one SQL function). A failed intention insert must not leave a check-in behind.
+Check-in, outcome update, and intention insert commit together (one SQL function). A failed intention insert must not leave a check-in behind. `notes` is part of that check-in insert.
+
+Check-in history lists the owner’s past check-ins and shows `notes` when present. A null note does not render an empty block. History is read-only.
 
 ### Intention after it exists
 
@@ -111,7 +114,7 @@ Shown as the coral line above the journal form, and as a card on the Mind page. 
 
 History reuses the measurements window from PR #52: 5 rows, then 10 more per **Show more**, **Show less** back to 5, “Showing N of M”, over one fetched page of 25. See `HISTORY_INITIAL_VISIBLE` and `HISTORY_VISIBLE_STEP` in `src/components/measurements/measurements-tab-panel.tsx`.
 
-The due card is computed on page load. It is shown when no `weekly_check_ins` row exists for `lastCompletedWeekStart(today)`. It writes nothing and sends nothing. No notification system.
+The due card is computed on page load. It is shown when no `weekly_check_ins` row exists for `lastCompletedWeekStart(today)`. It writes nothing and sends nothing. No notification system. The primary link goes to `/mind/check-in`. A secondary link, “Log this week’s weight”, goes to `/dashboard`, the existing measurements log (`+ Log measurement` opens the current modal). The link does not log a weight by itself.
 
 ## Routes
 
@@ -131,7 +134,7 @@ Do not build `/mind/domains`, Prompts, or the domain-comparison screen. `docs/na
 |-------|------|
 | `journal_entries` | One mood + reflection per user per calendar day |
 | `journal_entry_domains` | Zero to two domain tags |
-| `weekly_check_ins` | One score row per user per Monday `week_start` |
+| `weekly_check_ins` | One score row per user per Monday `week_start`, plus optional `notes` (nullable, 1–1000 characters) |
 | `weekly_intentions` | One intention per user per Monday `week_start` |
 
 Owner-scoped RLS on every new table. Zod on every action. `user_id` comes from `auth.uid()` / `getUser()`, never from the client. Database errors returned to the UI stay generic, matching `createMeasurement` rather than the raw Postgres text in `src/lib/profile/actions.ts`.
@@ -146,9 +149,12 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 - Monthly reflection
 - Pre/post workout mood
 - Wins, gratitude, life events
+- Sleep and motivation (later; not this slice)
+- Diet adherence / appetite tracking (not built)
+- Coach Q&A replies to check-in notes (not built; Slice 5 reads notes as context under ADR-004, and does not add a thread)
+- Progress photos (remain backlog [#54](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/54); not this slice)
 - Notifications, email, or push for “check-in due”
-- AI prompts, summaries, theme extraction, or a coach report
-- Sleep, motivation, nutrition adherence (they remain Slice 5 / later check-in ideas)
+- AI prompts, summaries, theme extraction, or a coach report in this slice
 - Editing or backfilling past journal days
 - Soft-delete of journal rows
 - Migrating `profiles.domain_priorities` inside the journal or check-in tickets (the mapping or migration is ticket 2.9, with ADR-013)
@@ -159,6 +165,7 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 - A signed-in user can save today’s journal (mood, reflection, up to two tags) and see it after refresh. A second save the same day updates the same row.
 - Stress and energy are not on the journal.
 - A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice.
+- Optional notes may be empty. When present, check-in history shows them. Nothing replies.
 - Exactly one next intention is stored. Its domain does not change later. Its text changes only through `editable_until`.
 - `/mind` shows stats, a 7-day mood trend, history with Show more, the intention, and a due card that appears and disappears from data alone.
 - Another user cannot read or write these rows. Unauthenticated requests fail.
