@@ -29,6 +29,33 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-04 — ADR-013 proposed (docs only, [PR #59](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/59))
+
+### Completed
+
+- Added ADR-013 (Proposed) to `docs/ARCHITECTURE_DECISIONS.md`. It records Option B life domains (Peterson / Future Authoring, not the SAMHSA wellness wheel), stress and energy on the weekly check-in, that check-in moving from Slice 5 into Slice 2, and exactly one `weekly_intentions` row per week.
+- Noted the proposal on ADR-005 without changing its Accepted status or deleting it. Slice 5’s coach report reads the stored check-in later.
+- Pointed the Slice 2 README and ticket 2.9 at ADR-013. Ticket 2.9 now requires the PRD, system design, ADR-005, `navigation-ia.md`, `tracking_setup.md`, and `DOMAIN_FOCUS_AREAS` to align with and link to it, including a mapping or migration for saved profile domain values.
+- Did not change application code, the PRD, system design, or the launch plan.
+
+### Decisions
+
+- ADR-013 stays Proposed until ticket 2.9 accepts it into the handoff pack. ADR-005 stays Accepted until that update. One intention per week is the rule; a list is a later idea. Copy stays wellbeing language, not therapy (ADR-011).
+
+### Issues
+
+- The pack files named in ticket 2.9 still describe the wellness wheel and a Slice 5 check-in. `DOMAIN_FOCUS_AREAS` is still the seven wheel slugs.
+
+### Next
+
+- Review PR #59. Ticket 2.9 is the pack alignment, including the profile-domain mapping or migration. It is not this commit.
+
+### AI Notes
+
+- Cursor Grok: docs only. Next free number after ADR-012.
+
+---
+
 ## 2026-11-03 — Slice 2 tickets and cleanup backlog (docs only)
 
 ### Completed

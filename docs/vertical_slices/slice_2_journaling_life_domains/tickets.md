@@ -438,38 +438,48 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 
 ### Description
 
-The approved Slice 2 spec and the handoff pack disagree. This docs PR **does not** edit the pack, on purpose: domain names, the journal shape, and the check-in move have to change together (`docs/ARCHITECTURE_DECISIONS.md` ADR-001). Build from the slice README until this ticket lands.
+The approved Slice 2 spec and the handoff pack disagree. This docs PR **does not** edit the pack, on purpose: domain names, the journal shape, and the check-in move have to change together (`docs/ARCHITECTURE_DECISIONS.md` ADR-001). The decision record is **[ADR-013](../../ARCHITECTURE_DECISIONS.md)** (status Proposed) in that file. Build from the slice README until this ticket lands.
+
+When this ticket lands, these must align with ADR-013 and link to it:
+
+- `docs/PRD.md`
+- `docs/SYSTEM_DESIGN.md`
+- ADR-005 in `docs/ARCHITECTURE_DECISIONS.md` (amend it; do not delete it)
+- `docs/navigation-ia.md`
+- `docs/vertical_slices/tracking_setup.md`
+- `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts`, including a mapping or migration for existing users’ saved `profiles.domain_priorities` values
 
 ### Discrepancies to fix
 
-**Life domains.** `docs/PRD.md` §2 lists the wellness wheel: Emotional, Physical well-being, Social / relationships, Environmental, Financial, Occupational, Spiritual / purpose. Approved set is Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, plus optional Habits. The comparison mockup labels the wheel “Option A: Wellness wheel (current)” and Option B as the replacement. `docs/PRD.md` database section also describes `life_domains` plus `journal_domain_scores`.
+**Life domains.** `docs/PRD.md` §2 lists the SAMHSA wellness wheel: Emotional, Physical well-being, Social / relationships, Environmental, Financial, Occupational, Spiritual / purpose. ADR-013 replaces that with Peterson / Future Authoring (Option B): Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, plus optional Habits. The comparison mockup labels the wheel “Option A: Wellness wheel (current)” and Option B as the replacement. `docs/PRD.md` database section also describes `life_domains` plus `journal_domain_scores`. The PRD must align with ADR-013 and link to it.
 
-**Journal shape.** PRD §2 and the feature hierarchy say journal entries carry mood, stress, energy, and optional domain scores. `docs/SYSTEM_DESIGN.md` “Logging a journal entry” writes `journal_entries` + `journal_domain_scores`. Approved: mood, reflection, optional tags in `journal_entry_domains`. Stress and energy live only on the weekly check-in. No domain scores on the journal row.
+**Journal shape.** PRD §2 and the feature hierarchy say journal entries carry mood, stress, energy, and optional domain scores. `docs/SYSTEM_DESIGN.md` “Logging a journal entry” writes `journal_entries` + `journal_domain_scores`. Approved, and recorded in ADR-013: mood, reflection, optional tags in `journal_entry_domains`. Stress and energy live only on the weekly check-in. No domain scores on the journal row. System design must say that and link to ADR-013.
 
-**Where the check-in sits.** PRD §2.5, the core loop, `docs/LAUNCH_PLAN.md` (phase table and build-order rows 2 and 5), `docs/SYSTEM_DESIGN.md` §8 and §16, and ADR-005 put the weekly check-in in Slice 5 together with the coach report. Approved: the subjective check-in (recap, stress, energy, domain scores, one intention) is Slice 2. Slice 5 consumes stored check-ins and still produces the structured coach report. ADR-005’s “not a chatbot / not the next slice after 1.5” part stays. Add a short ADR for the move rather than deleting ADR-005.
+**Where the check-in sits.** PRD §2.5, the core loop, `docs/LAUNCH_PLAN.md` (phase table and build-order rows 2 and 5), `docs/SYSTEM_DESIGN.md` §8 and §16, and ADR-005 put the weekly check-in in Slice 5 together with the coach report. ADR-013 amends ADR-005: the subjective check-in (recap, stress, energy, domain scores, one intention) is Slice 2. Slice 5’s coach report reads that stored check-in later and still produces the structured report. ADR-005’s “not a chatbot / not the next slice after 1.5” part stays. Update ADR-005 so its text matches ADR-013 and links to it. Do not delete ADR-005. One intention per week lives in `weekly_intentions` (next week), not as columns on the check-in (last week); text is editable for 3 days on the server, and the domain locks once set. The pack must not describe a list of intentions or a Slice 5 form.
 
 **Check-in fields the pack still lists and Slice 2 will not store:** mood (again), sleep / recovery, motivation, nutrition adherence, life-event text, free-form check-in reflection. Say they are later or explicitly dropped. Do not leave them implied as Slice 2 work.
 
-**Navigation.** `docs/navigation-ia.md` assigns the weekly check-in to Slice 5 and lists Mind tabs Overview, Journal, Domains, Prompts plus `/mind/domains`. Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. Update the draft IA so it does not send an implementer to build a domain radar.
+**Navigation.** `docs/navigation-ia.md` assigns the weekly check-in to Slice 5 and lists Mind tabs Overview, Journal, Domains, Prompts plus `/mind/domains`. Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. Update the draft IA so it aligns with ADR-013, links to it, and does not send an implementer to build a domain radar.
 
-**Profile keys.** `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` is still the seven wheel slugs. Slice 2 will not migrate `profiles.domain_priorities`. The pack should say that profile priorities and check-in domains are different lists until a later decision.
+**Profile keys.** `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` is still the seven wheel slugs (`emotional`, `physical`, `social`, `environmental`, `financial`, `occupational`, `spiritual`). It must align with ADR-013’s Option B set and link to that ADR. Include a mapping or migration for existing users’ saved `profiles.domain_priorities` values. Do not leave the wheel slugs valid beside the new domains, and do not rewrite saved values without that mapping. Journal and check-in tickets do not perform this migration; this ticket does.
 
-**Tracking.** `docs/vertical_slices/tracking_setup.md` milestones still describe Slice 5 as the check-in and Slice 2 as journaling only.
+**Tracking.** `docs/vertical_slices/tracking_setup.md` milestones still describe Slice 5 as the check-in and Slice 2 as journaling only. They must align with ADR-013 and link to it.
 
 **Not a product spec.** `docs/AI_ENGINEERING_CONTEXT.md` is an audit from 2026-10-05. Do not copy domain names or slice status from it. A full refresh is optional and is not required to close this ticket.
 
 ### Scope
 
-- Update PRD, system design, launch plan, and a new or amended ADR in one change, plus the development log.
-- Adjust navigation IA and the tracking milestone blurbs so they match.
-- Leave Slice 2 behavior described once, in the slice README, and point the pack at it.
-- Do not change application code in the doc ticket unless a one-line comment in `profile.ts` is the chosen way to warn about the two domain lists. Prefer the pack.
+- Update the PRD, system design, and launch plan so they match ADR-013 and link to it. Amend ADR-005 in the same change so it links to ADR-013. Set ADR-013 to Accepted only as part of this pack update, and append the development log.
+- Update `docs/navigation-ia.md` and `docs/vertical_slices/tracking_setup.md` so they align with ADR-013 and link to it.
+- Align `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` with ADR-013, including a mapping or migration for existing users’ saved values, and point readers at the ADR.
+- Leave Slice 2 behavior described once, in the slice README, and point the pack at it and at ADR-013.
+- The ADR pull request does not change application code. This ticket is the one that changes `DOMAIN_FOCUS_AREAS` and the saved-value mapping or migration.
 
 ### Acceptance Criteria
 
-- A reader of the pack can answer: journal fields, domain labels, and which slice stores the weekly check-in, without opening this ticket.
-- Slice 5 is still the coach report, after deterministic insights.
-- Profile domain priorities are explicitly unresolved or explicitly left on the wheel. They are not silently rewritten.
+- A reader of the pack can answer: journal fields, domain labels, and which slice stores the weekly check-in, without opening this ticket. PRD, system design, ADR-005, `docs/navigation-ia.md`, and `docs/vertical_slices/tracking_setup.md` each link to ADR-013.
+- Slice 5 is still the coach report, after deterministic insights, and it reads the Slice 2 check-in rather than collecting the form.
+- `DOMAIN_FOCUS_AREAS` matches ADR-013 and points at it. Existing users’ saved `domain_priorities` have a mapping or migration. They are not left on the wheel and not silently rewritten.
 - `docs/LAUNCH_PLAN.md` “You are here” changes only if Slice 1.5 is actually finished at that moment. This ticket must not pretend Slice 2 has started.
 
 ### Dependencies
