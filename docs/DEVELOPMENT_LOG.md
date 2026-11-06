@@ -29,7 +29,7 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
-## 2026-11-05 — Next.js 16.4.5 security upgrade (CU.1)
+## 2026-11-05 — Next.js 16.4.5 security upgrade (CU.1, [PR #61](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/61))
 
 ### Completed
 
