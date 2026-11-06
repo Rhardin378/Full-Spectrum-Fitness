@@ -26,6 +26,10 @@ export type UpdateProfileResult =
 const PROFILE_COLUMNS =
   "id, user_id, display_name, fitness_goal, wellness_goal, experience_level, sharing_preferences, domain_priorities, created_at, updated_at";
 
+const PROFILE_LOAD_ERROR = "Unable to load your profile. Please try again.";
+const PROFILE_SAVE_ERROR = "Unable to save your profile. Please try again.";
+const PROFILE_UPDATE_ERROR = "Unable to update your profile. Please try again.";
+
 function getDefaultDisplayName(user: User): string | null {
   const fromMetadata =
     typeof user.user_metadata?.full_name === "string"
@@ -76,7 +80,7 @@ export async function getOrCreateProfile(): Promise<GetOrCreateProfileResult> {
     return {
       success: false,
       error: "database",
-      message: selectError.message,
+      message: PROFILE_LOAD_ERROR,
     };
   }
 
@@ -119,7 +123,7 @@ export async function getOrCreateProfile(): Promise<GetOrCreateProfileResult> {
       return {
         success: false,
         error: "database",
-        message: retryError.message,
+        message: PROFILE_LOAD_ERROR,
       };
     }
   }
@@ -127,7 +131,7 @@ export async function getOrCreateProfile(): Promise<GetOrCreateProfileResult> {
   return {
     success: false,
     error: "database",
-    message: insertError?.message ?? "Failed to create profile.",
+    message: PROFILE_SAVE_ERROR,
   };
 }
 
@@ -174,7 +178,7 @@ export async function updateProfile(
     return {
       success: false,
       error: "database",
-      message: updateError.message,
+      message: PROFILE_UPDATE_ERROR,
     };
   }
 

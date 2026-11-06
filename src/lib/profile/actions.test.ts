@@ -208,4 +208,98 @@ describe("profile actions", () => {
     });
     expect(updateClient.spies.eq).toHaveBeenCalledWith("user_id", user.id);
   });
+
+  it("hides database details when loading a profile fails", async () => {
+    const user = { id: "user-1", email: "alex@example.com" };
+    const authClient = makeAuthClient(user);
+    const readClient = makeReadClient({
+      data: null,
+      error: { message: "relation \"profiles\" does not exist" },
+    });
+
+    createClientMock
+      .mockResolvedValueOnce(authClient)
+      .mockResolvedValueOnce(readClient.client);
+
+    const result = await getOrCreateProfile();
+
+    expect(result).toEqual({
+      success: false,
+      error: "database",
+      message: "Unable to load your profile. Please try again.",
+    });
+  });
+
+  it("hides database details when creating a profile fails", async () => {
+    const user = {
+      id: "user-1",
+      email: "alex@example.com",
+      user_metadata: { full_name: "Alex" },
+    };
+    const insertClient = makeInsertClient(user, {
+      data: null,
+      error: { message: "permission denied for table profiles" },
+    });
+    const readClient = makeReadClient({ data: null, error: null });
+
+    createClientMock
+      .mockResolvedValueOnce(insertClient.client)
+      .mockResolvedValueOnce(readClient.client);
+
+    const result = await getOrCreateProfile();
+
+    expect(result).toEqual({
+      success: false,
+      error: "database",
+      message: "Unable to save your profile. Please try again.",
+    });
+  });
+
+  it("hides database details when a duplicate insert cannot be reread", async () => {
+    const user = {
+      id: "user-1",
+      email: "alex@example.com",
+      user_metadata: { full_name: "Alex" },
+    };
+    const insertClient = makeInsertClient(user, {
+      data: null,
+      error: { message: "duplicate key value", code: "23505" },
+    });
+    const firstReadClient = makeReadClient({ data: null, error: null });
+    const retryReadClient = makeReadClient({
+      data: null,
+      error: { message: "connection reset by peer" },
+    });
+
+    createClientMock
+      .mockResolvedValueOnce(insertClient.client)
+      .mockResolvedValueOnce(firstReadClient.client)
+      .mockResolvedValueOnce(retryReadClient.client);
+
+    const result = await getOrCreateProfile();
+
+    expect(result).toEqual({
+      success: false,
+      error: "database",
+      message: "Unable to load your profile. Please try again.",
+    });
+  });
+
+  it("hides database details when updating a profile fails", async () => {
+    const user = { id: "user-1" };
+    const updateClient = makeUpdateClient(user, {
+      data: null,
+      error: { message: "null value in column \"display_name\" violates not-null constraint" },
+    });
+
+    createClientMock.mockResolvedValueOnce(updateClient.client);
+
+    const result = await updateProfile({ display_name: "Updated Alex" });
+
+    expect(result).toEqual({
+      success: false,
+      error: "database",
+      message: "Unable to update your profile. Please try again.",
+    });
+  });
 });

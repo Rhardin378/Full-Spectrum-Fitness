@@ -8,6 +8,8 @@ Repo-governance originals: [`../repo_governance/tickets.md`](../repo_governance/
 
 ## Ticket CU.1: Upgrade Next.js to the latest patched 16.x
 
+**Status:** Done on 2026-11-05. `next` and `eslint-config-next` are 16.4.5. Do not re-open unless a newer 16.x security release exists. Re-check `npm view next version` before any further bump.
+
 **Type:** chore  
 **Priority:** P0  
 **Labels:** `security`, `backend`

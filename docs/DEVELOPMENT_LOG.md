@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-05 — Next.js 16.4.5 security upgrade (CU.1)
+
+### Completed
+
+- Upgraded `next` and `eslint-config-next` from 16.1.6 to 16.4.5, the current patched 16.x line. React stays 19.2.3 because 16.4.5 accepts `^19`.
+- Turned off `X-Powered-By`. Added `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and `Referrer-Policy: strict-origin-when-cross-origin`. No Content-Security-Policy in this change.
+- Profile database failures now return a generic message from the server actions and from `GET /api/profile`. Validation messages are unchanged. There is no app logger, so the raw Postgres text is not logged.
+
+### Decisions
+
+- Did not run a broader `npm audit fix`. Remaining findings are in other packages (Vitest, Zod, and transitive ESLint tools), not in Next.js 16.4.5.
+
+### Issues
+
+- Password reset, CI, the stale header after sign-in, draft PR #19, issue labels, and the `main` ruleset are still the open cleanup tickets.
+
+### Next
+
+- CU.2 (CI) can share a later PR. CU.3 is the auth hardening, including the header refresh bug.
+
+### AI Notes
+
+- Cursor Grok. `npm view next version` on 2026-11-05 was 16.4.5, matching the November 2026 security release.
+
+---
+
 ## 2026-11-04 — Check-in notes and weight link (docs only, [PR #59](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/59))
 
 ### Completed
