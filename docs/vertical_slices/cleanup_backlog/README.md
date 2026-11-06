@@ -15,7 +15,8 @@ Verified against `main` on 2026-11-03. Tickets: [`tickets.md`](./tickets.md).
 | History window (5, then Show more) | PR #52. `HISTORY_INITIAL_VISIBLE` / `HISTORY_VISIBLE_STEP` in `src/components/measurements/measurements-tab-panel.tsx`. The 2026-10-21 development log accepts that Show more stops at the loaded page of 25. That is not a new cleanup ticket. |
 | Weight trend ranges | PR #58. `src/lib/measurements/trend-range.ts`. |
 | Slice 1.5 QA issue | #18 is closed. |
-| Password reset, CI, Next.js upgrade | **Not** in this table. They are tickets CU.3, CU.2, and CU.1. |
+| Next.js, response headers, profile error text | CU.1. `next` and `eslint-config-next` are 16.4.5. `X-Powered-By` is off. Profile database failures return a generic message. |
+| Password reset and CI | **Not** in this table. They are tickets CU.3 and CU.2. |
 
 ## Checked and left unticketed
 

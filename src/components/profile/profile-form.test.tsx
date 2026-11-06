@@ -97,7 +97,7 @@ describe("ProfileForm", () => {
   it("shows field and form errors without clearing user input", async () => {
     updateProfile.mockResolvedValue({
       success: false,
-      message: "We could not save your profile. Please try again.",
+      message: "Unable to update your profile. Please try again.",
       fieldErrors: { display_name: "Display name must be 80 characters or fewer." },
     });
 
@@ -108,7 +108,7 @@ describe("ProfileForm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save profile" }));
 
     expect(
-      await screen.findByText("We could not save your profile. Please try again."),
+      await screen.findByText("Unable to update your profile. Please try again."),
     ).toBeInTheDocument();
     expect(
       screen.getByText("Display name must be 80 characters or fewer."),

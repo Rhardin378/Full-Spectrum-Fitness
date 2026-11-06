@@ -2,7 +2,7 @@
 
 Use when you are ready to harden the repo. **Workflow policy is already in effect** (branch + PR); **RG.1** is the scheduled “sit down and configure GitHub” session.
 
-**2026-11-03:** Implementation detail for **RG.2** (CI) and **RG.3** (Next.js) now lives in [`docs/vertical_slices/cleanup_backlog/tickets.md`](../cleanup_backlog/tickets.md) as **CU.2** and **CU.1**. RG.3’s “patched 16.3.x / 16.3.8” pin is stale — the app is still on 16.1.6, and the patched 16.x line to re-check is 16.4.5 or newer. **RG.1** is repeated with current evidence as cleanup ticket **CU.6**. Do not open a second, conflicting CI or upgrade issue from the old pin.
+**2026-11-05:** CU.1 shipped `next` and `eslint-config-next` at 16.4.5, with baseline security headers and generic profile database errors. **2026-11-03:** Implementation detail for **RG.2** (CI) and **RG.3** (Next.js) now lives in [`docs/vertical_slices/cleanup_backlog/tickets.md`](../cleanup_backlog/tickets.md) as **CU.2** and **CU.1**. RG.3’s “patched 16.3.x / 16.3.8” pin is stale. **RG.1** is repeated with current evidence as cleanup ticket **CU.6**. Do not open a second, conflicting CI or upgrade issue from the old pin.
 
 ---
 
