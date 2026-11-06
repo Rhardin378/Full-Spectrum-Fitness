@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-06 — GitHub Actions CI (CU.2)
+
+### Completed
+
+- Added `.github/workflows/ci.yml` for `pull_request` and `push` to `main`. Node 22, `npm ci`, then `lint`, `typecheck`, `test`, `build`. Workflow env sets `CI=true` and dummy `NEXT_PUBLIC_SUPABASE_*` values (no secrets).
+- Added `npm run typecheck` (`tsc --noEmit`). Root layout skips `getOrCreateProfile()` when `CI=true` so `next build` does not call Supabase Auth in CI. Local and production behavior unchanged.
+- Documented the required check name for RG.1 / CU.6: job **`lint-typecheck-test-build`**, workflow **`CI`**. Marked CU.2 done in cleanup and governance ticket docs.
+
+### Decisions
+
+- One job with four sequential steps keeps a single required status check name for branch rules.
+
+### Issues
+
+- CU.6 still has to turn on the ruleset after merging this workflow.
+
+### Next
+
+- Merge the PR and require `lint-typecheck-test-build` on `main` (CU.6).
+
+### AI Notes
+
+- Cursor Grok. Verified locally with `CI=true` and the same env vars as the workflow.
+
+---
+
 ## 2026-11-05 — Next.js 16.4.5 security upgrade (CU.1, [PR #61](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/61))
 
 ### Completed

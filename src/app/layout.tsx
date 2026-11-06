@@ -27,9 +27,11 @@ export default async function RootLayout({
 }>) {
   let initialProfile = null;
 
-  const profileResult = await getOrCreateProfile();
-  if (profileResult.success) {
-    initialProfile = profileResult.profile;
+  if (process.env.CI !== "true") {
+    const profileResult = await getOrCreateProfile();
+    if (profileResult.success) {
+      initialProfile = profileResult.profile;
+    }
   }
 
   return (

@@ -35,7 +35,7 @@ Review [GitHub docs: rulesets](https://docs.github.com/en/repositories/configuri
 3. **Block force pushes** to `main`.
 4. **Block branch deletion** of `main` (optional).
 5. **Require linear history** (optional; squash merges often make this moot).
-6. **Require status checks** — **only after RG.2** (e.g. `lint`, `test`, `build`). List exact job names from workflow YAML.
+6. **Require status checks** — **only after RG.2** / CU.2. One job: **`lint-typecheck-test-build`** (workflow `CI`). List that exact name in the ruleset.
 7. **Restrict who can push** — nobody pushes directly to `main`; merges via PR only.
 8. **Bypass actors** — document who can bypass (e.g. repo admin for emergencies) and keep the list minimal.
 9. **Signed commits** — optional; skip unless you want GPG/SSH signing everywhere.
@@ -83,7 +83,7 @@ Add `.github/workflows/ci.yml` (or similar) running on PRs to `main`: `npm run l
 - Ruleset **RG.1** updated to require those check names.
 - No secrets in workflow except public env; Supabase not needed for unit tests.
 
-Follow cleanup ticket **CU.2** for the workflow file, the missing `typecheck` script, and the root-layout env issue. Do not open a second CI issue from this section.
+Cleanup ticket **CU.2** shipped the workflow, `npm run typecheck`, and the `CI=true` root-layout skip. Use job name **`lint-typecheck-test-build`** in RG.1. Do not open a second CI issue from this section.
 
 ### Dependencies
 

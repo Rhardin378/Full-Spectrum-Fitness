@@ -2,7 +2,7 @@
 
 Cross-cutting hardening that is still open after Slice 1 and Slice 1.5. These tickets do not start Slice 2. They also do not replace [`repo_governance/tickets.md`](../repo_governance/tickets.md): **RG.2** and **RG.3** point here so the version pin and the CI file are not specified twice.
 
-Verified against `main` on 2026-11-03. Tickets: [`tickets.md`](./tickets.md).
+Verified against `main` on 2026-11-03 (inventory); continuous integration added 2026-11-06 (CU.2). Tickets: [`tickets.md`](./tickets.md).
 
 ## Already done — do not re-open
 
@@ -16,7 +16,8 @@ Verified against `main` on 2026-11-03. Tickets: [`tickets.md`](./tickets.md).
 | Weight trend ranges | PR #58. `src/lib/measurements/trend-range.ts`. |
 | Slice 1.5 QA issue | #18 is closed. |
 | Next.js, response headers, profile error text | CU.1. `next` and `eslint-config-next` are 16.4.5. `X-Powered-By` is off. Profile database failures return a generic message. |
-| Password reset and CI | **Not** in this table. They are tickets CU.3 and CU.2. |
+| GitHub Actions CI (lint, typecheck, test, build) | CU.2. `.github/workflows/ci.yml`. Node 22. Required job name for rulesets: `lint-typecheck-test-build`. |
+| Password reset | **Not** in this table. Ticket CU.3. |
 
 ## Checked and left unticketed
 
