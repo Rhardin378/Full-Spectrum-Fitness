@@ -55,6 +55,8 @@ The app is on Next.js 16.1.6. That release is inside published security advisori
 
 ## Ticket CU.2: GitHub Actions CI (lint, typecheck, test, build)
 
+**Status:** Shipped 2026-11-06. Workflow file: `.github/workflows/ci.yml`. **Required check name for RG.1 / CU.6:** GitHub shows a single job; use the job id **`lint-typecheck-test-build`** (workflow name: `CI`). All steps run in that one job.
+
 **Type:** chore  
 **Priority:** P1  
 **Labels:** `github`, `tests`, `quality`
@@ -65,19 +67,19 @@ Pull requests to `main` do not run lint, types, tests, or build. The only file u
 
 ### Evidence
 
-- No `.github/workflows/` directory.
-- `package.json` scripts: `lint` (`eslint`), `test` (`vitest run`), `build` (`next build`). There is no `typecheck` script. `tsconfig.json` has `"noEmit": true`, so `npx tsc --noEmit` is the typecheck.
+- ~~No `.github/workflows/` directory.~~ Added `.github/workflows/ci.yml` on 2026-11-06.
+- `package.json` scripts: `lint` (`eslint`), `typecheck` (`tsc --noEmit`), `test` (`vitest run`), `build` (`next build`).
 - `eslint.config.mjs` is Next core-web-vitals plus TypeScript. It does not compile the project.
 - `docs/vertical_slices/repo_governance/tickets.md` ticket RG.2. `docs/AI_ENGINEERING_CONTEXT.md` lists “no CI” as a high finding.
-- `src/app/layout.tsx` calls `getOrCreateProfile()` on every render, which constructs a Supabase server client from `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. CI will not have `.env.local`. PR #19 claimed a local build only after those variables were written.
+- `src/app/layout.tsx` calls `getOrCreateProfile()` on every request except when `CI=true`, so GitHub Actions does not hit Supabase during `next build`. Production and local dev are unchanged.
 
 ### Approach
 
 - Add `.github/workflows/ci.yml` on pull requests to `main`.
-- Steps: `npm ci`, `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`.
-- No secrets. If the build evaluates the Supabase client, pass dummy `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` values in the workflow `env`. Do not point CI at the hosted project.
-- If `next build` still tries to call Auth because of the root layout, fix that in this PR with the smallest change that keeps production behavior (for example `force-dynamic` on the root layout, or skipping the profile fetch when the public env is missing). Do not stand up Supabase in GitHub Actions.
-- Node version: pin a current Node 20 or 22 LTS in the workflow and record it. The repo has no `.nvmrc` or `engines` field.
+- Steps: `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- No secrets. Dummy `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the workflow `env` for any code path that still constructs a client. Do not point CI at the hosted project.
+- Root layout: when `process.env.CI === "true"`, skip `getOrCreateProfile()` so the build does not call Auth over the network. Local and Vercel builds are unaffected.
+- Node version: **22** LTS in the workflow (`actions/setup-node@v4`). The repo has no `.nvmrc` or `engines` field; CI is the source of truth until one is added.
 - After the workflow file is on `main` and the check names are known, CU.6 can require them. This ticket does not click around in ruleset settings.
 
 ### Acceptance criteria
