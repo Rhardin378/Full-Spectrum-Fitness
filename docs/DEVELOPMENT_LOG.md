@@ -53,6 +53,19 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-16 — Goals reminder mockup
+
+### Completed
+
+- Added `docs/mockups/nov_2026_tickets/G-checkin-goals-reminder.png` and linked it from ticket 2.4 and the mockup README.
+- The PNG is the filled bar only. The empty state and the three-line clamp stay in ticket 2.4.
+
+### AI Notes
+
+- Cursor Grok committed the file Ryan supplied. No application code.
+
+---
+
 ## 2026-11-16 — Navigation IA owners
 
 ### Completed

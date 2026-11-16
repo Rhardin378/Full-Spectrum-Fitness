@@ -14,7 +14,7 @@ Chrome (charcoal bar, coral welcome band, warm page, coral primary buttons) matc
 | `D-mind-home.png` | Layout reference for the single-page Mind home. The PNG label “Journal streak” is **superseded** by Activity streak ([ADR-014](../../ARCHITECTURE_DECISIONS.md)). |
 | `E-mind-layout-compare.png` | **Decision record.** Option A (single page) is chosen. Do not build Option B (tabs). The compact Mind row at the bottom is a later idea, not part of the Fitness Overview ticket. |
 | `F-fitness-overview.png` | **Approved Fitness Overview** for desktop and mobile. The tab stays off until the workouts slice. The card marked LATER (compact Mind row) is not part of that ticket. |
-| `G-checkin-goals-reminder.png` | **Pending.** Not in the repo. Ryan described a muted “Your goals” bar on the weekly check-in, above the domain scores. Ticket 2.4 is the spec until the file is added. Do not treat `checkin-desktop.png` as including that bar. |
+| `G-checkin-goals-reminder.png` | Filled **Your goals** bar on the weekly check-in, desktop and mobile. Read-only free-text fitness and wellness goals, “Edit in profile”, directly above the life-domain scores. Sample data. The empty state and the three-line clamp are not drawn here; ticket 2.4 governs those. |
 
 ## How to read A
 
@@ -33,7 +33,9 @@ Build the check-in from [`docs/mockups/slice_2_journal_checkin/checkin-desktop.p
 
 ## How to read G
 
-`G-checkin-goals-reminder.png` was named with the Nov 16 answers and is not in this folder. The bar is read-only free-text fitness and wellness goals, directly above the life-domain scores, with an “Edit in profile” link and no inputs. Build ticket 2.4 from that description.
+[`G-checkin-goals-reminder.png`](./G-checkin-goals-reminder.png) is the filled bar: muted, read-only, “Edit in profile” on the right, sitting under last week’s intention and directly above Life domains. Desktop and mobile are in the same file. Names, scores, and the “Mockup — proposed” pill are sample content. Do not ship the pill.
+
+The PNG does not show an empty bar, and it does not show text long enough to clamp. Those two behaviors are spec-only. Ticket 2.4 governs them: both goals empty becomes a quiet “Add goals in your profile” link, and each goal clamps to three lines. The PNG also leaves out stress and energy. Those fields stay in ticket 2.4, above this bar. Do not drop them because this frame omits them.
 
 ## How to read C
 
