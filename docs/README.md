@@ -11,6 +11,8 @@
 | [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md) | **Chronological record** — append after every meaningful session |
 | [AI_ENGINEERING_CONTEXT.md](./AI_ENGINEERING_CONTEXT.md) | Engineering health, bugs, audit notes — not approved architecture |
 
+Beta access and feedback process (Google Form, invite waves, weekly survey): [BETA_PLAN.md](./BETA_PLAN.md).
+
 Slice tickets, mockups, and brand live beside this pack. They do not override it.
 
 **Git workflow:** branch + PR into `main` (no direct pushes). Deferred GitHub ruleset/CI tickets: [vertical_slices/repo_governance/](./vertical_slices/repo_governance/). Current hardening backlog (Next.js, CI, auth, stale PR #19): [vertical_slices/cleanup_backlog/](./vertical_slices/cleanup_backlog/).

@@ -29,6 +29,30 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-16 — Beta access plan (CU.7, BETA_PLAN)
+
+### Completed
+
+- Added ticket CU.7 (invite-only sign-up for the beta) to `docs/vertical_slices/cleanup_backlog/tickets.md`, timed for just before beta testers get access.
+- Added `docs/BETA_PLAN.md`: the Google Form text and questions, how to pick and invite testers in waves, a welcome message, and a weekly feedback form.
+- Added “Before beta launch” and “After MVP launch — operations” checklists to `docs/LAUNCH_PLAN.md`.
+
+### Decisions
+
+- Beta is invite-only. The block is the Supabase sign-up toggle, not a hidden tab, because `signUp` is called from the browser with the public anon key.
+- The waitlist is a Google Form and its sheet, not an in-app table. CU.7 only links to the form. An in-app waitlist is noted in CU.7 as a later option.
+- Custom SMTP and higher auth email limits are post-MVP, unless invite waves outgrow the built-in sender first.
+
+### Next
+
+- Create the beta and feedback forms from `BETA_PLAN.md`. Build CU.7 just before the first wave.
+
+### AI Notes
+
+- Cursor agent wrote the docs; Ryan chose invite-only with a Google Form.
+
+---
+
 ## 2026-11-16 — Password reset and auth hardening (CU.3)
 
 ### Completed

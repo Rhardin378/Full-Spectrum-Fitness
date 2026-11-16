@@ -314,7 +314,7 @@ Policy says `main` changes only through a pull request. The sit-down that record
 
 **Type:** feature  
 **Priority:** P1 (at beta)  
-**Labels:** `auth`, `security`, `frontend`, `backend`  
+**Labels:** `auth`, `security`, `frontend`  
 **When:** Just before the first beta testers get access. Do not start earlier; listed in `docs/LAUNCH_PLAN.md` under “Before beta launch”.
 
 ### Problem
@@ -341,32 +341,34 @@ Anyone who finds the site can create an account. For the beta, accounts should e
 
 - `supabase/config.toml`: set `enable_signup = false` so local matches hosted. Local invites go through Studio.
 - A `NEXT_PUBLIC_SIGNUPS_OPEN` flag (default off). When off, `/auth` shows a “Private beta — request access” panel in place of the Sign Up tab. Reopening sign-up later means flipping this flag and the Supabase toggle, nothing else.
-- Request-access form backed by a new `beta_waitlist` table (`email` unique, optional short note, `created_at`, nullable `invited_at`). Insert through a server action with Zod validation. RLS on; no `select`, `update`, or `delete` for `anon` or `authenticated`. A duplicate email returns the same success message, so the form does not reveal who is already on the list. Use a honeypot field instead of a captcha.
+- The request-access panel links to the beta Google Form from `NEXT_PUBLIC_BETA_FORM_URL`. If that is unset, the panel says sign-up is invite-only and shows no link. Add the same “Join the beta” link to the landing page (`src/app/(main)/page.tsx`). Form questions and the invite process are in [`docs/BETA_PLAN.md`](../../BETA_PLAN.md). The waitlist lives in the form's Google Sheet; there is no waitlist table in this ticket.
 - Map Supabase's `signup_disabled` error to friendly copy in `AuthForm`, for anyone on a cached page that still shows the old form.
 - `/auth/update-password` heading and copy should read correctly for both a reset and a first-time invite (for example “Set your password”).
-- Working the waitlist is manual: read the table in the dashboard, invite, and set `invited_at`. No admin UI in this ticket.
 
 ### Acceptance criteria
 
 - A direct `signUp` call with the anon key is rejected by hosted Supabase (checked once with the browser console or `curl` against `/auth/v1/signup`).
-- With the flag off, `/auth` shows no sign-up form, and the request-access form stores an email.
-- A duplicate request shows the same success message and does not create a second row.
+- With the flag off, `/auth` shows no sign-up form, and the request-access panel links to the beta form.
+- The landing page links to the beta form.
 - An invited user can open the email, set a password, land on `/dashboard`, and sign in again later with that password.
 - Sign-in and password reset behave as they did after CU.3.
 - The development log records the hosted settings that were changed and how to reopen sign-up.
 
 ### Tests
 
-- Waitlist action: validation, honeypot, duplicate email, and no raw database errors returned.
-- `AuthForm` with the flag off (request-access panel, no sign-up form) and on (current sign-up form).
+- `AuthForm` with the flag off (request-access panel with the form link, no sign-up form), off with no form URL (no link), and on (current sign-up form).
 - `signup_disabled` copy.
 - `/auth/callback` with `type=invite` redirecting to `next`.
 - No live inbox test in CI.
 
 ### Dependencies
 
-- CU.3 (merged in #64). Custom SMTP is optional for a small first wave, required for a larger one.
+- CU.3 (merged in #64). The beta Google Form must exist and its URL must be set in Vercel. Custom SMTP is optional for a small first wave, required for a larger one.
+
+### Later, if needed
+
+- An in-app waitlist instead of the form: a `beta_waitlist` table (unique `email`, `created_at`, nullable `invited_at`) written by a Zod-validated server action, RLS with no reads for `anon` or `authenticated`, the same success message for duplicates, and a honeypot field. Only worth it if the Google Sheet stops being enough.
 
 ### Suggested GitHub title
 
-`[Beta] Make sign-up invite-only with a request-access waitlist`
+`[Beta] Make sign-up invite-only and link to the beta form`

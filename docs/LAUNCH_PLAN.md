@@ -157,7 +157,9 @@ Do not use free→paid conversion or social engagement as Phase 1 targets.
 
 Do these just before the first beta testers get access, not earlier.
 
-- [ ] **Invite-only sign-up (CU.7).** Turn off public sign-up in Supabase, invite beta testers from the dashboard, and replace the Sign Up tab with a request-access waitlist. Spec: [`docs/vertical_slices/cleanup_backlog/tickets.md`](./vertical_slices/cleanup_backlog/tickets.md) ticket CU.7.
+- [ ] **Beta application form.** Create the Google Form and its sheet from [`BETA_PLAN.md`](./BETA_PLAN.md). It can be shared before CU.7 is built.
+- [ ] **Invite-only sign-up (CU.7).** Turn off public sign-up in Supabase, invite beta testers from the dashboard, and replace the Sign Up tab with a request-access panel that links to the beta form. Spec: [`docs/vertical_slices/cleanup_backlog/tickets.md`](./vertical_slices/cleanup_backlog/tickets.md) ticket CU.7.
+- [ ] **Weekly feedback form** and a Feedback link in the app, also in `BETA_PLAN.md`.
 
 ---
 
