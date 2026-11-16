@@ -1,6 +1,6 @@
 # Cleanup backlog tickets (copy to GitHub issues)
 
-Each ticket is open work verified on 2026-11-03. Do not redo the items listed as already done in [`README.md`](./README.md).
+Each ticket was open work verified on 2026-11-03. **As of 2026-11-16, CU.1–CU.6 are done.** CU.7 is still open and waits for the beta. Do not redo the items listed as already done in [`README.md`](./README.md).
 
 Repo-governance originals: [`../repo_governance/tickets.md`](../repo_governance/tickets.md). **CU.1** replaces the 16.3.x pin in **RG.3**. **CU.2** is **RG.2** with the scripts that exist today. **CU.6** is the still-open **RG.1** sit-down. **CU.7** is timed for just before beta testers get access; do not start it earlier.
 
@@ -101,7 +101,7 @@ Pull requests to `main` do not run lint, types, tests, or build. The only file u
 
 ## Ticket CU.3: Password reset and auth hardening
 
-**Status:** Built 2026-11-16 on branch `cursor/cu3-password-reset`. Code, migration, local `supabase/config.toml`, and tests are in git. The hosted Supabase steps below are **not** done by this branch and cannot be verified from the repo.
+**Status:** Done 2026-11-16. Code merged in #64. Ryan pushed the migration and applied the hosted Supabase settings (steps 1–3 below) the same day; those settings are outside git and are recorded here on his confirmation. Step 5 (SMTP and email limits) is deferred to after MVP launch.
 
 What shipped:
 
@@ -184,6 +184,8 @@ Checked in the tree. None of the missing pieces are hiding under another name.
 
 ## Ticket CU.4: Close stale draft PR #19
 
+**Status:** Done 2026-11-16. PR #19 is closed.
+
 **Type:** chore  
 **Priority:** P2  
 **Labels:** `github`, `chore`
@@ -224,6 +226,8 @@ Draft PR #19 has been open and untouched since the minute it was created. It is 
 ---
 
 ## Ticket CU.5: Relabel issues #54, #55, and #56 as backlog
+
+**Status:** Done 2026-11-16. Label created as `Backlog` (GitHub label filters ignore case). #54, #55, and #56 have it and no longer have `slice-1.5`; their other labels were kept.
 
 **Type:** chore  
 **Priority:** P2  
@@ -270,6 +274,8 @@ Open issues on 2026-11-03, and the only open issues:
 ---
 
 ## Ticket CU.6: Finish the GitHub ruleset for `main` (RG.1)
+
+**Status:** Done. Ruleset **Protect main** (active since 2026-11-06, verified 2026-11-16) targets the default branch and has no bypass actors. It blocks deletion and force-push (non-fast-forward), requires a pull request (0 approvals; merge, squash, and rebase allowed), and requires the status check `lint-typecheck-test-build`.
 
 **Type:** chore  
 **Priority:** P1  

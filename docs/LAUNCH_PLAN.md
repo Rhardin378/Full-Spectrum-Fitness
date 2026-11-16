@@ -31,15 +31,15 @@ If a later idea conflicts with this document, update the handoff pack **before**
 | Slice | Status |
 |-------|--------|
 | Slice 1 — Authentication & Profile Setup | **Done** |
-| **Slice 1.5 — Measurements & Baseline Tracking** | **Current work** |
-| Slice 2 — Journaling & Life Domains | Next after 1.5 is complete |
+| Slice 1.5 — Measurements & Baseline Tracking | **Done** (closed 2026-11-16) |
+| **Slice 2 — Journaling & Life Domains** | **Current work** |
 | Slice 3+ | Planned — do not start |
 
-Do not skip Slice 1.5. Measurements are the first longitudinal time-series in the product and feed later analytics and coaching. There is no architectural reason to reorder this slice.
+Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_2_journaling_life_domains/`](./vertical_slices/slice_2_journaling_life_domains/). Start with ticket **2.9** (align this handoff pack with ADR-013 and map saved `profiles.domain_priorities` to the new domains), then **2.1** (schema). Where the slice folder and this pack disagree, the slice folder is what to build until 2.9 lands.
 
-Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_1_5_measurements/`](./vertical_slices/slice_1_5_measurements/).
+**Cleanup backlog:** CU.1–CU.6 are done ([`docs/vertical_slices/cleanup_backlog/`](./vertical_slices/cleanup_backlog/)). CU.7 (invite-only beta sign-up) waits for “Before beta launch” below.
 
-**Repo governance (parallel, deferred):** use **branch + PR** for every merge to `main` now. Schedule a focused session for GitHub ruleset + CI after the next few Slice 1.5 tickets — see [`docs/vertical_slices/repo_governance/tickets.md`](./vertical_slices/repo_governance/tickets.md) (**RG.1**, **RG.2**).
+**Repo governance:** every change to `main` goes through a pull request. The “Protect main” ruleset blocks deletion and force-push and requires the CI check `lint-typecheck-test-build` (RG.1 / CU.6).
 
 ---
 
@@ -77,7 +77,7 @@ The product should get **more useful as the user accumulates history**. The recu
 
 These are product decisions, not suggestions. Change them here if they change.
 
-1. **Finish Slice 1.5** before journaling, workouts, insights, or coaching work.
+1. **Finish Slice 1.5** before journaling, workouts, insights, or coaching work. (Done 2026-11-16.)
 2. **Capture before coach.** Weekly Coach is the Phase 1 *destination*, not the next coding task. It needs workouts, journal/check-in scores, measurements, and a deterministic analytics snapshot first.
 3. **Journal (Slice 2) before workouts (Slice 3)** is acceptable and preferred: wellbeing capture is as important as fitness, and Slice 2 is smaller than a full workout model. Do not reverse this without updating this file.
 4. **Manual workout logging before AI import.** Slice 3.1 (text PDF) starts only after Slice 3’s canonical model and editor path exist.
@@ -122,8 +122,8 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 | Capability | Slice | Notes |
 |------------|-------|--------|
 | Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
-| Weight & waist time-series | 1.5 (current) | Deterministic weight trend in-tab; no unit conversion |
-| Journal + life domains + mood/stress/energy | 2 | Fast entry; AI prompts are **not** required in Slice 2 |
+| Weight & waist time-series | 1.5 (done) | Deterministic weight trend in-tab; no unit conversion |
+| Journal + life domains + mood/stress/energy | 2 (current) | Fast entry; AI prompts are **not** required in Slice 2 |
 | Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions |
 | Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
 | Weekly Coach Check-In v1 | 5 | Scores + optional reflection; server-built snapshot; Zod-validated report UI |
@@ -213,8 +213,8 @@ Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tra
 | Order | Slice | User value | Depends on | Deliberately deferred |
 |-------|-------|------------|------------|------------------------|
 | 1 | Auth & Profile | Account and goals | — | Circles, social privacy product |
-| **1.5** | **Measurements** | Body baseline over time | Slice 1 | Photos, extra tape measurements |
-| 2 | Journaling & Life Domains | Wellbeing capture | Slice 1 | LLM prompts, theme extraction |
+| 1.5 | Measurements | Body baseline over time | Slice 1 | Photos, extra tape measurements |
+| **2** | **Journaling & Life Domains** | Wellbeing capture | Slice 1 | LLM prompts, theme extraction |
 | 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest |
 | 4 | Deterministic Analytics & Insights | “What changed?” without AI | 1.5, 2, 3 | ML correlations presented as facts |
 | 5 | Weekly Coach Check-In | Recurring coach experience | Slice 4 | Tool-calling agent, RAG |
@@ -229,9 +229,9 @@ Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tra
 
 ## Do not start yet
 
-Until Slice 1.5 is done, do not implement:
+Until Slice 2 is done, do not implement:
 
-- Journal or workout schemas “while measurements is finishing,” unless a tiny shared foundation is required (it is not)
+- Workout schemas “while journaling is finishing,” unless a tiny shared foundation is required
 - AI provider integration
 - RAG / embeddings
 - Social or achievements
@@ -258,7 +258,7 @@ Not a chatbot.
 
 ## Final note
 
-Shipping Slice 1.5 with discipline matters more than designing Slice 6.
+Shipping Slice 2 with discipline matters more than designing Slice 6.
 
 - One slice in active execution
 - Update this file if the order changes
