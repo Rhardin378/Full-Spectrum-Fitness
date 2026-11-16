@@ -119,7 +119,7 @@ One card, fed by the signed-in user’s weight rows (`measurement_type = weight`
 
 **Empty.** No weight rows: the A empty state. Heading “No weight logged yet.” Body: “Log a measurement to see your latest weight and the change over 30 days.” Button “Log measurement” opens the existing log modal. It does not insert a row by itself.
 
-**Where it renders before Overview.** Proposed, and listed for Ryan to confirm: the top of the Measurements tab. **OV.1** moves this same card onto Overview and removes it from Measurements. Do not also put it in the welcome band. Do not turn the Overview tab on in this ticket.
+**Where it renders.** Ryan confirmed this on 2026-11-16. Until **OV.1**, the card is at the top of the Measurements tab. OV.1 moves this same card onto Overview and removes it from Measurements. One place only. Not in the welcome band. Do not turn the Overview tab on in this ticket.
 
 Tests for the pure date math: relative copy for 0, 1, and 2 days; a baseline exactly 30 days back; a history shorter than 30 days omits the line; rounding half away from zero (`1.25` → `1.3`, `-1.25` → `-1.3`); toward-goal vs away-from-goal; unit mismatch omits “to goal”.
 
@@ -142,7 +142,7 @@ Tests for the pure date math: relative copy for 0, 1, and 2 days; a baseline exa
 
 - Slice 1.5 measurements (shipped).
 - **G.1** only for the “to goal” line and the toward-goal color. The card ships without that line if G.1 has not merged.
-- Interim placement is the open question in the README. Build the proposed Measurements-tab placement unless Ryan has answered otherwise.
+- Placement is the Measurements tab until **OV.1**. That order is confirmed.
 
 ### Mockups
 
@@ -179,8 +179,8 @@ Body metrics:
 
 Weekly workout count:
 
-- Integer from 1 to 14. The cap is a proposal; see the README open questions.
-- No deadline. It is a standing target. The Overview hero resets every Monday. C shows “None” on that row.
+- Integer from 1 to 14. Ryan confirmed the cap on 2026-11-16.
+- No deadline. It is a standing weekly target. Ryan confirmed that. The Overview hero resets every Monday. C shows “None” on that row.
 - Start date and active toggle, same as the other rows.
 - The count can be saved before any workout exists. Nothing compares it to logged workouts until **OV.1**.
 
@@ -192,15 +192,15 @@ Weekly workout count:
 
 - Current value is the latest non-deleted measurement of that type whose unit matches the goal. No such row: no warning.
 - Weeks are the calendar days from validated today to the deadline, divided by 7. A deadline seven days out is one week. A deadline of today is zero weeks. Weekly pace is `abs(target - latest) / latest`, divided by that week count. Do not divide by zero: a deadline of today with a non-zero gap warns immediately.
-- Until Ryan replaces the numbers, tests and the product use the proposals: `0.01` for weight and `0.005` for waist. At the threshold does not warn. Over it does. A clearly-over case and a clearly-under case are both required, plus one pace that lands on the threshold and stays quiet.
+- Thresholds, confirmed 2026-11-16: `0.01` for weight and `0.005` for waist. At the threshold does not warn. Over it does. A clearly-over case and a clearly-under case are both required, plus one pace that lands on the threshold and stays quiet.
 - Suggested date: `ceil(abs(target - latest) / (latest * threshold))` whole weeks after today (`addUtcCalendarDays`). When that value is already a whole number of weeks, the suggested day is that many weeks out (the pace equals the threshold, so that day does not warn). Target equal to latest: no warning and no suggested date. Show the day with `formatCalendarDate`. If the user picks that day or a later one, the note goes away.
-- Weight threshold: about **1% of the latest body weight per week** (`0.01`). Confirm with Ryan.
-- Waist threshold, proposed: about **0.5% of the latest waist per week** (`0.005`). Confirm with Ryan.
+- Weight threshold: **1% of the latest body weight per week** (`0.01`). Confirmed.
+- Waist threshold: **0.5% of the latest waist per week** (`0.005`). Confirmed.
 - At or under the threshold: no warning.
 - Over the threshold: inline note. Save stays enabled. The user may keep the date. Do not add a second confirm step and do not reject the save.
 - Copy is supportive and non-medical ([ADR-011](../../ARCHITECTURE_DECISIONS.md)). Name the pace in plain language (“about 1% of your weight each week”). Do not say unsafe, unhealthy, dangerous, obese, or tell them to see a doctor. Do not prescribe a diet or a training plan. Example shape, not locked wording: “That’s a quick change for the time you picked. A date around {suggested} keeps it closer to about 1% of your weight each week. You can keep {deadline}.” Waist uses the confirmed waist threshold in the same shape.
 
-The pace uses the latest measurement and the deadline, not the start date. That choice is an open question in the README.
+The pace uses the latest measurement and the deadline, not the start date. Ryan confirmed that on 2026-11-16.
 
 Tests: deadline required for weight and waist; workout count rejects 0 and 15 and accepts 1 and 14; past deadline fails; warning fires above the threshold and not at it; missing measurement skips the warning; save still persists the fast date; suggested date is on the threshold pace; a unit mismatch skips the warning; a second active weight goal leaves only one active.
 
@@ -269,7 +269,7 @@ Do not build the three-bar Goal progress panel on A. F replaced that Overview. D
 - With an active weight goal and a matching latest weight, the profile row and the Weight now card show the same remaining distance.
 - A waist goal shows remaining distance on the profile row only.
 - No measurement, no goal, or a unit mismatch: no invented number.
-- The A Goal progress panel is not on `/dashboard`.
+- The A Goal progress panel is not on the Fitness shell.
 
 ### Dependencies
 
@@ -308,7 +308,7 @@ Small. The profile page shell (title, display name, back link, save) stays.
 
 **Life-domain ranker.** After ticket **2.9** has switched `DOMAIN_FOCUS_AREAS` to the ADR-013 set, show all eight domains as a fixed ranked list, lower number = higher priority, as on C. Do not keep the add/remove rows. Do not do this restyle while the wheel slugs are still the list. This ticket does not write the 2.9 mapping or migration.
 
-**Free-text goals.** Leave the textareas. Do not add the helper “Shown on the dashboard Overview.” F does not show them, and where else they should appear is an open question.
+**Free-text goals.** Leave the textareas. They stay editable only here. Ticket 2.4 shows them read-only on the weekly check-in. Do not add the helper “Shown on the dashboard Overview.” Helper, if one is added: “Shown on the weekly check-in.” Do not put the text on Overview.
 
 ### Out of scope
 
@@ -331,11 +331,80 @@ Small. The profile page shell (title, display name, back link, save) stays.
 
 ### Mockups
 
-- [`C-profile.png`](../../mockups/nov_2026_tickets/C-profile.png) — sharing helper, experience helper, ranked domains. The Goals block is G.1. Ignore the “Shown on the dashboard Overview” lines until the open question is answered.
+- [`C-profile.png`](../../mockups/nov_2026_tickets/C-profile.png) — sharing helper, experience helper, ranked domains. The Goals block is G.1. The “Shown on the dashboard Overview” lines are superseded: free-text goals show on the weekly check-in (ticket 2.4), not on Overview.
 
 ### Suggested GitHub title
 
 `[Profile] Mark inactive fields and rank life domains`
+
+---
+
+## Ticket NAV.1: Move Fitness to `/fitness`
+
+**Type:** feature  
+**Priority:** P1  
+**Labels:** `frontend`, `ui`, `tests`  
+**Scope gate:** B — supporting
+
+### Goal
+
+Make `/fitness` the Fitness URL, and send `/dashboard` there permanently without dropping the query string.
+
+### Scope
+
+Ryan confirmed the map on 2026-11-16. This ticket does the move. It does not build Overview, workouts, or the library.
+
+**Paths.**
+
+| Path | What it shows |
+|------|----------------|
+| `/fitness` | Fitness shell. Until **OV.1**, the selected tab is Measurements, which is today’s home, so sign-in does not land on a coming-soon panel. The address stays `/fitness`. |
+| `/fitness/measurements` | Measurements tab. Same screen as today’s working tab. |
+| `/fitness/workouts` | Workouts tab. Coming soon, as it is now. |
+| `/fitness/library` | Library tab. Coming soon. Content waits for Slice 3.1. |
+
+The tab follows the URL. Choosing a tab updates the URL. Overview content stays the coming-soon panel until OV.1. OV.1 then fills `/fitness`. It does not move the route again.
+
+**Redirect.** `/dashboard` and any path under it permanently redirect to the same path with `/fitness` in place of `/dashboard`. Use a 308 so the method is unchanged. Keep the query string: `/dashboard?foo=1` becomes `/fitness?foo=1`. `/dashboard/settings` becomes `/fitness/settings`.
+
+**Auth.** A signed-out visit to `/dashboard` or `/fitness` ends on `/auth`, including `?reason=` when the middleware already adds one. The redirect must not skip that check and must not loop. A signed-in visit to `/dashboard` ends on `/fitness` with the query string kept. A signed-in visit to `/auth` still leaves the sign-in form; the destination becomes `/fitness` instead of `/dashboard` (`DEFAULT_SIGNED_IN_PATH` in `src/lib/auth/redirect.ts`).
+
+**Protection.** In `src/lib/supabase/middleware.ts`, the protected list that is `/dashboard` today becomes `/fitness`. Prefix matching covers the child paths. `/profile` stays protected. `/mind` stays ticket 2.6.
+
+**Links and active state.** Point Fitness in `src/components/app-header.tsx` and `src/components/mobile-nav-menu.tsx` at `/fitness`. Fitness is active on `/fitness` and on paths under it. Muted Insights and Community placeholders must not keep `href="/dashboard"`. The profile “Back to dashboard” link (`src/app/(main)/profile/page.tsx`) goes to `/fitness`. Post-reset and post-sign-in navigations that hard-code `/dashboard` go to `/fitness` (`src/components/auth/auth-form.tsx`, `src/components/auth/update-password-form.tsx`, `src/app/auth/callback/route.ts`). Move the page file off `src/app/(main)/dashboard/page.tsx`. `getOrCreateProfile()` still runs for a signed-in visit to the Fitness shell.
+
+**Tests.** Update the cases that expect `/dashboard`, including the middleware tests, `src/app/auth/callback/route.test.ts`, `src/components/auth/auth-form.test.ts`, `src/components/auth/update-password-form.test.tsx`, and `src/components/app-header.test.tsx`. Add: signed-in `/dashboard?foo=1` lands on `/fitness?foo=1`; signed-out `/dashboard` and `/fitness` land on `/auth`; Fitness is active on `/fitness/measurements`.
+
+Until OV.1, do not turn Overview into a live home. This ticket only changes where the existing shell lives.
+
+### Out of scope
+
+- Overview content (**OV.1**).
+- Workout logging (Slice 3; no ticket folder yet).
+- Library content (Slice 3.1).
+- Last-visited domain memory. Sign-in lands on `/fitness`. Remembering Mind versus Fitness is still unplanned.
+- Renaming historical Slice 1.5 tickets. They correctly describe what shipped at `/dashboard`.
+
+### Acceptance Criteria
+
+- A signed-in user who opens `/dashboard?foo=1` is at `/fitness?foo=1`, and the Measurements tab is selected until OV.1.
+- A signed-out user who opens `/dashboard` or `/fitness` is at `/auth`.
+- `/fitness/measurements` shows Measurements. `/fitness/workouts` and `/fitness/library` show the existing coming-soon panels.
+- The navbar Fitness item points at `/fitness` and is active on that tree.
+- No in-app link still targets `/dashboard` as a page the user stays on.
+- The new and updated tests pass.
+
+### Dependencies
+
+- CU.3 is already merged for the auth redirects this ticket retargets. Nothing else. Can start beside Slice 2. Must land before **OV.1**.
+
+### Mockups
+
+None. The shell does not change shape.
+
+### Suggested GitHub title
+
+`[Nav] Move the Fitness shell to /fitness`
 
 ---
 
@@ -352,7 +421,7 @@ Turn the Fitness Overview tab on with the workouts slice, using the F layout and
 
 ### Scope
 
-Overview stays `comingSoon` until the workouts slice can log a workout that has a calendar day and a display name. This ticket does not define that model ([ADR-009](../../ARCHITECTURE_DECISIONS.md)) and does not ship sample workouts. It reads what the workouts slice stores and what measurements already store.
+Overview stays `comingSoon` until the workouts slice can log a workout that has a calendar day and a display name. This ticket does not define that model ([ADR-009](../../ARCHITECTURE_DECISIONS.md)) and does not ship sample workouts. It reads what the workouts slice stores and what measurements already store. The shell already lives at `/fitness` (**NAV.1**). This ticket fills `/fitness`. It does not rename the route.
 
 **Welcome band, Overview tab only.** Primary **+ Log workout** (the workouts slice’s log action). Secondary **+ Log measurement** (the existing modal). Subtitle stays “Track training and baseline progress”. Other tabs keep the tab-aware CTA rules in `docs/navigation-ia.md`. Slice 1.5’s “no log buttons except on Measurements” rule ends for Overview only when this tab turns on.
 
@@ -364,9 +433,9 @@ Overview stays `comingSoon` until the workouts slice can log a workout that has 
 
 **Activity streak.** The **2.5.1** card. Do not compute a different streak.
 
-**Weight now.** The **2.5.2** card. Remove it from the Measurements tab when it moves here, so it is not on both.
+**Weight now.** The **2.5.2** card, moved here from the top of Measurements. It is not on both. `/fitness/measurements` no longer shows it.
 
-**Recent activity.** The latest 6 items, newest first, mixing workouts and weight/waist measurements. Each row: a calendar label (Today, Yesterday, or the formatted day), the title the source already has, and a type label (Workout, Weight, Waist) in `text-muted`. Do not use small coral type for that label. The brand guide avoids it on white. Links **View workouts** and **View measurements** go to those tabs. Empty list: short honest copy and the two log buttons. No Alex Sample rows.
+**Recent activity.** The latest 6 items, newest first, mixing workouts and weight/waist measurements. Each row: a calendar label (Today, Yesterday, or the formatted day), the title the source already has, and a type label (Workout, Weight, Waist) in `text-muted`. Do not use small coral type for that label. The brand guide avoids it on white. Links **View workouts** and **View measurements** go to `/fitness/workouts` and `/fitness/measurements`. Empty list: short honest copy and the two log buttons. No Alex Sample rows.
 
 **Mobile.** The F phone frame: hero, then streak and weight, then recent activity, then the same two links. Buttons stack. Do not add a bottom nav.
 
@@ -378,7 +447,7 @@ Library and the Workouts tab are not turned on by this ticket, except that **Vie
 - The A layout: Goal progress panel, Your goals free-text card, PRs / consistency, a separate journal streak, Mind stats on this page.
 - Building the workout logger, the exercise library, or Slice 3.1 import.
 - PRs, volume, or other Slice 4 analytics.
-- Choosing or changing the Fitness URL. The app uses `/dashboard`. The IA also lists `/fitness`. Which path is canonical is an open question in `docs/navigation-ia.md`. This ticket does not pick one and does not move the route. It turns the Overview tab on in the Fitness shell that already exists.
+- Moving or renaming `/fitness`. **NAV.1** already did that. `/dashboard` already redirects.
 
 ### Acceptance Criteria
 
@@ -394,6 +463,7 @@ Library and the Workouts tab are not turned on by this ticket, except that **Vie
 ### Dependencies
 
 - Workouts slice: a logged workout with a calendar day and a title, and a Workouts tab to open.
+- **NAV.1**. The Overview tab turns on at `/fitness`, not at `/dashboard`.
 - **G.1** for the target on the hero. The no-goal state can be built before G.1; the “of {target}” state cannot ship without it.
 - **2.5.1** and **2.5.2**.
 
@@ -432,6 +502,16 @@ A target on a lift (a weight, a reps scheme, or whatever the workouts slice can 
 **Scope gate:** D — future
 
 The Coach slice may suggest goal wording later. The model interprets. It does not calculate pace, remaining distance, or the realism threshold ([ADR-004](../../ARCHITECTURE_DECISIONS.md)). Copy stays under [ADR-011](../../ARCHITECTURE_DECISIONS.md). Not MVP, and not a shortcut around G.1’s warning.
+
+### Focus areas on the check-in, later
+
+**Scope gate:** D — future
+
+Profile focus areas do not affect the Slice 2 check-in. Ryan confirmed that on 2026-11-16. These three are later, and none of them is the rejected “preselect the top focus area” default.
+
+- A recap callout when a high-priority domain scored low. Example shape: “Family is your #1 focus but scored 4/10.” Copy stays under [ADR-011](../../ARCHITECTURE_DECISIONS.md). The numbers come from the stored check-in and `domain_priorities`, not from a model ([ADR-004](../../ARCHITECTURE_DECISIONS.md)).
+- Ordering the check-in domain rows by the profile’s priority instead of the canonical slug order.
+- Passing those priorities into the Slice 5 coach context. Slice 5 has no ticket folder yet. This idea does not start that slice.
 
 ### PRs / consistency card
 

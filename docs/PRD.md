@@ -187,8 +187,8 @@ Status tags: **Done** · **Current** · **Phase 1** · **Follow-on** · **Later*
 ### Profile data
 
 - Display name
-- Fitness goal (free text; stays)
-- Wellness goal (free text; stays)
+- Fitness goal (free text; stays). Edited only on the profile. Shown read-only on the weekly check-in. Not on the Fitness Overview.
+- Wellness goal (free text; stays). Same rule as the fitness goal.
 - Experience level
 - Domain priorities
 - Sharing preference field may exist for later use; **accountability circles are not Phase 1**

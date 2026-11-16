@@ -18,7 +18,7 @@ Every build ticket has one gate. **D** and **E** are not build tickets. They sit
 | **D** | Future. A real later product, not this sequence |
 | **E** | Speculative. No commitment and no home slice |
 
-There is no **E** item in this set. The rejected focus-area suggestion is not parked as a future idea.
+There is no **E** item in this set. The rejected “preselect my top focus area” suggestion is not parked as a future idea. Later ways focus areas might show up are Future ideas (gate D), and they are not Slice 2.
 
 ## Sequence
 
@@ -26,27 +26,28 @@ Do not start a later row before the earlier one is underway. Hard dependencies a
 
 | Order | Work | Tickets |
 |-------|------|---------|
-| 1 | **CU.3** ([PR #64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64)) and **Slice 2** | CU.3 is already specified. Hosted Supabase steps stay in that ticket. Slice 2 is [`slice_2_journaling_life_domains/tickets.md`](../slice_2_journaling_life_domains/tickets.md). Ticket **2.6** is amended here for the single Mind page. Ticket **2.9** still updates the rest of the handoff pack. |
-| 2 | **Slice 2.5** polish | **2.5.1** activity streak, **2.5.2** Weight now card |
+| 1 | **CU.3** ([PR #64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64)) and **Slice 2** | CU.3 is already specified. Hosted Supabase steps stay in that ticket. Slice 2 is [`slice_2_journaling_life_domains/tickets.md`](../slice_2_journaling_life_domains/tickets.md). Ticket **2.6** is amended here for the single Mind page. Ticket **2.4** includes the read-only Your goals reminder. Ticket **2.9** still updates the rest of the handoff pack. |
+| Alongside 1, before Overview | **NAV.1** Fitness URLs | Anytime after CU.3. Required before **OV.1**. Can run beside Slice 2, 2.5, or goals. |
+| 2 | **Slice 2.5** polish | **2.5.1** activity streak, **2.5.2** Weight now card (top of Measurements until OV.1) |
 | 3 | **Goals** | **G.1** structured goals, then **G.2** progress on the surfaces that already show the metric, and **G.3** profile cleanup |
-| 4 | **Fitness Overview with the workouts slice** | **OV.1**. Not before workouts exist. Not during Slice 1.5 or Slice 2. |
+| 4 | **Fitness Overview with the workouts slice** | **OV.1**, after **NAV.1** and after workouts exist. Not during Slice 1.5 or Slice 2. |
 
 Slice 2’s check-in recap still shows days journaled as “N of 7”. That number is not the activity streak. Do not remove it when 2.5.1 lands.
 
 ## What was locked
 
-1. **Weekly intention.** The suggested domain stays the lowest check-in score. ADR-013 is unchanged. A proposal to suggest the user’s top-ranked profile focus area was rejected. The user can still change the domain before submit.
+1. **Weekly intention.** The suggested domain stays the lowest check-in score. ADR-013 is unchanged. A proposal to suggest the user’s top-ranked profile focus area was rejected. Profile focus areas do not affect the check-in for now. The user can still change the domain before submit.
 2. **One activity streak.** A calendar day counts when the user logged a journal entry or a workout. One missed day per Monday–Sunday week does not break it. Server-computed, from calendar dates, unit-tested. Until workouts exist, journal entries are the only input. ADR-014.
 3. **Mind home is one page.** `/mind` has no tab bar. This confirms Slice 2 tickets 2.6 and 2.9. Stats: activity streak (this replaces “days journaled, N of 7”), 7-day average mood, domains touched, last entry. Then the 7-day mood strip, this week’s intention, recent entries (5, then Show more), and the check-in due card when it is due.
-4. **Fitness Overview turns on with the workouts slice.** Contents are the F mockup: weekly workout goal hero, activity streak, Weight now, recent activity (workouts and measurements), primary **+ Log workout**, secondary **+ Log measurement**.
+4. **Fitness Overview turns on with the workouts slice.** Contents are the F mockup: weekly workout goal hero, activity streak, Weight now, recent activity (workouts and measurements), primary **+ Log workout**, secondary **+ Log measurement**. The shell’s canonical URLs are `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library` (**NAV.1**). `/dashboard` permanently redirects to `/fitness`.
 5. **Structured goals.** Minimum for a body-metric goal: one target number and a deadline. Weight and waist first. A weekly workout count feeds the Overview hero. Lift goals wait until workouts exist. A rule-based realism warning may suggest a later date; the user can keep theirs. Copy stays supportive and non-medical ([ADR-011](../../ARCHITECTURE_DECISIONS.md)). An LLM does not write the warning or the goal ([ADR-004](../../ARCHITECTURE_DECISIONS.md)). Goals are edited on the profile.
-6. **Weight now.** Relative calendar time (“Logged 2 days ago”), change over 30 days, and “X lb to goal” when a weight goal exists.
+6. **Weight now.** Relative calendar time (“Logged 2 days ago”), change over 30 days, and “X lb to goal” when a weight goal exists. The card sits at the top of the Measurements tab until **OV.1**, then only on Overview.
 7. **Positive-change green** is brand `#4ADE80`, as a pill or background with charcoal text. It is not green text on white.
-8. **Goal progress** on the surfaces that already show that metric, and a **small profile cleanup**, are their own tickets.
+8. **Goal progress** on the surfaces that already show that metric, and a **small profile cleanup**, are their own tickets. Free-text fitness and wellness goals also appear as a read-only reminder on the weekly check-in (ticket 2.4). They are not edited there and they are not on Overview.
 
 ## Rejected
 
-- Preselecting the weekly intention from the top-ranked profile focus area. Recorded on [`B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png). ADR-013 still preselects the lowest score. Ties still use the Slice 2 canonical order. Habits still count only when the user scored them.
+- Preselecting the weekly intention from the top-ranked profile focus area. Recorded on [`B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png). ADR-013 still preselects the lowest score. Ties still use the Slice 2 canonical order. Habits still count only when the user scored them. Focus-area rank also does not reorder the check-in, change its copy, or feed this slice’s form. Later ideas are gate D in the tickets file.
 - A separate journal streak and a separate workout streak. There is one activity streak.
 - Mind tabs (E, Option B), including Overview / Journal / Check-ins and the older Overview / Journal / Domains / Prompts list.
 - Turning the Fitness Overview tab on before the workouts slice.
@@ -65,7 +66,7 @@ Do not edit #55 or #56. They stay as they are. When Ryan opens the new issues, t
 |-------------|---------------|
 | This week workouts | **OV.1** hero (“3 of 4 workouts this week”), with the workouts slice. Not a band card, and not before workouts. |
 | Streak | **2.5.1** / ADR-014. One activity streak, not a workouts-only streak. |
-| Weight now | **2.5.2**. Can render before Overview exists. See the open question on interim placement. |
+| Weight now | **2.5.2**. Top of Measurements until **OV.1**, then only on Overview. |
 | PRs / consistency | Not in this sequence. Future ideas. Slice 4 still owns PR-style analytics. |
 
 ### #56 — Remaining Fitness dashboard tabs
@@ -80,15 +81,15 @@ Do not edit #55 or #56. They stay as they are. When Ryan opens the new issues, t
 | “Mind shell + Journal tab” in the suggested breakdown | Superseded as a **tab**. Mind is one page (ticket 2.6). The journal is `/mind/journal`. |
 | Insights navbar, Community muted | Insights stays Slice 4 (no ticket folder yet). The Community “Soon” item is already in the navbar. The Community product is Unplanned. Owners are in `docs/navigation-ia.md`. |
 
-## Open questions for Ryan
+## Resolved Nov 16
 
-These are unspecified. The tickets do not invent an answer for them. Thresholds that the tickets **propose** are listed here so they are easy to confirm or replace.
+Ryan answered these on 2026-11-16. Nothing from this list is still open.
 
-1. **Focus areas and the check-in.** The top-ranked profile domain does not become the suggested intention. Is there any other way `domain_priorities` should change the check-in (copy, order of the score rows, anything else)? Nothing else is specified.
-2. **Weekly workout-count deadline.** Weight and waist require a deadline. The workout count is specified as a standing weekly target with **no** end date, because the hero resets every Monday and C shows “None” on that row. Confirm that, or give it a deadline too. The ticket caps the count at 1–14. Confirm the cap.
-3. **Realism thresholds.** Weight: warn above about **1% of the latest body weight per week**. Waist, proposed: warn above about **0.5% of the latest waist per week**. Both are “confirm with Ryan.” The warning never blocks save.
-4. **Pace anchor.** The warning uses the latest measurement and the deadline, not the goal’s start date. Confirm that, or say the pace starts from the start date.
-5. **Weight now before Overview exists.** Proposed home: the top of the Measurements tab, then **only** on Overview once OV.1 turns that tab on (not both, and not in the welcome band). Confirm or name a different interim home.
-6. **Free-text fitness and wellness goals.** C says they are “Shown on the dashboard Overview,” and A has a Your goals card. F does not include that card, and F is the approved Overview. The cleanup ticket leaves the fields on the profile and does not add the card. Where should that text appear, if anywhere besides the profile form?
-7. **Check-in due card position.** Ticket 2.6 places it on `/mind`, under the stat row and above the 7-day mood strip, and only when it is due. Say if it should sit somewhere else on that page.
-8. **Fitness URL.** `docs/navigation-ia.md` lists Fitness Overview as `/fitness` (and `/fitness/workouts`, `/fitness/measurements`, `/fitness/library`). The app serves that shell at `/dashboard`. The header treats a `/fitness` prefix as Fitness, and there is no `/fitness` page. The IA does not choose which URL is canonical. OV.1 does not move the route.
+1. **Focus areas and the check-in.** Profile focus areas do not affect the check-in for now. They do not pick the intention domain, reorder the score rows, or change the copy. Later, and not in Slice 2: a priority-versus-score callout in the recap, ordering the domain rows by priority, and passing priorities to the Slice 5 coach. Those are Future ideas (gate D).
+2. **Weekly workout count.** Standing weekly target. No deadline. Cap is 1–14. Confirmed.
+3. **Realism thresholds.** Weight warns above 1% of the latest body weight per week (`0.01`). Waist warns above 0.5% of the latest waist per week (`0.005`). The warning does not block save. Confirmed.
+4. **Pace anchor.** Pace is from the latest matching measurement to the deadline, not from the goal’s start date. Confirmed.
+5. **Weight now placement.** Top of the Measurements tab until **OV.1**. Then the same card moves to Overview and leaves Measurements. One place only. Not in the welcome band. Confirmed.
+6. **Free-text goals.** A read-only “Your goals” reminder on the Slice 2 weekly check-in (ticket 2.4). It sits after the week recap and last week’s intention, directly above the life-domain scores. It shows the profile’s free-text fitness and wellness goals, with an “Edit in profile” link and no inputs. If both are empty, hide the card or show a quiet “Add goals in your profile” link. Long text clamps. Editing stays on the profile. Not on Overview. The PNG `G-checkin-goals-reminder.png` is not in the repo yet; the mockup README marks it pending.
+7. **Check-in due card.** On `/mind`, under the stat cards and above the 7-day mood strip. Confirmed.
+8. **Fitness URL.** `/fitness` is canonical: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library`. `/dashboard` permanently redirects to `/fitness` and keeps the query string. Ticket **NAV.1** does the move. It is scope gate B, anytime after CU.3, and before OV.1.

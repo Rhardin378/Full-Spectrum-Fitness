@@ -20,11 +20,11 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 |------|--------|----------------|
 | Logo lockup (mark + wordmark) | **Done** — Slice 1.5 ticket 1.5.3b | `src/components/brand-logo.tsx` |
 | Logo goes to the last-visited domain home | **Unplanned** | The logo always links to `/` |
-| Fitness navbar item, coral active state | **Done** — 1.5.3b / 1.5.4 | Desktop and mobile. `href` is `/dashboard`. Active on `/dashboard` and on a `/fitness` prefix |
+| Fitness navbar item, coral active state | Item **Done** — 1.5.3b / 1.5.4. Href change is **NAV.1** | Desktop and mobile. Today `href` is `/dashboard`. **NAV.1** points it at `/fitness` and keeps it active on that tree |
 | Mind navbar item | **Ticket 2.6** | Visible, muted, and linked to `/dashboard`. Not `/mind` |
 | Domain switcher (Fitness \| Mind, one active) | **Ticket 2.6** finishes it. Fitness half is **Done** | Mind does not switch domains yet |
-| Insights navbar item | **Slice 4** — no ticket folder yet | Muted placeholder. `href` is `/dashboard`. No `/insights` page. Ticket 2.6 leaves it muted |
-| Community nav item, muted, “Soon” | **Done** — 1.5.3b | Desktop and mobile. It is still a link to `/dashboard` |
+| Insights navbar item | **Slice 4** — no ticket folder yet | Muted placeholder. Today `href` is `/dashboard`. **NAV.1** must not leave that href on `/dashboard`. No `/insights` page. Ticket 2.6 leaves it muted |
+| Community nav item, muted, “Soon” | Chrome **Done** — 1.5.3b. Href cleanup is **NAV.1** | Desktop and mobile. Today the link is `/dashboard`. The product stays **Unplanned** |
 | Community product and `/community` | **Unplanned** | Not Slice 6. Slice 6 is coach agent tools. Social is PRD §8, Phase 3 |
 | Profile avatar menu: Profile, Sign out | **Done** — 1.5.3b | `src/components/profile/profile-menu.tsx` |
 | Achievements row in that menu (disabled, Soon) | **Done** — 1.5.3b | Not a link |
@@ -33,11 +33,11 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | Settings page | **Unplanned** | No route and no ticket |
 | Logged-out Sign in and Get started | **Done** | Both go to `/auth` |
 | Navbar must not list Dashboard, Profile, or Measurements | **Done** | Those are not top-level nav items |
-| Last-visited domain persistence | **Unplanned** | No cookie and no profile field. Sign-in lands on `/dashboard` (`DEFAULT_SIGNED_IN_PATH`) |
+| Last-visited domain persistence | **Unplanned** | No cookie and no profile field. **NAV.1** moves the sign-in landing from `/dashboard` to `/fitness`. Remembering the last domain is still unplanned |
 | Fitness tab bar | **Done** — ticket 1.5.4 | `src/components/dashboard/fitness-tabs.ts`. Measurements is the default |
 | Overview tab content | **OV.1**, with the workouts slice | Coming-soon panel today |
 | Workouts tab content | **Slice 3** — no ticket folder yet | Coming-soon panel today |
-| Measurements tab | **Done** — Slice 1.5 | Live on `/dashboard` |
+| Measurements tab | **Done** — Slice 1.5. URL is **NAV.1** | Live today on `/dashboard`. After NAV.1, `/fitness/measurements` |
 | Library tab content | **Slice 3.1** tickets, after Slice 3 | Coming-soon panel today. Slice 3.1’s folder exists. Slice 3’s does not |
 | Mind tab bar | Not built. **Ticket 2.6** ships the page without one | No Mind route yet |
 | Mind home `/mind` | **Ticket 2.6** | No page. Middleware does not protect `/mind` yet (that ticket adds it) |
@@ -55,8 +55,11 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | `/` marketing | **Done** | `src/app/(main)/page.tsx` |
 | `/auth` | **Done** | `src/app/auth/page.tsx` |
 | `/profile` | **Done** — Slice 1 | `src/app/(main)/profile/page.tsx` |
-| `/dashboard` Fitness shell | **Done** — Slice 1.5 | The live shell. See the URL question below |
-| `/fitness`, `/fitness/workouts`, `/fitness/measurements`, `/fitness/library` | **Open question** for the path. Feature owners are OV.1, Slice 3, Slice 1.5, and Slice 3.1 | No `/fitness` page. Header still treats that prefix as Fitness |
+| `/dashboard` Fitness shell | Shell **Done** — Slice 1.5. Redirect is **NAV.1** | Live today. **NAV.1** permanently redirects it to `/fitness` and keeps the query string |
+| `/fitness` | **NAV.1** for the route. **OV.1** for Overview content | No page yet. Until OV.1, opening it selects Measurements |
+| `/fitness/measurements` | **NAV.1** | Measurements, already built |
+| `/fitness/workouts` | **NAV.1** for the path. **Slice 3** — no ticket folder yet — for the feature | Coming-soon panel |
+| `/fitness/library` | **NAV.1** for the path. **Slice 3.1** for the feature | Coming-soon panel. Later than the other three |
 | `/insights` | **Slice 4** — no ticket folder yet | No page |
 | `/achievements` | **Unplanned** | No page |
 | `/community` | **Unplanned** | No page |
@@ -68,15 +71,15 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 Nothing in the launch plan or a ticket folder owns these:
 
 - Logo destination is the last-visited domain home (the logo links to `/` today).
-- Last-visited domain persistence, and using it as the landing page after sign-in.
+- Last-visited domain persistence. **NAV.1** moves today’s sign-in landing from `/dashboard` to `/fitness`. Remembering the last domain is still unplanned.
 - Community product and `/community`. The Soon item in the navbar is Done.
 - Achievements product and `/achievements`. The disabled menu row is Done.
 - Settings page. The disabled menu row is Done.
 - Route groups `(fitness)`, `(mind)`, and `(insights)`.
 
-### Open question for Ryan — Fitness URL
+### Fitness URL — resolved 2026-11-16
 
-This file’s route list names Fitness Overview `/fitness`, with `/fitness/workouts`, `/fitness/measurements`, and `/fitness/library`. The app’s Fitness shell is `/dashboard` (`src/app/(main)/dashboard/page.tsx`). After sign-in, `DEFAULT_SIGNED_IN_PATH` in `src/lib/auth/redirect.ts` is `/dashboard`. There is no `src/app` page under `/fitness`. `src/components/app-header.tsx` still treats a path that starts with `/fitness` as the Fitness item. This file does not choose which URL is canonical. Ticket OV.1 does not move the route.
+`/fitness` is canonical: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library`. `/dashboard` permanently redirects to `/fitness` and keeps the query string. Ticket **NAV.1** does the move, anytime after CU.3 and before OV.1. The app still serves the shell at `/dashboard` until that ticket. Sign-in landing becomes `/fitness`. Last-visited domain memory stays unplanned.
 
 ---
 
@@ -112,7 +115,7 @@ The app splits into two primary **domains**. Fitness has a tab bar. Mind does no
 | Item | MVP | Owner | Notes |
 |------|-----|-------|-------|
 | Logo | Yes | Lockup **Done**. Destination **Unplanned** | The mark is in the navbar. It links to `/`, not to a last-visited domain home |
-| **Fitness \| Mind** | Yes | Fitness link **Done**. Switcher finished by **ticket 2.6** | Coral active state exists for Fitness. Mind is muted and points at `/dashboard` |
+| **Fitness \| Mind** | Yes | Fitness link **Done**. Href **NAV.1**. Mind link **ticket 2.6** | Coral active state exists for Fitness. Today both point at `/dashboard`. NAV.1 points Fitness at `/fitness`. Ticket 2.6 points Mind at `/mind` |
 | **Insights** | Yes | **Slice 4** — no ticket folder yet | Navbar link, not a domain tab. Placeholder is muted |
 | **Community** | Yes (muted) | Chrome **Done**. Product **Unplanned** | “Soon” badge is in the navbar. The product is PRD §8, not Slice 6 |
 | Profile avatar + menu | Yes | Profile and Sign out **Done**. Achievements and Settings pages **Unplanned** | Achievements and Settings rows are disabled “Soon” placeholders |
@@ -141,7 +144,7 @@ Same shell layout as dashboard mockups; **greeting + subtitle change by domain**
 
 - **Slice 1.5:** only the **Measurements** tab shows a welcome-band CTA (`+ Log measurement`). Other Fitness tabs show **no** log buttons in the band (coming-soon tab panels are fine). Overview stays coming soon through Slice 2.
 - **Numbers live in the page body, not the welcome band.** The band stays greeting, subtitle, and CTAs. That supersedes the welcome-band stat cards in issue #55 for the cards below. Do not edit #55 from a docs change. Mapping: [`docs/vertical_slices/nov_16_2026_decisions/README.md`](./vertical_slices/nov_16_2026_decisions/README.md).
-- **Slice 2.5:** Weight now card and the activity streak ([ADR-014](./ARCHITECTURE_DECISIONS.md)). Overview stays coming soon. Where Weight now sits before Overview is an open question in that README. The proposed interim home is the Measurements tab.
+- **Slice 2.5:** Weight now card and the activity streak ([ADR-014](./ARCHITECTURE_DECISIONS.md)). The card is at the top of Measurements until **OV.1**, then only on Overview. Overview stays coming soon until then.
 - **Workouts slice:** Overview turns on ([ticket OV.1](./vertical_slices/nov_16_2026_decisions/tickets.md)). Contents are the F mockup: weekly workout goal, activity streak, Weight now, recent activity. PRs / consistency stay later (Slice 4), not on this tab.
 
 #### Mind welcome band
@@ -204,7 +207,7 @@ No `/mind/domains`, no `/mind/prompts`, no domain radar. A compact Mind row on t
 |---|----------|----------|
 | 1 | Insights — navbar or tab? | **Navbar link** |
 | 2 | Achievements — navbar or profile? | **Profile menu** (recommended) |
-| 3 | Default landing after login? | **Last visited** domain (Fitness or Mind); persist preference. Building that persistence is **Unplanned**. Sign-in lands on `/dashboard` today |
+| 3 | Default landing after login? | **Last visited** domain (Fitness or Mind) when that memory exists. Persistence is **Unplanned**. Until then, sign-in lands on the Fitness home. **NAV.1** moves that home from `/dashboard` to `/fitness` |
 | 4 | Community in MVP navbar? | **Yes — visible but dulled / “Coming soon”** until feature ships |
 
 ---
@@ -213,17 +216,17 @@ No `/mind/domains`, no `/mind/prompts`, no domain radar. A compact Mind row on t
 
 Do not add `/mind/domains` or `/mind/prompts`.
 
-The `/fitness/...` paths and the live `/dashboard` shell are the [open question](#open-question-for-ryan--fitness-url) above. This table does not pick a winner.
+Ryan resolved the URL on 2026-11-16. See [Fitness URL](#fitness-url--resolved-2026-11-16). Until **NAV.1**, the running app is still `/dashboard`.
 
 | Path | Role | Owner |
 |------|------|-------|
 | `/` | Marketing | **Done** |
 | `/auth` | Sign in and sign up | **Done** |
-| `/dashboard` | Fitness shell that exists today | **Done** — Slice 1.5 |
-| `/fitness` | Name this file uses for Fitness Overview | **Open question.** Tab content, once the URL is settled: **OV.1** |
-| `/fitness/workouts` | Workouts | **Open question** for the path. Feature: **Slice 3** — no ticket folder yet |
-| `/fitness/measurements` | Measurements | **Open question** for the path. Feature is **Done** on `/dashboard` |
-| `/fitness/library` | Library | **Open question** for the path. Feature: **Slice 3.1** after Slice 3 |
+| `/dashboard` | Old Fitness shell | Shell **Done**. Permanent redirect to `/fitness`, query string kept: **NAV.1** |
+| `/fitness` | Fitness home. Overview content when OV.1 lands. Until then, Measurements is the selected tab | Route **NAV.1**. Content **OV.1** |
+| `/fitness/workouts` | Workouts | Path **NAV.1**. Feature: **Slice 3** — no ticket folder yet |
+| `/fitness/measurements` | Measurements | Path **NAV.1**. Feature **Done** |
+| `/fitness/library` | Library | Path **NAV.1**. Feature: **Slice 3.1** after Slice 3 |
 | `/mind` | Mind home, no tab bar | **Ticket 2.6** |
 | `/mind/journal` | Today’s journal entry | **Ticket 2.3** |
 | `/mind/check-in` | Weekly check-in | **Ticket 2.4** |
@@ -249,9 +252,9 @@ The `/fitness/...` paths and the live `/dashboard` shell are the [open question]
 
 | Item | State | Owner |
 |------|-------|-------|
-| Domain switcher in the navbar | Fitness link is in. Mind does not switch yet | **Ticket 2.6** |
+| Domain switcher in the navbar | Fitness link is in and still points at `/dashboard`. Mind does not switch yet | Fitness href **NAV.1**. Mind link **Ticket 2.6** |
 | Last-visited domain persistence | Not started | **Unplanned** |
-| Community nav item, coming-soon styling | In the navbar (muted, Soon). The link still goes to `/dashboard` | **Done** for the chrome. Product **Unplanned** |
+| Community nav item, coming-soon styling | In the navbar (muted, Soon). The link still goes to `/dashboard` until **NAV.1** | **Done** for the chrome. Product **Unplanned** |
 | Route groups `(fitness)`, `(mind)`, `(insights)` | Not started. App group is `(main)` | **Unplanned** |
 | Welcome band CTAs follow the active Fitness tab | Measurements button only, which is the Slice 1.5 rule | **Done** for Measurements. Overview is **OV.1**. Workouts is **Slice 3** (no ticket folder) |
 | Mind welcome band and **+ New journal entry** | Not started | **Ticket 2.6** |

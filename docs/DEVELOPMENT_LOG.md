@@ -29,6 +29,30 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-16 — Ryan’s answers on the eight open questions
+
+### Completed
+
+- Moved the eight questions in `docs/vertical_slices/nov_16_2026_decisions/README.md` to “Resolved Nov 16” with his answers.
+- Amended Slice 2 ticket 2.4 with a read-only Your goals bar on the weekly check-in, directly above the life-domain scores. The PNG `G-checkin-goals-reminder.png` is not in the repo; the mockup README says so.
+- Confirmed the workout-count cap, the realism thresholds, the pace anchor, the Weight now placement, and the due-card spot.
+- Added ticket **NAV.1** (scope gate B): `/fitness` is canonical, `/dashboard` permanently redirects and keeps the query string. It can start after CU.3 and must land before OV.1.
+- Recorded three gate-D ideas: a priority-versus-score callout, ordering check-in domains by priority, and passing priorities to the Slice 5 coach. Focus areas still do not affect the Slice 2 check-in.
+
+### Decisions
+
+- Ryan’s. Listed under Resolved Nov 16. No new open questions from this set.
+
+### Next
+
+- Same sequence, plus NAV.1 anytime after CU.3 and before Overview.
+
+### AI Notes
+
+- Cursor Grok updated the specs only. No application code and no GitHub issue edits. The goals-reminder PNG was not on disk.
+
+---
+
 ## 2026-11-16 — Navigation IA owners
 
 ### Completed
