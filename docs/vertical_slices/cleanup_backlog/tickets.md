@@ -101,6 +101,29 @@ Pull requests to `main` do not run lint, types, tests, or build. The only file u
 
 ## Ticket CU.3: Password reset and auth hardening
 
+**Status:** Built 2026-11-16 on branch `cursor/cu3-password-reset`. Code, migration, local `supabase/config.toml`, and tests are in git. The hosted Supabase steps below are **not** done by this branch and cannot be verified from the repo.
+
+What shipped:
+
+- `src/lib/auth/validation.ts`: shared Zod schemas. New passwords (sign-up, update) are 8–72 characters. Sign-in only requires a non-empty password so accounts created under the old 6-character minimum can still log in.
+- `src/lib/auth/redirect.ts`: path constants, `?reason=` copy (`session`, `link_invalid`, `reset_expired`), `getSafeNextPath` (single leading `/` only; rejects `//`, backslashes, control characters), and exact-or-`/`-prefix path matching.
+- `/auth` is a server page that uses `getUser()` (not `getSession()`), reads `?reason=`, and renders the client `AuthForm` (`signin`, `signup`, `forgot`). Reset emails use `redirectTo = /auth/callback?next=/auth/update-password`. Sign-up `emailRedirectTo` is `/auth/callback`. Supabase 429s show a rate-limit message. Unknown Supabase errors show generic copy.
+- `/auth/callback` runs `exchangeCodeForSession(code)` or `verifyOtp(token_hash, type)` and redirects with a **relative** `Location` header (behind a proxy `nextUrl.origin` can read as `localhost`). Failure goes to `/auth?reason=link_invalid`.
+- `/auth/update-password` requires a user, then `updateUser({ password })` and on to `/dashboard`. `same_password` and `weak_password` have friendly copy; anything else is generic.
+- Middleware never redirects `/auth/callback`. `/auth/update-password` without a user goes to `/auth?reason=reset_expired`. `/dashboard` or `/profile` with an `sb-*-auth-token` cookie but no user adds `?reason=session`. Refreshed cookies are copied onto redirect responses. `/authors` is not `/auth`.
+- Root layout no longer calls `getOrCreateProfile()`. New read-only `getProfile()` returns `{ userId, profile | null }` and never inserts. `src/app/(main)/layout.tsx` wraps `AppHeader` and children in `ProfileProvider` keyed by `userId ?? "signed-out"` with `initialIsAuthenticated` (the `CI=true` skip moved there). `AppHeader` and `ProfileMenu` use `isAuthenticated`, not `profile !== null`. `GET /api/profile` uses `getProfile()`. `/dashboard` and `/profile` still call `getOrCreateProfile()`, so a signed-in user's row is still created there.
+- Migration `supabase/migrations/20261116160000_revoke_profiles_extra_grants.sql`: revokes `delete, truncate, references, trigger` on `public.profiles` from `authenticated`, then grants `select, insert, update`.
+- Local `supabase/config.toml`: `minimum_password_length = 8`; callback URLs with a `**` wildcard in `additional_redirect_urls`.
+- Tests: validation, redirect helpers, callback route, `AuthForm`, `UpdatePasswordForm`, middleware cases, `getProfile`, `GET /api/profile`, and an `AppHeader` signed-out → signed-in switch.
+
+**Hosted Supabase steps (manual, outside git):**
+
+1. Authentication → Providers → Email: set **Minimum password length** to 8 so the server matches Zod. Existing shorter passwords keep working for sign-in.
+2. Authentication → URL Configuration: keep **Site URL** on the production domain. Add redirect URLs `https://<production-domain>/auth/callback**`, the Vercel preview pattern (for example `https://*-<team>.vercel.app/auth/callback**`), and `http://localhost:3000/auth/callback**`. Without these, Supabase falls back to the Site URL and the reset link lands on `/` instead of the update-password page.
+3. Apply the profiles grant migration: `npm run db:push`, then `npm run db:status` to confirm.
+4. Optional: the default email templates work with the callback (PKCE `?code=`). That code only exchanges in the browser that requested it. To support opening the link on another device, change the **Reset password** template link to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/auth/update-password` (and the **Confirm signup** template to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email`).
+5. Check Authentication → Rate Limits for email sends. The built-in SMTP sender is heavily limited; the form shows a rate-limit message on 429 but a custom SMTP provider is needed for real traffic.
+
 **Type:** feature  
 **Priority:** P1  
 **Labels:** `auth`, `security`, `frontend`, `backend`
