@@ -14,6 +14,7 @@ vi.mock("@/lib/profile/actions", () => ({
 vi.mock("@/components/profile/profile-provider", () => ({
   useProfile: () => ({
     profile: null,
+    isAuthenticated: true,
     isLoading: false,
     errorMessage: null,
     refreshProfile,

@@ -64,7 +64,7 @@ function MenuItem({ children, disabled, badge, onSelect, href }: MenuItemProps) 
 export default function ProfileMenu() {
   const menuId = useId();
   const router = useRouter();
-  const { profile } = useProfile();
+  const { profile, isAuthenticated } = useProfile();
   const [email, setEmail] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -107,12 +107,12 @@ export default function ProfileMenu() {
     };
   }, [open, closeMenu]);
 
-  if (!profile) {
+  if (!isAuthenticated) {
     return null;
   }
 
-  const label = getProfileMenuLabel(profile.display_name, email);
-  const initials = getProfileInitials(profile.display_name, email);
+  const label = getProfileMenuLabel(profile?.display_name, email);
+  const initials = getProfileInitials(profile?.display_name, email);
 
   async function handleSignOut() {
     setSigningOut(true);

@@ -12,6 +12,7 @@ import type { Profile } from "@/lib/types/profile";
 
 type ProfileContextValue = {
   profile: Profile | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
   errorMessage: string | null;
   refreshProfile: () => Promise<void>;
@@ -21,14 +22,17 @@ const ProfileContext = createContext<ProfileContextValue | null>(null);
 
 type ProfileProviderProps = {
   initialProfile: Profile | null;
+  initialIsAuthenticated: boolean;
   children: ReactNode;
 };
 
 export function ProfileProvider({
   initialProfile,
+  initialIsAuthenticated,
   children,
 }: ProfileProviderProps) {
   const [profile, setProfile] = useState<Profile | null>(initialProfile);
+  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -44,6 +48,7 @@ export function ProfileProvider({
 
       if (response.status === 401) {
         setProfile(null);
+        setIsAuthenticated(false);
         return;
       }
 
@@ -55,6 +60,7 @@ export function ProfileProvider({
 
       const payload = (await response.json()) as { profile: Profile | null };
       setProfile(payload.profile ?? null);
+      setIsAuthenticated(true);
     } catch {
       setErrorMessage("Unable to refresh profile.");
     } finally {
@@ -65,11 +71,12 @@ export function ProfileProvider({
   const value = useMemo(
     () => ({
       profile,
+      isAuthenticated,
       isLoading,
       errorMessage,
       refreshProfile,
     }),
-    [profile, isLoading, errorMessage, refreshProfile],
+    [profile, isAuthenticated, isLoading, errorMessage, refreshProfile],
   );
 
   return (

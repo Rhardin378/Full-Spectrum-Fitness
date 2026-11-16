@@ -14,6 +14,10 @@ export type GetOrCreateProfileResult =
   | { success: true; profile: Profile }
   | { success: false; error: "unauthorized" | "database"; message: string };
 
+export type GetProfileResult =
+  | { success: true; userId: string | null; profile: Profile | null }
+  | { success: false; error: "database"; message: string; userId: string };
+
 export type UpdateProfileResult =
   | { success: true; profile: Profile }
   | {
@@ -56,6 +60,36 @@ async function fetchProfileByUserId(userId: string) {
     .select(PROFILE_COLUMNS)
     .eq("user_id", userId)
     .maybeSingle();
+}
+
+// Read-only: never inserts, so it is safe to call from public layouts.
+export async function getProfile(): Promise<GetProfileResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { success: true, userId: null, profile: null };
+  }
+
+  const { data, error } = await fetchProfileByUserId(user.id);
+
+  if (error) {
+    return {
+      success: false,
+      error: "database",
+      message: PROFILE_LOAD_ERROR,
+      userId: user.id,
+    };
+  }
+
+  return {
+    success: true,
+    userId: user.id,
+    profile: data ? normalizeProfile(data) : null,
+  };
 }
 
 export async function getOrCreateProfile(): Promise<GetOrCreateProfileResult> {
