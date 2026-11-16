@@ -153,6 +153,14 @@ Do not use free→paid conversion or social engagement as Phase 1 targets.
 
 ---
 
+## Before beta launch
+
+Do these just before the first beta testers get access, not earlier.
+
+- [ ] **Invite-only sign-up (CU.7).** Turn off public sign-up in Supabase, invite beta testers from the dashboard, and replace the Sign Up tab with a request-access waitlist. Spec: [`docs/vertical_slices/cleanup_backlog/tickets.md`](./vertical_slices/cleanup_backlog/tickets.md) ticket CU.7.
+
+---
+
 ## After MVP launch — operations
 
 Settings to revisit once real users are signing up. These are hosted dashboard settings, not code.

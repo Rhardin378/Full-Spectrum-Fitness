@@ -2,7 +2,7 @@
 
 Each ticket is open work verified on 2026-11-03. Do not redo the items listed as already done in [`README.md`](./README.md).
 
-Repo-governance originals: [`../repo_governance/tickets.md`](../repo_governance/tickets.md). **CU.1** replaces the 16.3.x pin in **RG.3**. **CU.2** is **RG.2** with the scripts that exist today. **CU.6** is the still-open **RG.1** sit-down.
+Repo-governance originals: [`../repo_governance/tickets.md`](../repo_governance/tickets.md). **CU.1** replaces the 16.3.x pin in **RG.3**. **CU.2** is **RG.2** with the scripts that exist today. **CU.6** is the still-open **RG.1** sit-down. **CU.7** is timed for just before beta testers get access; do not start it earlier.
 
 ---
 
@@ -307,3 +307,66 @@ Policy says `main` changes only through a pull request. The sit-down that record
 ### Suggested GitHub title
 
 `[Cleanup] Record the main branch ruleset (RG.1)`
+
+---
+
+## Ticket CU.7: Invite-only sign-up for the beta
+
+**Type:** feature  
+**Priority:** P1 (at beta)  
+**Labels:** `auth`, `security`, `frontend`, `backend`  
+**When:** Just before the first beta testers get access. Do not start earlier; listed in `docs/LAUNCH_PLAN.md` under “Before beta launch”.
+
+### Problem
+
+Anyone who finds the site can create an account. For the beta, accounts should exist only for people Ryan invites. Hiding the Sign Up tab is not enough: the browser calls Supabase `signUp` directly with the public anon key, so anyone can make that call from the console or a script. The block has to live in Supabase.
+
+### Evidence
+
+- Sign-up is a client call in `src/components/auth/auth-form.tsx` (`supabase.auth.signUp`). The anon key is public by design.
+- `supabase/config.toml` has `enable_signup = true` under `[auth]` and `[auth.email]`. The hosted setting is not visible from the repo.
+- CU.3 already handles invite links: `/auth/callback` accepts `token_hash` with `type=invite`, and `/auth/update-password` lets a signed-in user set a password.
+- `getOrCreateProfile()` on `/dashboard` and `/profile` creates the profile row on first visit, so invited users need no extra profile step.
+
+### Approach
+
+**Supabase (hosted, manual):**
+
+- Authentication → Sign In / Providers: turn off **Allow new users to sign up**. Admin invites still work with this off.
+- Authentication → Email Templates → **Invite user**: set the link to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite&next=/auth/update-password` so the invitee lands on the set-password page.
+- Invite testers from Authentication → Users → **Invite user**.
+- Invite emails count toward the auth email rate limit. With the built-in sender that is only a few per hour. Invite in small batches, or pull the custom SMTP item forward from “After MVP launch — operations” in `docs/LAUNCH_PLAN.md` if the first wave is more than a handful of people.
+
+**Repo:**
+
+- `supabase/config.toml`: set `enable_signup = false` so local matches hosted. Local invites go through Studio.
+- A `NEXT_PUBLIC_SIGNUPS_OPEN` flag (default off). When off, `/auth` shows a “Private beta — request access” panel in place of the Sign Up tab. Reopening sign-up later means flipping this flag and the Supabase toggle, nothing else.
+- Request-access form backed by a new `beta_waitlist` table (`email` unique, optional short note, `created_at`, nullable `invited_at`). Insert through a server action with Zod validation. RLS on; no `select`, `update`, or `delete` for `anon` or `authenticated`. A duplicate email returns the same success message, so the form does not reveal who is already on the list. Use a honeypot field instead of a captcha.
+- Map Supabase's `signup_disabled` error to friendly copy in `AuthForm`, for anyone on a cached page that still shows the old form.
+- `/auth/update-password` heading and copy should read correctly for both a reset and a first-time invite (for example “Set your password”).
+- Working the waitlist is manual: read the table in the dashboard, invite, and set `invited_at`. No admin UI in this ticket.
+
+### Acceptance criteria
+
+- A direct `signUp` call with the anon key is rejected by hosted Supabase (checked once with the browser console or `curl` against `/auth/v1/signup`).
+- With the flag off, `/auth` shows no sign-up form, and the request-access form stores an email.
+- A duplicate request shows the same success message and does not create a second row.
+- An invited user can open the email, set a password, land on `/dashboard`, and sign in again later with that password.
+- Sign-in and password reset behave as they did after CU.3.
+- The development log records the hosted settings that were changed and how to reopen sign-up.
+
+### Tests
+
+- Waitlist action: validation, honeypot, duplicate email, and no raw database errors returned.
+- `AuthForm` with the flag off (request-access panel, no sign-up form) and on (current sign-up form).
+- `signup_disabled` copy.
+- `/auth/callback` with `type=invite` redirecting to `next`.
+- No live inbox test in CI.
+
+### Dependencies
+
+- CU.3 (merged in #64). Custom SMTP is optional for a small first wave, required for a larger one.
+
+### Suggested GitHub title
+
+`[Beta] Make sign-up invite-only with a request-access waitlist`
