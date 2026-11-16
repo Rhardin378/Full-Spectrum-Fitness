@@ -261,7 +261,7 @@ Match [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desk
 3. Last intention, when one exists for that `week_start`: the body in quotes and Yes / Partly / No. One of the three required. Hidden when there is no intention.
 4. Stress and energy, 1–10, legend “1 = low, 10 = high”.
 5. Seven domain rows plus Habits. Legend “1 = struggling, 10 = thriving”. Habits may be left blank. The other seven may not.
-6. Intention for next week. Domain control defaults to the lowest score and can be changed before submit. Helper: “One concrete thing. Your lowest domain this week: {Label}.” The helper updates if the user changes scores before submit. Text required, max 200.
+6. Intention for next week. Domain control defaults to the lowest score and can be changed before submit. Helper: “One concrete thing. Your lowest domain this week: {Label}.” The helper updates if the user changes scores before submit. Text required, max 200. On 2026-11-16 Ryan rejected a proposal to preselect the user’s top-ranked profile focus area instead ([`B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png)). [ADR-013](../../ARCHITECTURE_DECISIONS.md) is unchanged. Do not read `domain_priorities` to pick this default. Any other effect of focus-area rank on the check-in is an open question in [`docs/vertical_slices/nov_16_2026_decisions/README.md`](../nov_16_2026_decisions/README.md), not a guess.
 7. Optional notes, last field before submit. Label and prompt, exact: “How did your training, energy and life go this week? Anything to remember?” The check-in submits when this is empty. Max 1000 characters. This is not a message to a coach. Nothing replies to it. Do not add a thread, a reply box, or any Q&A.
 8. “Submit check-in”. Pending, field errors, generic failure, and the already-submitted message.
 
@@ -345,29 +345,33 @@ Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend,
 
 - `src/lib/supabase/middleware.ts`: treat paths under `/mind` as protected, same redirect to `/auth` as `/dashboard`.
 - `src/components/app-header.tsx` and `src/components/mobile-nav-menu.tsx`: Mind href `/mind`, active on `/mind`. Do not activate it together with Fitness. Leave Insights and Community muted.
-- Page chrome uses the existing charcoal header and warm page. A short welcome line is enough (“Reflect across your life domains” from `docs/navigation-ia.md`) plus one primary action, **+ New journal entry**, to `/mind/journal`. Do not build the Mind tab bar (Overview / Journal / Domains / Prompts). That IA is still a draft; ticket 2.9 records the cut.
-- Stats for the seven days ending today (validated local today, inclusive):
-  - average mood (same rounding as the recap; em dash when there are no entries)
-  - days journaled (“N of 7”)
-  - domains touched (distinct tags in the window)
-  - last entry date, or “No entries yet”
-- Mood trend for those same seven days, hollow when a day has no entry. This window includes today. It is not the check-in week window.
-- History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap.
-- Mount points for the intention card (2.5) and the due card (2.7).
+- Page chrome uses the existing charcoal header and warm page. A short welcome line is enough (“Reflect across your life domains” from `docs/navigation-ia.md`) plus one primary action, **+ New journal entry**, to `/mind/journal`. **Mind is one page.** Do not build a tab bar: not Overview / Journal / Domains / Prompts, and not the Option B tabs on [`E-mind-layout-compare.png`](../../mockups/nov_2026_tickets/E-mind-layout-compare.png) (Overview / Journal / Check-ins). Option A on that PNG is this page. Ryan confirmed the single page on 2026-11-16. `docs/navigation-ia.md` now says the same. Ticket 2.9 must not put the tab bar back.
+- Page order, top to bottom:
+  1. Welcome line and **+ New journal entry**.
+  2. Stat row. **Activity streak** is the first stat ([ADR-014](../../ARCHITECTURE_DECISIONS.md), ticket 2.5.1). It replaces “days journaled, N of 7” in this row. Do not show “N of 7” here, and do not label the card “Journal streak” (the D mockup still uses that sample label). If ticket 2.5.1 has not merged, omit the streak card. Do not fill the slot with a days-journaled fraction. The other three stats still ship:
+     - average mood for the seven days ending today (same rounding as the recap; em dash when there are no entries)
+     - domains touched: the count of distinct tags in that window, plus their labels (Family may use the short chip label)
+     - last entry date, or “No entries yet”
+  3. Check-in due card (ticket 2.7), under the stat row and above the mood strip, only when `isCheckInDue` is true. Placement is an open question in the Nov 16 README if Ryan wants it elsewhere.
+  4. Mood trend for those same seven days, hollow when a day has no entry. This window includes today. It is not the check-in week window.
+  5. Intention card (ticket 2.5).
+  6. History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap.
+- Layout reference: [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). Sample numbers and the “rules are not decided yet” line are not product copy. The streak rules are ADR-014.
 - Empty history: supportive copy and the new-entry action. No sample numbers.
 
 ### Acceptance Criteria
 
 - Signed-out visitors to `/mind` and `/mind/journal` land on `/auth`.
 - Mind in the navbar is a real link and shows the coral active state on `/mind` (desktop and the mobile menu).
-- Stats and the trend match journal rows in the rolling seven days and ignore older rows.
+- Stats and the trend match journal rows in the rolling seven days and ignore older rows. The stat row does not show “N of 7” or a “Journal streak” number. When ticket 2.5.1 has merged, Activity streak is the first stat and its number comes from that server result.
 - History Show more / Show less behaves like Recent history on the Measurements tab.
-- The page does not show an Insights tab, a domain radar, or hard-coded demo stats.
+- The page does not show a tab bar, an Insights tab, a domain radar, or hard-coded demo stats.
 
 ### Dependencies
 
 - Ticket 2.2
 - Ticket 2.3 for the new-entry link target
+- Ticket 2.5.1 fills the Activity streak stat. This ticket does not wait on it, and it does not invent a substitute number.
 
 ### Suggested GitHub title
 
@@ -476,7 +480,7 @@ When this ticket lands, these must align with ADR-013 and link to it:
 
 **Check-in fields the pack still lists and Slice 2 will not store:** mood (again), sleep / recovery, motivation, nutrition adherence, life-event text, free-form check-in reflection. Say they are later or explicitly dropped. Do not leave them implied as Slice 2 work.
 
-**Navigation.** `docs/navigation-ia.md` assigns the weekly check-in to Slice 5 and lists Mind tabs Overview, Journal, Domains, Prompts plus `/mind/domains`. Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. Update the draft IA so it aligns with ADR-013, links to it, and does not send an implementer to build a domain radar.
+**Navigation.** Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. On 2026-11-16 `docs/navigation-ia.md` was updated: Mind is a single page with no tab bar, the check-in is Slice 2, and `/mind/domains` and `/mind/prompts` are explicitly not routes. This ticket must not put the Mind tab bar back, and it must not move the subjective check-in back to Slice 5. It still aligns the rest of the pack with ADR-013 and links to it. The activity streak on `/mind` is [ADR-014](../../ARCHITECTURE_DECISIONS.md), not a change to ADR-013.
 
 **Profile keys.** `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` is still the seven wheel slugs (`emotional`, `physical`, `social`, `environmental`, `financial`, `occupational`, `spiritual`). It must align with ADR-013’s Option B set and link to that ADR. Include a mapping or migration for existing users’ saved `profiles.domain_priorities` values. Do not leave the wheel slugs valid beside the new domains, and do not rewrite saved values without that mapping. Journal and check-in tickets do not perform this migration; this ticket does.
 

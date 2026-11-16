@@ -51,7 +51,7 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 - **Status:** Accepted
 - **Decision:** Deterministic code stores, validates, calculates metrics/trends, and applies explicit rules. The LLM interprets, summarizes, hypothesizes, retrieves evidence, and generates reflections/suggestions. The LLM must not calculate core user metrics.
 - **Why:** Longitudinal trust, testability, and safety. Hallucinated numbers would undermine the product thesis.
-- **Consequence:** Slice 4 produces a versioned analytics snapshot. Slice 5 coach consumes that snapshot. Product must still work if the model is down.
+- **Consequence:** Slice 4 produces a versioned analytics snapshot. Slice 5 coach consumes that snapshot. Product must still work if the model is down. The activity streak ([ADR-014](#adr-014--one-activity-streak-one-grace-day-per-week)) is one of these deterministic metrics. A model does not compute it.
 
 ---
 
@@ -152,3 +152,28 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
   - Allow a list of intentions each week. Rejected for this slice. Focus, and time to act, need one aim. A list can be reconsidered later.
   - Enforce the 3-day text window, or the locked domain, only in the client. Rejected. A modified client must not extend the window or retarget the domain. The server rejects both.
 - **Consequence:** This ADR is Proposed until ticket 2.9 accepts it into the handoff pack. Until then, build Slice 2 from `docs/vertical_slices/slice_2_journaling_life_domains/README.md`, and do not treat PRD §2 or ADR-005’s original check-in placement as the spec. Ticket 2.9 must make the PRD, system design, ADR-005, `docs/navigation-ia.md`, `docs/vertical_slices/tracking_setup.md`, and `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` align with and link to this ADR. That includes a mapping or migration for existing users’ saved `profiles.domain_priorities` (today the wheel slugs `emotional`, `physical`, `social`, `environmental`, `financial`, `occupational`, `spiritual`). Do not drop those saved values and do not leave the wheel slugs valid next to Option B. Do not delete ADR-005: keep the “not a chatbot / not the next slice after 1.5” decision, and point it here. Slice 5 still produces the structured coach report after deterministic insights. It does not collect this form. Journal and check-in copy must not prescribe care (ADR-011). Habits is optional on the check-in and is not the preselected intention domain unless it was scored. The check-in may also store optional `notes` (nullable text, at most 1000 characters; empty is allowed and stores null), checked in Zod and in the database. Notes are the owner’s memory of the week, not a message to a coach, and nothing replies. Slice 5 reads `notes` as context later (ADR-004) with no new table or column. Diet adherence / appetite tracking, and coach Q&A replies to notes, are not built. Progress photos stay backlog issue #54.
+
+---
+
+## ADR-014 — One activity streak, one grace day per week
+
+- **Date:** 2026-11-16
+- **Status:** Proposed
+- **Does not amend:** ADR-013. The weekly intention stays the lowest check-in score. A 2026-11-16 proposal to preselect the top-ranked profile focus area was rejected and is not part of this ADR.
+- **Decision:** The product has one activity streak. A calendar day counts when the user logged a journal entry that day or, once a workout has a calendar day, a workout that day. The same day from both sources counts once. One missed day in a Monday–Sunday week does not break the streak. A second missed day in that same week does. The streak is recomputed on the server from those dates. It is not stored, and a model does not calculate it (ADR-004).
+- **Why:** Mind and Fitness were about to grow separate streaks (“journal streak”, “workout streak”, “N of 7” on the Mind home). One rule is the number both surfaces show. A single grace day per week keeps a missed day from wiping a long run, and a second miss in that week still ends it, so the number stays meaningful. Calendar dates match journal `entry_on` and measurement `measured_on`, which already exist so a timezone cannot move the day.
+- **Week boundary:** The same Monday rule as Slice 2. `week_start` is `mondayOnOrBefore(date)`. Sunday 2026-11-01 belongs to the week of 2026-10-26. Monday 2026-11-02 starts the week of 2026-11-02. The grace day is per that week, not a floating token that rolls forever. A miss on Sunday and a miss on Monday are two different weeks, so each can be the one forgiven day.
+- **Inputs:** Journal `entry_on`. Workout calendar day, the same kind of `date`, only after the workouts slice stores one. Until then, journal entries are the only input. Do not invent workout hits. Dates after the validated local `today` are ignored. The loader uses the Slice 2 slack window for `today`. The pure function does not read the clock.
+- **Count:** Let hits be the set of counting dates on or before `today`. If that set is empty, the streak is 0 and the grace line is hidden. Otherwise let `earliest` be the oldest hit. Walk backward from `today` when `today` is a hit, or from yesterday when it is not. Today with no log does not add a day and does not use a grace day. For each walked day that is still on or after `earliest`: a hit adds 1; the first miss in that Monday–Sunday week adds 0 and uses that week’s grace; a second miss in that week stops the walk. That stopping day and everything older are outside the streak. Days before `earliest` are not misses and are not walked. Forgiven misses do not add to the count.
+- **Grace left:** Shown only when the count is at least 1. Look at this week’s calendar days from `week_start` through yesterday that are on or after `earliest`. No miss in that range: “1 grace day left this week”. Any miss: “No grace day left this week”.
+- **Where it shows:** The first stat on `/mind` (ticket 2.5.1, replacing “days journaled, N of 7” from ticket 2.6). The Fitness Overview card (ticket OV.1) uses the same function once that tab turns on with the workouts slice. The check-in recap’s “N of 7” is a different number (journal rows in the check-in week, no grace, no workouts) and stays.
+- **Alternatives considered:**
+
+  - A journal streak and a workout streak. Rejected. Two numbers would disagree, and the Mind card would have to pick one.
+  - “N of 7” days journaled as the Mind stat. Rejected for that slot. It stays on the check-in recap, where it describes the week being reviewed.
+  - A stored counter incremented on save. Rejected. A deleted or skipped day would drift. Recomputing from the dates is the ADR-004 rule and is what the unit tests lock.
+  - Forgiving one miss anywhere in the streak, with no week boundary. Rejected. The grace day would be ambiguous across months. The week already has a `week_start`.
+  - Treating every empty day before the user started as a miss. Rejected. Those days are before `earliest` and are outside the streak.
+  - Computing the streak in the browser from a fetched history. Rejected. The page can format the server result. It does not decide the count.
+- **Consequence:** This ADR is Proposed until ticket 2.5.1 lands the function, the tests, and the Mind card. The fixture table for those tests is in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](./vertical_slices/nov_16_2026_decisions/tickets.md) (ticket 2.5.1). Overview must not grow a second implementation. Copy stays plain (“N days”, grace left). It does not turn the streak into a badge or a shame state (ADR-007, ADR-011).
+
