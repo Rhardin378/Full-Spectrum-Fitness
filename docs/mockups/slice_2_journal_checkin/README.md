@@ -5,7 +5,7 @@ Approved UI references for [`docs/vertical_slices/slice_2_journaling_life_domain
 | File | Use |
 |------|-----|
 | `journal-desktop.png` | Daily journal. Mood 1–10, reflection, optional domain tags (one or two), this week’s intention as a line. No stress or energy on this screen. |
-| `checkin-desktop.png` | Weekly check-in order: week recap, last intention outcome, stress and energy, life-domain scores, next intention. |
+| `checkin-desktop.png` | Weekly check-in order: week recap, last intention outcome, stress and energy, life-domain scores, next intention. The next-intention domain still defaults to the lowest score ([ADR-013](../../ARCHITECTURE_DECISIONS.md)). A later composite, [`docs/mockups/nov_2026_tickets/B-checkin-journal.png`](../nov_2026_tickets/B-checkin-journal.png), includes a rejected idea (preselect the top profile focus area). Do not build that callout. |
 | `domains-compare-desktop.png` | Decision record only. **Option B is approved.** Do not build this comparison screen. |
 
 Option A in the comparison PNG is the SAMHSA-style wellness wheel still listed in [`docs/PRD.md`](../../PRD.md) §2. Option B (Peterson / Future Authoring inspired) replaces those names for journal tags and check-in scores. The handoff pack still describes Option A; ticket **2.9** is the pack update. Slice 2 build work follows Option B.

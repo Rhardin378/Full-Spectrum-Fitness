@@ -17,7 +17,7 @@ Approved theme applied in code (`src/app/globals.css`, `src/lib/theme/colors.ts`
 | `brand-coral-deep` | `#D14A40` | Filled CTAs, hover |
 | `text-primary` | `#1A1A1A` | Body on light |
 | `text-muted` | `#6B6560` | Secondary labels |
-| `success` | `#4ADE80` | Positive trends only |
+| `success` | `#4ADE80` | Positive-change pill fill with charcoal text, not green text on white. See [brand_style_guide.md](../../brand_style_guide.md). |
 
 ---
 

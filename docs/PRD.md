@@ -187,11 +187,12 @@ Status tags: **Done** · **Current** · **Phase 1** · **Follow-on** · **Later*
 ### Profile data
 
 - Display name
-- Fitness goal
-- Wellness goal
+- Fitness goal (free text; stays). Edited only on the profile. Shown read-only on the weekly check-in. Not on the Fitness Overview.
+- Wellness goal (free text; stays). Same rule as the fitness goal.
 - Experience level
 - Domain priorities
 - Sharing preference field may exist for later use; **accountability circles are not Phase 1**
+- Structured goals are specified, not built: a weight goal and a waist goal are each a target number plus a deadline, plus a weekly workout count. Spec: [`docs/vertical_slices/nov_16_2026_decisions/`](./vertical_slices/nov_16_2026_decisions/README.md). Lift goals and model-written goal suggestions are later.
 
 ---
 
@@ -415,7 +416,7 @@ Insights copy must not imply proven causation. Prefer “together with,” “wh
 ### Analytics engine (examples)
 
 - Training volume and week-over-week change
-- Training consistency (sessions, streaks)
+- Training consistency (sessions, and the one activity streak in [ADR-014](./ARCHITECTURE_DECISIONS.md) — not a separate journal streak and a separate workout streak)
 - Exercise performance / plateau flags (rule-based)
 - Weight and waist deltas over a window
 - Average mood / stress / energy and deltas
@@ -533,7 +534,7 @@ Auth users live in Supabase Auth (`auth.users`). Application tables use `user_id
 
 ### Implemented
 
-**profiles** — `user_id`, `display_name`, `fitness_goal`, `wellness_goal`, `experience_level`, `sharing_preferences`, `domain_priorities`, timestamps.
+**profiles** — `user_id`, `display_name`, `fitness_goal`, `wellness_goal`, `experience_level`, `sharing_preferences`, `domain_priorities`, timestamps. Structured goals (weight, waist, weekly workout count) are not extra columns on this row. They are specified in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](./vertical_slices/nov_16_2026_decisions/tickets.md) (ticket G.1) and are not migrated yet.
 
 **measurements** — `user_id`, `measurement_type` (`weight` | `waist`), `value`, `unit`, `measured_on` (calendar date), `measured_at` (UTC midnight of that date), `notes`, timestamps; soft-delete via `deleted_at` per Slice 1.5 follow-up tickets.
 

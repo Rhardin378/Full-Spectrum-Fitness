@@ -15,7 +15,7 @@ Slice 3.1 is a follow-on to Slice 3 (Workouts). It must reuse the same canonical
 - Slice 3 defines and ships the canonical workout template model.
 - The model supports programs, ordered sessions, ordered exercises, one row per prescribed set, and editable exercise groupings.
 - Manual template creation/editing and owner-scoped persistence work before AI import is enabled.
-- The Workouts tab exists on `/dashboard`.
+- The Workouts tab exists on `/dashboard`. Ticket **NAV.1** (`docs/vertical_slices/nov_16_2026_decisions/tickets.md`) moves that shell to `/fitness` and permanently redirects `/dashboard`. After it lands, read `/dashboard` in this folder as `/fitness` (the import flow becomes `/fitness/workouts/import`). This note does not rewrite the Slice 3.1 tickets.
 
 AI import must not establish a competing workout schema or bypass canonical validation.
 

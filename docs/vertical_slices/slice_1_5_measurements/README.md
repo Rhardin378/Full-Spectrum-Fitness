@@ -49,8 +49,8 @@ Measurements ship inside a **light dashboard shell** on `/dashboard`, not as a s
 
 ### Deferred in shell (future slices)
 
-- Summary stat cards above the tab bar (check-ins, streak, consistency, etc.) — requires Journal/Workouts data not built yet.
-- Functional non-Measurements tabs (Overview, Journal, Workouts, Insights, Achievements).
+- Summary stat cards. Weight now and the activity streak are Slice 2.5. The Fitness Overview tab turns on with the workouts slice, not in Slice 1.5. Spec: [`docs/vertical_slices/nov_16_2026_decisions/`](../nov_16_2026_decisions/README.md).
+- Functional non-Measurements tabs (Overview, Workouts, Library). Mind is not a Fitness tab. Overview stays coming soon until the workouts slice.
 - Progress Photos sub-tab or upload UI.
 - Standalone `/measurements` route (may be added later only if product routing changes).
 

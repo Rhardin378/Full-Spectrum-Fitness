@@ -87,6 +87,7 @@ These are product decisions, not suggestions. Change them here if they change.
 8. **Evidence RAG is planned, not current.** Do not embed user journals as the knowledge base. Do not scrape commercial fitness sites.
 9. **Screenshot/spreadsheet program ingestion is later than Slice 3.1.** Reuse the same human-review pattern; do not pull it into Phase 1.
 10. **Personal timeline, wins, and life events** are near-term *after* Phase 1, not blockers for the first coach report (optional free-text on the weekly check-in covers context for v1).
+11. **After Slice 2’s capture work, a small Slice 2.5 polish, then goals, then Fitness Overview with the workouts slice.** Overview stays off until workouts exist. Mind home is one page (no Mind tab bar). The activity streak, the Weight now card, and structured goals are specified in [`docs/vertical_slices/nov_16_2026_decisions/`](./vertical_slices/nov_16_2026_decisions/README.md). Slice 2 is already the current slice. CU.3 is merged in [PR #64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64), including the hosted Supabase settings. **NAV.1** (same folder) can start now. It moves the Fitness shell from `/dashboard` to `/fitness` before Overview. `/dashboard` permanently redirects to `/fitness`.
 
 ---
 

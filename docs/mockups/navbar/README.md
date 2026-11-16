@@ -60,7 +60,7 @@ The logo makes the current **indigo / purple gradient** and **teal landing-page 
 2. **Primary CTAs** — coral pill buttons (already in brand guide; now anchored to logo hex).
 3. **Active nav state** — coral underline or coral bottom border instead of white-only.
 4. **Landing hero** — optional subtle charcoal → warm-dark gradient with coral CTA; drop teal-to-cyan sweeps.
-5. **Success / achievements** — keep **wellness green** (`#4ADE80` range) as a secondary positive color so coral stays reserved for brand + CTAs.
+5. **Success / achievements** — keep **wellness green** (`#4ADE80`) as a secondary positive **fill** with charcoal text, so coral stays reserved for brand and CTAs. Do not use it as green text on white. The rule is in [brand_style_guide.md](../../brand_style_guide.md).
 
 ---
 
@@ -86,7 +86,7 @@ The Slice 1.5 reference uses a **two-tier shell**: dark top navbar + white tab b
 | Top navbar | `#1E1E1E` | Coral active underline; profile corner |
 | Welcome band | `#EDE9E4` (light cream) | Dark charcoal text; coral CTAs — **keep lighter than navbar** |
 | Tab bar (dashboard) | `#FFFFFF` | Coral underline on active tab (Measurements, etc.) |
-| Page body | `#F5F3F0` | Coral primary buttons; green for positive trends |
+| Page body | `#F5F3F0` | Coral primary buttons; `#4ADE80` as a fill for a positive change, with charcoal text |
 
 ### Profile corner (logged in)
 

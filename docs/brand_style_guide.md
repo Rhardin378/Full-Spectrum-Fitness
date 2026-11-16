@@ -33,7 +33,7 @@ Derived from the official logo (circular head + brain mark on charcoal).
 | `text-muted` | `#6B6560` | Secondary labels (warm gray) |
 | `text-on-dark` | `#FFFFFF` | Text on charcoal / gradients |
 | `text-on-dark-muted` | `#A3A3A3` | Inactive nav on dark header |
-| `success` | `#4ADE80` | Positive trends, streaks, achievements |
+| `success` | `#4ADE80` | Positive-change **fill** only (pill or background). Text on that fill is `text-primary`. Not text on white. |
 
 ### Gradients
 
@@ -56,7 +56,7 @@ Do **not** use in new UI:
 
 1. **Coral** — primary CTAs, active tab/nav underlines, progress bars, key chart lines, logo accent.
 2. **Charcoal** — navbar only; keep visually separate from welcome bands (use gradient or warm cream, not matching `#1E1E1E`).
-3. **Green** — positive deltas and achievements only; do not use for primary actions.
+3. **Green (`#4ADE80`)** — a positive change only, and only as a pill or background fill with charcoal text (`text-primary`, `#1A1A1A`). Do not use this green as text on white, on `surface-card`, or on `surface-page`. It fails ordinary text contrast there. Charcoal on the green fill is the pair that passes. Form success messages keep the darker pair already in the theme (`feedback-success-text` `#166534` on `feedback-success-bg` `#ECFDF5`). Do not recolor those messages as `#4ADE80` text. Do not use green for primary actions. Do not add a red “negative delta.” A change that is not the positive direction is muted text. “Positive” for a body-metric delta means toward the active goal (ticket 2.5.2). With no goal, the signed delta stays muted.
 4. **Warm off-white** — default page background; avoid cold `#F8FAFC`-style grays.
 5. **Coral text on light backgrounds** — avoid for small body copy (contrast); use coral for fills and underlines.
 
@@ -92,7 +92,7 @@ See [navigation-ia.md](./navigation-ia.md) for full structure.
 
 - **Navbar:** charcoal, logo, Fitness | Mind domain switcher, Insights, Community (coming soon), profile menu.
 - **Welcome band:** coral gradient, domain-specific copy and CTAs.
-- **Tabs:** in-domain only (Fitness tabs ≠ Mind tabs).
+- **Tabs:** Fitness only. Mind is a single page with no tab bar ([navigation-ia.md](./navigation-ia.md)).
 
 ---
 
@@ -100,7 +100,7 @@ See [navigation-ia.md](./navigation-ia.md) for full structure.
 
 ### Achievements and badges (Slice 5)
 
-- **Unlocked:** wellness green + soft circular badge frames.
+- **Unlocked:** wellness-green fill (`#4ADE80`) with charcoal text or mark, plus a soft circular badge frame. Not green text on white.
 - **Locked:** subdued warm gray — secondary, not punitive.
 
 ### Weekly AI summary and prompts (Slice 6)

@@ -254,22 +254,23 @@ Build `/mind/check-in` in the mockup’s order. The recap is computed. The form 
 
 ### Scope
 
-Match [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desktop.png):
+Match [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desktop.png), plus the Your goals bar below, which that PNG does not show:
 
 1. Title “Weekly check-in” and subtitle “Week of {Mon} – {Sun}” for `lastCompletedWeekStart(today)` through that Sunday. Format those dates with the calendar-date helper.
 2. **Your week so far.** Average mood, “N of 7” days, top tagged domains, sparkline with hollow gaps. Data from ticket 2.2. No entries: short empty copy, not zeros, and the rest of the form still works.
 3. Last intention, when one exists for that `week_start`: the body in quotes and Yes / Partly / No. One of the three required. Hidden when there is no intention.
 4. Stress and energy, 1–10, legend “1 = low, 10 = high”.
-5. Seven domain rows plus Habits. Legend “1 = struggling, 10 = thriving”. Habits may be left blank. The other seven may not.
-6. Intention for next week. Domain control defaults to the lowest score and can be changed before submit. Helper: “One concrete thing. Your lowest domain this week: {Label}.” The helper updates if the user changes scores before submit. Text required, max 200.
-7. Optional notes, last field before submit. Label and prompt, exact: “How did your training, energy and life go this week? Anything to remember?” The check-in submits when this is empty. Max 1000 characters. This is not a message to a coach. Nothing replies to it. Do not add a thread, a reply box, or any Q&A.
-8. “Submit check-in”. Pending, field errors, generic failure, and the already-submitted message.
+5. **Your goals.** A read-only reminder of the profile’s free-text fitness and wellness goals. Ryan added this on 2026-11-16. Layout: [`G-checkin-goals-reminder.png`](../../mockups/nov_2026_tickets/G-checkin-goals-reminder.png) (desktop and mobile). It sits after the week recap and last week’s intention, and directly above the life-domain scores (after stress and energy, immediately before the domain rows). The PNG draws the filled bar and leaves stress and energy out of that frame. Keep stress and energy. Muted bar, not a form. Labels “Fitness” and “Wellness”. No inputs, and the text is not editable here. Link, exact label “Edit in profile”, to `/profile`. Show a goal only when its trimmed text is non-empty. Each goal clamps to three lines; the rest is truncated. The full text stays on the profile. The PNG does not show that clamp or an empty bar. This ticket governs both. If both goals are empty, do not show blank lines: show a quiet link, exact label “Add goals in your profile”, to `/profile`. Hiding the whole block is also allowed by the decision; build the quiet link so the empty state is one thing. Do not show structured goals (weight, waist, weekly count) in this bar. Do not put this bar on the Fitness Overview. `checkin-desktop.png` does not show the bar.
+6. Seven domain rows plus Habits, in canonical order, not profile-priority order. Legend “1 = struggling, 10 = thriving”. Habits may be left blank. The other seven may not. `domain_priorities` does not change this block. Ryan confirmed that on 2026-11-16. A later callout, a later reorder, and passing priorities to the Slice 5 coach are Future ideas (gate D) in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](../nov_16_2026_decisions/tickets.md). Not this ticket.
+7. Intention for next week. Domain control defaults to the lowest score and can be changed before submit. Helper: “One concrete thing. Your lowest domain this week: {Label}.” The helper updates if the user changes scores before submit. Text required, max 200. On 2026-11-16 Ryan rejected a proposal to preselect the user’s top-ranked profile focus area instead ([`B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png)). [ADR-013](../../ARCHITECTURE_DECISIONS.md) is unchanged. Do not read `domain_priorities` to pick this default, to order the rows, or to write this helper.
+8. Optional notes, last field before submit. Label and prompt, exact: “How did your training, energy and life go this week? Anything to remember?” The check-in submits when this is empty. Max 1000 characters. This is not a message to a coach. Nothing replies to it. Do not add a thread, a reply box, or any Q&A.
+9. “Submit check-in”. Pending, field errors, generic failure, and the already-submitted message.
 
 Check-in history on this screen lists the caller’s past `weekly_check_ins`, newest first, read-only. Show `notes` when the value is non-null. A week with null notes does not render an empty notes block. This slice still does not edit a submitted check-in.
 
 The Slice 5 coach report will read `notes` as context later ([ADR-004](../../ARCHITECTURE_DECISIONS.md)). No data model change is needed then. Do not call a model from this screen.
 
-Do not add sleep, motivation, nutrition, diet or appetite tracking, alcohol, a second reflection, a coach reply, or an AI panel. Do not build the domain-comparison page. The notes field above is the only free text on this form.
+Do not add sleep, motivation, nutrition, diet or appetite tracking, alcohol, a second reflection, a coach reply, or an AI panel. Do not build the domain-comparison page. The notes field is the only free-text input. Your goals is read-only.
 
 ### Acceptance Criteria
 
@@ -281,6 +282,10 @@ Do not add sleep, motivation, nutrition, diet or appetite tracking, alcohol, a s
 - Empty notes are allowed and store null. Notes of 1000 characters submit. Longer notes do not.
 - Check-in history shows saved notes. A null notes week has no empty notes block.
 - The screen has no coach reply, no Q&A, and does not ask the user to write “to the coach.”
+- With both free-text goals saved, Your goals shows both, clamped, with “Edit in profile” and no inputs, directly above the domain scores.
+- With only one free-text goal saved, only that goal shows.
+- With both empty, the block is the quiet “Add goals in your profile” link and does not show blank goal text.
+- The intention domain still defaults to the lowest score. Profile priority does not reorder the domain rows.
 
 ### Dependencies
 
@@ -345,29 +350,33 @@ Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend,
 
 - `src/lib/supabase/middleware.ts`: treat paths under `/mind` as protected, same redirect to `/auth` as `/dashboard`.
 - `src/components/app-header.tsx` and `src/components/mobile-nav-menu.tsx`: Mind href `/mind`, active on `/mind`. Do not activate it together with Fitness. Leave Insights and Community muted.
-- Page chrome uses the existing charcoal header and warm page. A short welcome line is enough (“Reflect across your life domains” from `docs/navigation-ia.md`) plus one primary action, **+ New journal entry**, to `/mind/journal`. Do not build the Mind tab bar (Overview / Journal / Domains / Prompts). That IA is still a draft; ticket 2.9 records the cut.
-- Stats for the seven days ending today (validated local today, inclusive):
-  - average mood (same rounding as the recap; em dash when there are no entries)
-  - days journaled (“N of 7”)
-  - domains touched (distinct tags in the window)
-  - last entry date, or “No entries yet”
-- Mood trend for those same seven days, hollow when a day has no entry. This window includes today. It is not the check-in week window.
-- History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap.
-- Mount points for the intention card (2.5) and the due card (2.7).
+- Page chrome uses the existing charcoal header and warm page. A short welcome line is enough (“Reflect across your life domains” from `docs/navigation-ia.md`) plus one primary action, **+ New journal entry**, to `/mind/journal`. **Mind is one page.** Do not build a tab bar: not Overview / Journal / Domains / Prompts, and not the Option B tabs on [`E-mind-layout-compare.png`](../../mockups/nov_2026_tickets/E-mind-layout-compare.png) (Overview / Journal / Check-ins). Option A on that PNG is this page. Ryan confirmed the single page on 2026-11-16. `docs/navigation-ia.md` now says the same. Ticket 2.9 must not put the tab bar back.
+- Page order, top to bottom:
+  1. Welcome line and **+ New journal entry**.
+  2. Stat row. **Activity streak** is the first stat ([ADR-014](../../ARCHITECTURE_DECISIONS.md), ticket 2.5.1). It replaces “days journaled, N of 7” in this row. Do not show “N of 7” here, and do not label the card “Journal streak” (the D mockup still uses that sample label). If ticket 2.5.1 has not merged, omit the streak card. Do not fill the slot with a days-journaled fraction. The other three stats still ship:
+     - average mood for the seven days ending today (same rounding as the recap; em dash when there are no entries)
+     - domains touched: the count of distinct tags in that window, plus their labels (Family may use the short chip label)
+     - last entry date, or “No entries yet”
+  3. Check-in due card (ticket 2.7), under the stat row and above the mood strip, only when `isCheckInDue` is true. Ryan confirmed that placement on 2026-11-16.
+  4. Mood trend for those same seven days, hollow when a day has no entry. This window includes today. It is not the check-in week window.
+  5. Intention card (ticket 2.5).
+  6. History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap.
+- Layout reference: [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). Sample numbers and the “rules are not decided yet” line are not product copy. The streak rules are ADR-014.
 - Empty history: supportive copy and the new-entry action. No sample numbers.
 
 ### Acceptance Criteria
 
 - Signed-out visitors to `/mind` and `/mind/journal` land on `/auth`.
 - Mind in the navbar is a real link and shows the coral active state on `/mind` (desktop and the mobile menu).
-- Stats and the trend match journal rows in the rolling seven days and ignore older rows.
+- Stats and the trend match journal rows in the rolling seven days and ignore older rows. The stat row does not show “N of 7” or a “Journal streak” number. When ticket 2.5.1 has merged, Activity streak is the first stat and its number comes from that server result.
 - History Show more / Show less behaves like Recent history on the Measurements tab.
-- The page does not show an Insights tab, a domain radar, or hard-coded demo stats.
+- The page does not show a tab bar, an Insights tab, a domain radar, or hard-coded demo stats.
 
 ### Dependencies
 
 - Ticket 2.2
 - Ticket 2.3 for the new-entry link target
+- Ticket 2.5.1 fills the Activity streak stat. This ticket does not wait on it, and it does not invent a substitute number.
 
 ### Suggested GitHub title
 
@@ -389,7 +398,7 @@ On `/mind`, show a card when last week’s check-in is missing. Compute it when 
 
 - Server component (or the Mind page loader) calls the due predicate from ticket 2.2.
 - Visible only when `isCheckInDue` is true. Copy is calm and specific, for example that last week’s check-in is ready, with a link to `/mind/check-in`.
-- Secondary link, exact label “Log this week’s weight”, to `/dashboard`. That is the existing measurements logging flow: the Measurements tab and `+ Log measurement`, which opens `LogMeasurementModal`. Do not add a route, a modal, a query param, or a weight-only form. The link does not insert a measurement.
+- Secondary link, exact label “Log this week’s weight”, to `/fitness/measurements`. That is the measurements logging flow: the Measurements tab and `+ Log measurement`, which opens `LogMeasurementModal`. **NAV.1** is the ticket that creates that path. Do not add a second route, a modal, a query param, or a weight-only form. The link does not insert a measurement. Do not point it at `/dashboard`.
 - After a successful submit, the next load of `/mind` does not show the card for that week.
 - No email, push, badge count in the navbar, cron, or `notifications` table.
 - The card does not appear on Fitness `/dashboard` in this ticket.
@@ -399,7 +408,7 @@ On `/mind`, show a card when last week’s check-in is missing. Compute it when 
 - A user with no check-in for `lastCompletedWeekStart(today)` sees the card.
 - A user who has that row does not see the card.
 - Rendering the card does not insert a row.
-- The card shows a secondary link “Log this week’s weight” to `/dashboard`. Following it does not insert a measurement or a check-in.
+- The card shows a secondary link “Log this week’s weight” to `/fitness/measurements`. Following it does not insert a measurement or a check-in.
 - Monday and Sunday follow the README fixtures (different `week_start` values).
 
 ### Dependencies
@@ -427,7 +436,7 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 
 - Unit: week fixtures, inclusive `editable_until`, recap rounding and empty input, tag ranking, lowest domain, due predicate. Extend the ticket 2.2 tests rather than forking a second copy.
 - Action tests: unauthorized journal save, check-in submit, and intention update; invalid mood, tags, and body; `today` outside the slack window; intention update rejected after the window; `.strict()` rejects `domain` on text update; check-in unique violation mapped to the friendly error. Notes: omitted, null, and whitespace-only store null; 1000 characters pass; 1001 fail. A signed-out caller cannot submit notes or read them back. `listWeeklyCheckIns` returns only the session user’s rows.
-- Component: journal blocks a third tag and requires reflection; check-in hides outcome when there is no prior intention and shows the empty recap without zeros; empty notes still submit; check-in history shows notes text and hides the block when notes are null; history Show more reveals the next 10 and Show less returns to 5; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/dashboard`.
+- Component: journal blocks a third tag and requires reflection; check-in hides outcome when there is no prior intention and shows the empty recap without zeros; empty notes still submit; check-in history shows notes text and hides the block when notes are null; history Show more reveals the next 10 and Show less returns to 5; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/fitness/measurements`.
 - Run under `TZ=America/Chicago` and `TZ=UTC` the way measurement calendar tests do, with `vi.setSystemTime` where the clock matters.
 - Do not add Playwright in this ticket.
 
@@ -476,7 +485,7 @@ When this ticket lands, these must align with ADR-013 and link to it:
 
 **Check-in fields the pack still lists and Slice 2 will not store:** mood (again), sleep / recovery, motivation, nutrition adherence, life-event text, free-form check-in reflection. Say they are later or explicitly dropped. Do not leave them implied as Slice 2 work.
 
-**Navigation.** `docs/navigation-ia.md` assigns the weekly check-in to Slice 5 and lists Mind tabs Overview, Journal, Domains, Prompts plus `/mind/domains`. Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. Update the draft IA so it aligns with ADR-013, links to it, and does not send an implementer to build a domain radar.
+**Navigation.** Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. On 2026-11-16 `docs/navigation-ia.md` was updated: Mind is a single page with no tab bar, the check-in is Slice 2, and `/mind/domains` and `/mind/prompts` are explicitly not routes. This ticket must not put the Mind tab bar back, and it must not move the subjective check-in back to Slice 5. It still aligns the rest of the pack with ADR-013 and links to it. The activity streak on `/mind` is [ADR-014](../../ARCHITECTURE_DECISIONS.md), not a change to ADR-013.
 
 **Profile keys.** `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` is still the seven wheel slugs (`emotional`, `physical`, `social`, `environmental`, `financial`, `occupational`, `spiritual`). It must align with ADR-013’s Option B set and link to that ADR. Include a mapping or migration for existing users’ saved `profiles.domain_priorities` values. Do not leave the wheel slugs valid beside the new domains, and do not rewrite saved values without that mapping. Journal and check-in tickets do not perform this migration; this ticket does.
 
@@ -527,7 +536,7 @@ Walk the Mind loop on a real account after the feature tickets merge. Capture ga
 - Submit the check-in with notes left blank, then once with a short note on a later week if a second week is available. Blank stores no note. The saved note shows in check-in history. A note over 1000 characters is refused. Nothing replies to the note.
 - Recap counts match the journal. Outcome buttons match an existing intention. A second submit is refused.
 - Edit intention text today. Confirm the domain control is absent. Confirm text is refused after `editable_until` (the unit fixture is enough if the calendar day cannot be waited out).
-- Due card visible before submit and gone after. “Log this week’s weight” goes to `/dashboard` and does not add a weigh-in.
+- Due card visible before submit and gone after. “Log this week’s weight” goes to `/fitness/measurements` and does not add a weigh-in.
 - Sign out. `/mind` redirects to `/auth`.
 - Confirm deferred items are absent: second intention, alcohol, diet or appetite tracking, coach Q&A replies to notes, Insights, monthly reflection, workout mood, wins, notifications, AI, progress photos (backlog #54), example-data pill.
 - Ticket 2.9 is merged or has an open issue. QA does not silently edit the PRD.
