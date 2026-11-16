@@ -122,7 +122,7 @@ What shipped:
 2. Authentication → URL Configuration: keep **Site URL** on the production domain. Add redirect URLs `https://<production-domain>/auth/callback**`, the Vercel preview pattern (for example `https://*-<team>.vercel.app/auth/callback**`), and `http://localhost:3000/auth/callback**`. Without these, Supabase falls back to the Site URL and the reset link lands on `/` instead of the update-password page.
 3. Apply the profiles grant migration: `npm run db:push`, then `npm run db:status` to confirm.
 4. Optional: the default email templates work with the callback (PKCE `?code=`). That code only exchanges in the browser that requested it. To support opening the link on another device, change the **Reset password** template link to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/auth/update-password` (and the **Confirm signup** template to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email`).
-5. Check Authentication → Rate Limits for email sends. The built-in SMTP sender is heavily limited; the form shows a rate-limit message on 429 but a custom SMTP provider is needed for real traffic.
+5. Check Authentication → Rate Limits for email sends. The built-in SMTP sender is heavily limited; the form shows a rate-limit message on 429 but a custom SMTP provider is needed for real traffic. Deferred until after MVP launch; tracked in [`docs/LAUNCH_PLAN.md`](../../LAUNCH_PLAN.md) under “After MVP launch — operations”.
 
 **Type:** feature  
 **Priority:** P1  
