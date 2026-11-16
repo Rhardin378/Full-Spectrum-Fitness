@@ -1,8 +1,32 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  AUTH_CALLBACK_PATH,
+  AUTH_PATH,
+  DEFAULT_SIGNED_IN_PATH,
+  UPDATE_PASSWORD_PATH,
+  matchesPath,
+  type AuthReason,
+} from "@/lib/auth/redirect";
+
+const PROTECTED_PATHS = ["/dashboard", "/profile"];
+
+// Matches sb-<ref>-auth-token and its chunked form sb-<ref>-auth-token.0
+const AUTH_COOKIE_PATTERN = /^sb-.+-auth-token(\.\d+)?$/;
+
+function hasAuthCookie(request: NextRequest): boolean {
+  return request.cookies
+    .getAll()
+    .some((cookie) => AUTH_COOKIE_PATTERN.test(cookie.name));
+}
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const path = request.nextUrl.pathname;
+
+  if (matchesPath(path, AUTH_CALLBACK_PATH)) {
+    return response;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,25 +49,36 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
+  // Read before getUser(), which may clear an expired session's cookies.
+  const hadAuthCookie = hasAuthCookie(request);
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
-  const isAuthPage = path.startsWith("/auth");
-  const isProtectedPage =
-    path.startsWith("/dashboard") || path.startsWith("/profile");
-
-  if (!user && isProtectedPage) {
+  function redirectTo(pathname: string, reason?: AuthReason) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth";
-    return NextResponse.redirect(url);
+    url.pathname = pathname;
+    url.search = reason ? `?reason=${reason}` : "";
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies
+      .getAll()
+      .forEach((cookie) => redirectResponse.cookies.set(cookie));
+    return redirectResponse;
   }
 
-  if (user && isAuthPage) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+  if (matchesPath(path, UPDATE_PASSWORD_PATH)) {
+    return user ? response : redirectTo(AUTH_PATH, "reset_expired");
+  }
+
+  const isProtectedPage = PROTECTED_PATHS.some((base) => matchesPath(path, base));
+
+  if (!user && isProtectedPage) {
+    return redirectTo(AUTH_PATH, hadAuthCookie ? "session" : undefined);
+  }
+
+  if (user && matchesPath(path, AUTH_PATH)) {
+    return redirectTo(DEFAULT_SIGNED_IN_PATH);
   }
 
   return response;
