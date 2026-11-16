@@ -153,6 +153,14 @@ Do not use free→paid conversion or social engagement as Phase 1 targets.
 
 ---
 
+## After MVP launch — operations
+
+Settings to revisit once real users are signing up. These are hosted dashboard settings, not code.
+
+- [ ] **Auth email rate limits and SMTP.** Supabase's built-in email sender only allows a few auth emails per hour, which is fine for testing but will block sign-up confirmations and password resets with real traffic. Set up a custom SMTP provider (Authentication → Emails → SMTP Settings), then raise the email limits in [Rate Limits](https://supabase.com/dashboard/project/argiyojdnvhsmuyzzath/auth/rate-limits). The sign-in form already shows a rate-limit message on 429s (CU.3), so this is a capacity fix, not a UX fix.
+
+---
+
 ## Phase 1.5 — Enrichment (after the coach loop works)
 
 Start only after Phase 1 DoD is met (or a slice is unblocked and does not steal focus from Slice 1.5 → 5).
