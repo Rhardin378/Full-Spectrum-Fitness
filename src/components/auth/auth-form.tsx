@@ -264,9 +264,15 @@ export default function AuthForm({
         </form>
       ) : (
         <>
-          <div className="mb-5 grid grid-cols-2 rounded-lg bg-surface-page p-1">
+          <div
+            role="tablist"
+            aria-label="Account"
+            className="mb-5 grid grid-cols-2 rounded-lg bg-surface-page p-1"
+          >
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === "signin"}
               onClick={() => switchMode("signin")}
               className={`rounded-md px-3 py-2 text-sm font-medium transition ${
                 mode === "signin"
@@ -278,6 +284,8 @@ export default function AuthForm({
             </button>
             <button
               type="button"
+              role="tab"
+              aria-selected={mode === "signup"}
               onClick={() => switchMode("signup")}
               className={`rounded-md px-3 py-2 text-sm font-medium transition ${
                 mode === "signup"

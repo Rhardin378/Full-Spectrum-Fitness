@@ -47,4 +47,43 @@ describe("GET /api/profile", () => {
     });
     expect(JSON.stringify(body)).not.toContain("profiles");
   });
+
+  it("returns 401 when signed out", async () => {
+    createClientMock.mockResolvedValueOnce({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      },
+      from: vi.fn(),
+    });
+
+    const response = await GET();
+
+    expect(response.status).toBe(401);
+  });
+
+  it("returns a null profile without inserting one", async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+    const eq = vi.fn(() => ({ maybeSingle }));
+    const select = vi.fn(() => ({ eq }));
+    const from = vi.fn(() => ({ select }));
+
+    createClientMock
+      .mockResolvedValueOnce({
+        auth: {
+          getUser: vi.fn().mockResolvedValue({
+            data: { user: { id: "user-1" } },
+            error: null,
+          }),
+        },
+        from: vi.fn(),
+      })
+      .mockResolvedValueOnce({ auth: { getUser: vi.fn() }, from });
+
+    const response = await GET();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ profile: null });
+    expect(from).toHaveBeenCalledTimes(1);
+    expect(select).toHaveBeenCalled();
+  });
 });

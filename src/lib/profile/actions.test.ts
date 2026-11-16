@@ -8,7 +8,11 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: createClientMock,
 }));
 
-import { getOrCreateProfile, updateProfile } from "@/lib/profile/actions";
+import {
+  getOrCreateProfile,
+  getProfile,
+  updateProfile,
+} from "@/lib/profile/actions";
 
 type ProfileRow = {
   id: string;
@@ -300,6 +304,75 @@ describe("profile actions", () => {
       success: false,
       error: "database",
       message: "Unable to update your profile. Please try again.",
+    });
+  });
+});
+
+describe("getProfile", () => {
+  beforeEach(() => {
+    createClientMock.mockReset();
+  });
+
+  it("returns no user and no profile when signed out", async () => {
+    const authClient = makeAuthClient(null);
+    createClientMock.mockResolvedValueOnce(authClient);
+
+    const result = await getProfile();
+
+    expect(result).toEqual({ success: true, userId: null, profile: null });
+    expect(authClient.from).not.toHaveBeenCalled();
+  });
+
+  it("returns the existing profile without inserting", async () => {
+    const authClient = makeAuthClient({ id: "user-1" });
+    const readClient = makeReadClient({ data: makeProfileRow(), error: null });
+    createClientMock
+      .mockResolvedValueOnce(authClient)
+      .mockResolvedValueOnce(readClient.client);
+
+    const result = await getProfile();
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.userId).toBe("user-1");
+      expect(result.profile?.id).toBe("profile-1");
+    }
+    expect(readClient.spies.from).toHaveBeenCalledTimes(1);
+    expect(readClient.spies.select).toHaveBeenCalled();
+  });
+
+  it("returns a null profile for a signed-in user with no row, and never inserts", async () => {
+    const authClient = makeAuthClient({ id: "user-1" });
+    const readClient = makeReadClient({ data: null, error: null });
+    createClientMock
+      .mockResolvedValueOnce(authClient)
+      .mockResolvedValueOnce(readClient.client);
+
+    const result = await getProfile();
+
+    expect(result).toEqual({ success: true, userId: "user-1", profile: null });
+    expect(createClientMock).toHaveBeenCalledTimes(2);
+    expect(readClient.spies.from).toHaveBeenCalledTimes(1);
+    expect(authClient.from).not.toHaveBeenCalled();
+  });
+
+  it("returns a generic database error that still carries the user id", async () => {
+    const authClient = makeAuthClient({ id: "user-1" });
+    const readClient = makeReadClient({
+      data: null,
+      error: { message: 'relation "profiles" does not exist' },
+    });
+    createClientMock
+      .mockResolvedValueOnce(authClient)
+      .mockResolvedValueOnce(readClient.client);
+
+    const result = await getProfile();
+
+    expect(result).toEqual({
+      success: false,
+      error: "database",
+      message: "Unable to load your profile. Please try again.",
+      userId: "user-1",
     });
   });
 });
