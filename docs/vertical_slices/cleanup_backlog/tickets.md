@@ -2,7 +2,7 @@
 
 Each ticket is open work verified on 2026-11-03. Do not redo the items listed as already done in [`README.md`](./README.md).
 
-Repo-governance originals: [`../repo_governance/tickets.md`](../repo_governance/tickets.md). **CU.1** replaces the 16.3.x pin in **RG.3**. **CU.2** is **RG.2** with the scripts that exist today. **CU.6** is the still-open **RG.1** sit-down.
+Repo-governance originals: [`../repo_governance/tickets.md`](../repo_governance/tickets.md). **CU.1** replaces the 16.3.x pin in **RG.3**. **CU.2** is **RG.2** with the scripts that exist today. **CU.6** is the still-open **RG.1** sit-down. **CU.7** is timed for just before beta testers get access; do not start it earlier.
 
 ---
 
@@ -122,7 +122,7 @@ What shipped:
 2. Authentication → URL Configuration: keep **Site URL** on the production domain. Add redirect URLs `https://<production-domain>/auth/callback**`, the Vercel preview pattern (for example `https://*-<team>.vercel.app/auth/callback**`), and `http://localhost:3000/auth/callback**`. Without these, Supabase falls back to the Site URL and the reset link lands on `/` instead of the update-password page.
 3. Apply the profiles grant migration: `npm run db:push`, then `npm run db:status` to confirm.
 4. Optional: the default email templates work with the callback (PKCE `?code=`). That code only exchanges in the browser that requested it. To support opening the link on another device, change the **Reset password** template link to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/auth/update-password` (and the **Confirm signup** template to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email`).
-5. Check Authentication → Rate Limits for email sends. The built-in SMTP sender is heavily limited; the form shows a rate-limit message on 429 but a custom SMTP provider is needed for real traffic.
+5. Check Authentication → Rate Limits for email sends. The built-in SMTP sender is heavily limited; the form shows a rate-limit message on 429 but a custom SMTP provider is needed for real traffic. Deferred until after MVP launch; tracked in [`docs/LAUNCH_PLAN.md`](../../LAUNCH_PLAN.md) under “After MVP launch — operations”.
 
 **Type:** feature  
 **Priority:** P1  
@@ -307,3 +307,68 @@ Policy says `main` changes only through a pull request. The sit-down that record
 ### Suggested GitHub title
 
 `[Cleanup] Record the main branch ruleset (RG.1)`
+
+---
+
+## Ticket CU.7: Invite-only sign-up for the beta
+
+**Type:** feature  
+**Priority:** P1 (at beta)  
+**Labels:** `auth`, `security`, `frontend`  
+**When:** Just before the first beta testers get access. Do not start earlier; listed in `docs/LAUNCH_PLAN.md` under “Before beta launch”.
+
+### Problem
+
+Anyone who finds the site can create an account. For the beta, accounts should exist only for people Ryan invites. Hiding the Sign Up tab is not enough: the browser calls Supabase `signUp` directly with the public anon key, so anyone can make that call from the console or a script. The block has to live in Supabase.
+
+### Evidence
+
+- Sign-up is a client call in `src/components/auth/auth-form.tsx` (`supabase.auth.signUp`). The anon key is public by design.
+- `supabase/config.toml` has `enable_signup = true` under `[auth]` and `[auth.email]`. The hosted setting is not visible from the repo.
+- CU.3 already handles invite links: `/auth/callback` accepts `token_hash` with `type=invite`, and `/auth/update-password` lets a signed-in user set a password.
+- `getOrCreateProfile()` on `/dashboard` and `/profile` creates the profile row on first visit, so invited users need no extra profile step.
+
+### Approach
+
+**Supabase (hosted, manual):**
+
+- Authentication → Sign In / Providers: turn off **Allow new users to sign up**. Admin invites still work with this off.
+- Authentication → Email Templates → **Invite user**: set the link to `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite&next=/auth/update-password` so the invitee lands on the set-password page.
+- Invite testers from Authentication → Users → **Invite user**.
+- Invite emails count toward the auth email rate limit. With the built-in sender that is only a few per hour. Invite in small batches, or pull the custom SMTP item forward from “After MVP launch — operations” in `docs/LAUNCH_PLAN.md` if the first wave is more than a handful of people.
+
+**Repo:**
+
+- `supabase/config.toml`: set `enable_signup = false` so local matches hosted. Local invites go through Studio.
+- A `NEXT_PUBLIC_SIGNUPS_OPEN` flag (default off). When off, `/auth` shows a “Private beta — request access” panel in place of the Sign Up tab. Reopening sign-up later means flipping this flag and the Supabase toggle, nothing else.
+- The request-access panel links to the beta Google Form from `NEXT_PUBLIC_BETA_FORM_URL`. If that is unset, the panel says sign-up is invite-only and shows no link. Add the same “Join the beta” link to the landing page (`src/app/(main)/page.tsx`). Form questions and the invite process are in [`docs/BETA_PLAN.md`](../../BETA_PLAN.md). The waitlist lives in the form's Google Sheet; there is no waitlist table in this ticket.
+- Map Supabase's `signup_disabled` error to friendly copy in `AuthForm`, for anyone on a cached page that still shows the old form.
+- `/auth/update-password` heading and copy should read correctly for both a reset and a first-time invite (for example “Set your password”).
+
+### Acceptance criteria
+
+- A direct `signUp` call with the anon key is rejected by hosted Supabase (checked once with the browser console or `curl` against `/auth/v1/signup`).
+- With the flag off, `/auth` shows no sign-up form, and the request-access panel links to the beta form.
+- The landing page links to the beta form.
+- An invited user can open the email, set a password, land on `/dashboard`, and sign in again later with that password.
+- Sign-in and password reset behave as they did after CU.3.
+- The development log records the hosted settings that were changed and how to reopen sign-up.
+
+### Tests
+
+- `AuthForm` with the flag off (request-access panel with the form link, no sign-up form), off with no form URL (no link), and on (current sign-up form).
+- `signup_disabled` copy.
+- `/auth/callback` with `type=invite` redirecting to `next`.
+- No live inbox test in CI.
+
+### Dependencies
+
+- CU.3 (merged in #64). The beta Google Form must exist and its URL must be set in Vercel. Custom SMTP is optional for a small first wave, required for a larger one.
+
+### Later, if needed
+
+- An in-app waitlist instead of the form: a `beta_waitlist` table (unique `email`, `created_at`, nullable `invited_at`) written by a Zod-validated server action, RLS with no reads for `anon` or `authenticated`, the same success message for duplicates, and a honeypot field. Only worth it if the Google Sheet stops being enough.
+
+### Suggested GitHub title
+
+`[Beta] Make sign-up invite-only and link to the beta form`

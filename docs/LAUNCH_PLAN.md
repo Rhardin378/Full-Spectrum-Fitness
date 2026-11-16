@@ -153,6 +153,24 @@ Do not use free→paid conversion or social engagement as Phase 1 targets.
 
 ---
 
+## Before beta launch
+
+Do these just before the first beta testers get access, not earlier.
+
+- [ ] **Beta application form.** Create the Google Form and its sheet from [`BETA_PLAN.md`](./BETA_PLAN.md). It can be shared before CU.7 is built.
+- [ ] **Invite-only sign-up (CU.7).** Turn off public sign-up in Supabase, invite beta testers from the dashboard, and replace the Sign Up tab with a request-access panel that links to the beta form. Spec: [`docs/vertical_slices/cleanup_backlog/tickets.md`](./vertical_slices/cleanup_backlog/tickets.md) ticket CU.7.
+- [ ] **Weekly feedback form** and a Feedback link in the app, also in `BETA_PLAN.md`.
+
+---
+
+## After MVP launch — operations
+
+Settings to revisit once real users are signing up. These are hosted dashboard settings, not code.
+
+- [ ] **Auth email rate limits and SMTP.** Supabase's built-in email sender only allows a few auth emails per hour, which is fine for testing but will block sign-up confirmations and password resets with real traffic. Set up a custom SMTP provider (Authentication → Emails → SMTP Settings), then raise the email limits in [Rate Limits](https://supabase.com/dashboard/project/argiyojdnvhsmuyzzath/auth/rate-limits). The sign-in form already shows a rate-limit message on 429s (CU.3), so this is a capacity fix, not a UX fix.
+
+---
+
 ## Phase 1.5 — Enrichment (after the coach loop works)
 
 Start only after Phase 1 DoD is met (or a slice is unblocked and does not steal focus from Slice 1.5 → 5).
