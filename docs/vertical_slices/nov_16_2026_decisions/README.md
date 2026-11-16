@@ -22,12 +22,12 @@ There is no **E** item in this set. The rejected “preselect my top focus area�
 
 ## Sequence
 
-Do not start a later row before the earlier one is underway. Hard dependencies are also on each ticket. This list does not move the current-slice pointer in [`docs/LAUNCH_PLAN.md`](../../LAUNCH_PLAN.md). Slice 1.5 stays the current slice until that plan says otherwise.
+Do not start a later row before the earlier one is underway. Hard dependencies are also on each ticket. Slice 2 is the current slice in [`docs/LAUNCH_PLAN.md`](../../LAUNCH_PLAN.md) (Slice 1.5 closed 2026-11-16). This sequence does not start workouts or Overview before Slice 2’s capture tickets.
 
 | Order | Work | Tickets |
 |-------|------|---------|
-| 1 | **CU.3** ([PR #64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64)) and **Slice 2** | CU.3 is already specified. Hosted Supabase steps stay in that ticket. Slice 2 is [`slice_2_journaling_life_domains/tickets.md`](../slice_2_journaling_life_domains/tickets.md). Ticket **2.6** is amended here for the single Mind page. Ticket **2.4** includes the read-only Your goals reminder. Ticket **2.9** still updates the rest of the handoff pack. |
-| Alongside 1, before Overview | **NAV.1** Fitness URLs | Anytime after CU.3. Required before **OV.1**. Can run beside Slice 2, 2.5, or goals. |
+| 1 | **Slice 2** (current) | CU.3 is merged in [#64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64), including the hosted Supabase settings. Slice 2 tickets are [`slice_2_journaling_life_domains/tickets.md`](../slice_2_journaling_life_domains/tickets.md). Start with **2.9**, then **2.1**. Ticket **2.6** is the single Mind page. Ticket **2.4** includes the read-only Your goals reminder. |
+| Alongside Slice 2, before Overview | **NAV.1** Fitness URLs | CU.3 is merged, so this can start now. Required before **OV.1**. Can run beside Slice 2, 2.5, or goals. |
 | 2 | **Slice 2.5** polish | **2.5.1** activity streak, **2.5.2** Weight now card (top of Measurements until OV.1) |
 | 3 | **Goals** | **G.1** structured goals, then **G.2** progress on the surfaces that already show the metric, and **G.3** profile cleanup |
 | 4 | **Fitness Overview with the workouts slice** | **OV.1**, after **NAV.1** and after workouts exist. Not during Slice 1.5 or Slice 2. |
@@ -92,4 +92,4 @@ Ryan answered these on 2026-11-16. Nothing from this list is still open.
 5. **Weight now placement.** Top of the Measurements tab until **OV.1**. Then the same card moves to Overview and leaves Measurements. One place only. Not in the welcome band. Confirmed.
 6. **Free-text goals.** A read-only “Your goals” reminder on the Slice 2 weekly check-in (ticket 2.4). It sits after the week recap and last week’s intention, directly above the life-domain scores. It shows the profile’s free-text fitness and wellness goals, with an “Edit in profile” link and no inputs. If both are empty, hide the card or show a quiet “Add goals in your profile” link. Long text clamps. Editing stays on the profile. Not on Overview. Layout: [`G-checkin-goals-reminder.png`](../../mockups/nov_2026_tickets/G-checkin-goals-reminder.png). That PNG is the filled bar only. The empty state and the three-line clamp are spec-only; ticket 2.4 governs them.
 7. **Check-in due card.** On `/mind`, under the stat cards and above the 7-day mood strip. Confirmed.
-8. **Fitness URL.** `/fitness` is canonical: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library`. `/dashboard` permanently redirects to `/fitness` and keeps the query string. Ticket **NAV.1** does the move. It is scope gate B, anytime after CU.3, and before OV.1.
+8. **Fitness URL.** `/fitness` is canonical: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library`. `/dashboard` permanently redirects to `/fitness` and keeps the query string. Ticket **NAV.1** does the move. It is scope gate B. CU.3 is merged in #64, so NAV.1 can start now, and it lands before OV.1.

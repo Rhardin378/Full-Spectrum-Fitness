@@ -79,7 +79,7 @@ Nothing in the launch plan or a ticket folder owns these:
 
 ### Fitness URL — resolved 2026-11-16
 
-`/fitness` is canonical: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library`. `/dashboard` permanently redirects to `/fitness` and keeps the query string. Ticket **NAV.1** does the move, anytime after CU.3 and before OV.1. The app still serves the shell at `/dashboard` until that ticket. Sign-in landing becomes `/fitness`. Last-visited domain memory stays unplanned.
+`/fitness` is canonical: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, and later `/fitness/library`. `/dashboard` permanently redirects to `/fitness` and keeps the query string. Ticket **NAV.1** does the move. CU.3 is merged in #64, so NAV.1 can start now, and it lands before OV.1. The app still serves the shell at `/dashboard` until that ticket. Sign-in landing becomes `/fitness`. Last-visited domain memory stays unplanned.
 
 ---
 

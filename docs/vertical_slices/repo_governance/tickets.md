@@ -8,6 +8,8 @@ Use when you are ready to harden the repo. **Workflow policy is already in effec
 
 ## Ticket RG.1: Configure GitHub ruleset for `main` (deferred)
 
+**Status:** Done through cleanup ticket CU.6. See the CU.6 status in [`../cleanup_backlog/tickets.md`](../cleanup_backlog/tickets.md) for the exact rules.
+
 **Type:** chore  
 **Priority:** P1 (after next few Slice 1.5 tickets)  
 **Labels:** `governance`, `github`, `security`  
