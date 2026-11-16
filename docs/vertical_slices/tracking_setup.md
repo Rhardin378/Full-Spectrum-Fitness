@@ -7,8 +7,8 @@ Use this as your default project-tracking structure in GitHub.
 Create one milestone per vertical slice. Names and order must match [`docs/LAUNCH_PLAN.md`](../LAUNCH_PLAN.md):
 
 - `Slice 1 - Auth & Profile Setup` (done)
-- `Slice 1.5 - Measurements & Baseline Tracking` (**current**)
-- `Slice 2 - Journaling & Life Domains`
+- `Slice 1.5 - Measurements & Baseline Tracking` (done)
+- `Slice 2 - Journaling & Life Domains` (**current**)
 - `Slice 3 - Workouts`
 - `Slice 4 - Deterministic Analytics & Insights`
 - `Slice 5 - Weekly Coach Check-In`
@@ -21,7 +21,7 @@ Do **not** create Phase 1 milestones for Achievements or Social Lite.
 
 Suggested due date pattern:
 
-- Set each milestone due date to your sprint cadence. Do not schedule Slice 5+ while Slice 1.5 is open.
+- Set each milestone due date to your sprint cadence. Do not schedule Slice 5+ while Slice 2 is open.
 
 ## Labels
 

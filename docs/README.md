@@ -15,8 +15,8 @@ Beta access and feedback process (Google Form, invite waves, weekly survey): [BE
 
 Slice tickets, mockups, and brand live beside this pack. They do not override it.
 
-**Git workflow:** branch + PR into `main` (no direct pushes). Deferred GitHub ruleset/CI tickets: [vertical_slices/repo_governance/](./vertical_slices/repo_governance/). Current hardening backlog (Next.js, CI, auth, stale PR #19): [vertical_slices/cleanup_backlog/](./vertical_slices/cleanup_backlog/).
+**Git workflow:** branch + PR into `main` (no direct pushes). Deferred GitHub ruleset/CI tickets: [vertical_slices/repo_governance/](./vertical_slices/repo_governance/). Hardening backlog (CU.1–CU.6 done; CU.7 waits for the beta): [vertical_slices/cleanup_backlog/](./vertical_slices/cleanup_backlog/).
 
-**Slice tickets:** measurements (current build) live in [vertical_slices/slice_1_5_measurements/](./vertical_slices/slice_1_5_measurements/). Approved Slice 2 scope (Option B domains, journal mood + reflection, weekly check-in moved out of Slice 5) is [vertical_slices/slice_2_journaling_life_domains/](./vertical_slices/slice_2_journaling_life_domains/). Ticket 2.9 updates this pack to match before implementation. Until that lands, do not build the wellness-wheel journal in PRD §2.
+**Slice tickets:** Slice 2 (current build; Option B domains, journal mood + reflection, weekly check-in moved out of Slice 5) is [vertical_slices/slice_2_journaling_life_domains/](./vertical_slices/slice_2_journaling_life_domains/). Measurements (Slice 1.5, done) live in [vertical_slices/slice_1_5_measurements/](./vertical_slices/slice_1_5_measurements/). Ticket 2.9 updates this pack to match before implementation. Until that lands, do not build the wellness-wheel journal in PRD §2.
 
 **Rule:** If code, a chat, or a slice README disagrees with the pack, update the pack (and log the change) before continuing implementation.

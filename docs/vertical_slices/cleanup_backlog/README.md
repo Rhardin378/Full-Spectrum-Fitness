@@ -2,7 +2,7 @@
 
 Cross-cutting hardening that is still open after Slice 1 and Slice 1.5. These tickets do not start Slice 2. They also do not replace [`repo_governance/tickets.md`](../repo_governance/tickets.md): **RG.2** and **RG.3** point here so the version pin and the CI file are not specified twice.
 
-Verified against `main` on 2026-11-03 (inventory); continuous integration added 2026-11-06 (CU.2). Tickets: [`tickets.md`](./tickets.md).
+Verified against `main` on 2026-11-03 (inventory); continuous integration added 2026-11-06 (CU.2). **Closed out 2026-11-16:** CU.1–CU.6 are done and Slice 2 is the current slice. Only CU.7 remains, timed for the beta. Tickets: [`tickets.md`](./tickets.md).
 
 ## Already done — do not re-open
 
@@ -17,7 +17,11 @@ Verified against `main` on 2026-11-03 (inventory); continuous integration added 
 | Slice 1.5 QA issue | #18 is closed. |
 | Next.js, response headers, profile error text | CU.1. `next` and `eslint-config-next` are 16.4.5. `X-Powered-By` is off. Profile database failures return a generic message. |
 | GitHub Actions CI (lint, typecheck, test, build) | CU.2. `.github/workflows/ci.yml`. Node 22. Required job name for rulesets: `lint-typecheck-test-build`. |
-| Password reset and auth hardening | CU.3 (branch `cursor/cu3-password-reset`, 2026-11-16). Forgot password, `/auth/callback`, `/auth/update-password`, 8–72 character new passwords, `?reason=` copy, middleware hardening, read-only `getProfile()` so public pages do not insert profiles, and the profiles grant migration. Hosted Supabase settings (password length, redirect URLs, migration push) are manual; see the CU.3 status in [`tickets.md`](./tickets.md). |
+| Password reset and auth hardening | CU.3 (merged in #64, 2026-11-16; hosted settings and migration applied by Ryan). Forgot password, `/auth/callback`, `/auth/update-password`, 8–72 character new passwords, `?reason=` copy, middleware hardening, read-only `getProfile()` so public pages do not insert profiles, and the profiles grant migration. Hosted steps are listed in the CU.3 status in [`tickets.md`](./tickets.md). |
+| Stale draft PR #19 | CU.4. Closed 2026-11-16. |
+| Deferred follow-ups #54, #55, #56 | CU.5. Labeled `Backlog`, `slice-1.5` removed, 2026-11-16. |
+| `main` ruleset (RG.1) | CU.6. “Protect main”: no deletion or force-push, pull request required, `lint-typecheck-test-build` required. |
+| Invite-only beta sign-up | **Not** in this table. CU.7, timed for just before the beta. |
 
 ## Checked and left unticketed
 

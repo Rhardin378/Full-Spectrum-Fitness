@@ -4,7 +4,7 @@
 
 Authenticated users can keep one short journal entry per calendar day, tag it with up to two life domains, and once a week score how life went, close last week’s intention, and set exactly one intention for the new week.
 
-**Do not start this slice until Slice 1.5 is closed** (`docs/LAUNCH_PLAN.md`). This folder is the approved build spec for when it starts. It does not move the current-slice pointer by itself.
+**This is the current slice.** Slice 1.5 closed on 2026-11-16 and `docs/LAUNCH_PLAN.md` points here. Start with ticket 2.9, then 2.1.
 
 ## Scope change (read this first)
 

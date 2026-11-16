@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-16 — Cleanup closed; Slice 1.5 done; Slice 2 is current
+
+### Completed
+
+- Cleanup backlog CU.1–CU.6 done. CU.3 merged in #64; Ryan pushed the profiles grant migration and applied the hosted Supabase settings. CU.4: draft PR #19 closed. CU.5: #54, #55, #56 labeled `Backlog` without `slice-1.5`. CU.6: ruleset “Protect main” verified (no deletion or force-push, pull request required, `lint-typecheck-test-build` required, no bypass actors).
+- Slice 1.5 closed. All its issues were already closed (last on 2026-11-02); the remaining follow-ups are backlog.
+- Moved the current-slice pointer to Slice 2 in `LAUNCH_PLAN.md`, `docs/README.md`, `tracking_setup.md`, and the Slice 2 README.
+
+### Decisions
+
+- Slice 2 starts with ticket 2.9 (handoff pack alignment with ADR-013 and the `profiles.domain_priorities` mapping), then 2.1.
+
+### Issues
+
+- CU.3's hosted Supabase settings and the live reset test are outside git; recorded on Ryan's confirmation.
+
+### Next
+
+- Create the `slice-2` label and the Slice 2 milestone and issues, then build ticket 2.9.
+
+### AI Notes
+
+- Cursor agent checked GitHub state (PR #19, labels, ruleset, CI on `main`) and wrote the close-out docs.
+
+---
+
 ## 2026-11-16 — Beta access plan (CU.7, BETA_PLAN)
 
 ### Completed
