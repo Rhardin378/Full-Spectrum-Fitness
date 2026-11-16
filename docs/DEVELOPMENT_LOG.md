@@ -29,6 +29,38 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-16 — Password reset and auth hardening (CU.3)
+
+### Completed
+
+- Forgot password on the sign-in form (`resetPasswordForEmail` through `/auth/callback?next=/auth/update-password`), a new `/auth/callback` route (code exchange or `token_hash` verify, relative redirects), and `/auth/update-password` (`updateUser`, then `/dashboard`).
+- Shared auth Zod schemas in `src/lib/auth/validation.ts`: new passwords 8–72 characters; sign-in accepts any non-empty password so older 6–7 character accounts still work. Redirect helpers and `?reason=` copy in `src/lib/auth/redirect.ts`.
+- `/auth` is now a server page using `getUser()`. Middleware never redirects the callback, guards update-password (`reason=reset_expired`), adds `reason=session` when a stale auth cookie is present, copies cookies onto redirects, and matches paths exactly or by `/` prefix.
+- Root layout no longer calls `getOrCreateProfile()`, so marketing pages do not insert `profiles` rows. Read-only `getProfile()` feeds the `(main)` layout, whose `ProfileProvider` is keyed by user id and exposes `isAuthenticated` for the header and menu. `GET /api/profile` uses it too.
+- Migration revoking `delete, truncate, references, trigger` on `public.profiles` from `authenticated`. Local `supabase/config.toml`: minimum password length 8, callback redirect URLs.
+- Tests for all of the above. `npm run lint`, `typecheck`, `test` (225 tests), and `build` with `CI=true` and dummy Supabase values pass.
+
+### Decisions
+
+- Sign-in does not enforce the new minimum, so existing accounts are not locked out. Only new passwords must be 8+.
+- The callback redirects with a relative `Location` header because `nextUrl.origin` can be the internal host behind a proxy.
+
+### Issues
+
+- Hosted Supabase settings (password length, redirect allowlist, migration push, optional `token_hash` email templates) are outside git and were not changed. Steps are in the CU.3 status in `docs/vertical_slices/cleanup_backlog/tickets.md`.
+- The stale-header bug was not browser-reproduced. The fix is structural: the provider remounts when the server-rendered user id changes, and sign-in calls `router.refresh()`. Covered by an `AppHeader` test.
+- On a brand-new account's first `/dashboard` load, the layout may read the profile before the page creates it, so the header menu shows the email-based label until the next navigation. The menu still renders because it keys off `isAuthenticated`.
+
+### Next
+
+- Apply the hosted Supabase steps, then do one live reset on the deployed site.
+
+### AI Notes
+
+- Cursor agent built CU.3 from the ticket spec on `cursor/cu3-password-reset` (the shared bundle from an earlier run was not readable from this VM).
+
+---
+
 ## 2026-11-06 — GitHub Actions CI (CU.2)
 
 ### Completed

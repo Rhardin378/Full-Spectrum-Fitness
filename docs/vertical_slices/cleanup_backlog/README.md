@@ -17,7 +17,7 @@ Verified against `main` on 2026-11-03 (inventory); continuous integration added 
 | Slice 1.5 QA issue | #18 is closed. |
 | Next.js, response headers, profile error text | CU.1. `next` and `eslint-config-next` are 16.4.5. `X-Powered-By` is off. Profile database failures return a generic message. |
 | GitHub Actions CI (lint, typecheck, test, build) | CU.2. `.github/workflows/ci.yml`. Node 22. Required job name for rulesets: `lint-typecheck-test-build`. |
-| Password reset | **Not** in this table. Ticket CU.3. |
+| Password reset and auth hardening | CU.3 (branch `cursor/cu3-password-reset`, 2026-11-16). Forgot password, `/auth/callback`, `/auth/update-password`, 8–72 character new passwords, `?reason=` copy, middleware hardening, read-only `getProfile()` so public pages do not insert profiles, and the profiles grant migration. Hosted Supabase settings (password length, redirect URLs, migration push) are manual; see the CU.3 status in [`tickets.md`](./tickets.md). |
 
 ## Checked and left unticketed
 

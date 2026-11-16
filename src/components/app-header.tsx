@@ -80,8 +80,7 @@ function DomainNav({
 
 export default function AppHeader() {
   const pathname = usePathname();
-  const { profile } = useProfile();
-  const isAuthenticated = profile !== null;
+  const { isAuthenticated } = useProfile();
 
   const isFitness =
     pathname.startsWith("/dashboard") || pathname.startsWith("/fitness");
