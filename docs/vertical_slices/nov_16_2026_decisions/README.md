@@ -78,7 +78,7 @@ Do not edit #55 or #56. They stay as they are. When Ryan opens the new issues, t
 | Workouts tab | Still the workouts slice. OV.1 reads logged workouts. It does not specify the workout model. |
 | Library | Still Slice 3.1, after workouts. Untouched. |
 | “Mind shell + Journal tab” in the suggested breakdown | Superseded as a **tab**. Mind is one page (ticket 2.6). The journal is `/mind/journal`. |
-| Insights navbar, Community muted | Unchanged. Not this folder. |
+| Insights navbar, Community muted | Insights stays Slice 4 (no ticket folder yet). The Community “Soon” item is already in the navbar. The Community product is Unplanned. Owners are in `docs/navigation-ia.md`. |
 
 ## Open questions for Ryan
 
@@ -91,3 +91,4 @@ These are unspecified. The tickets do not invent an answer for them. Thresholds 
 5. **Weight now before Overview exists.** Proposed home: the top of the Measurements tab, then **only** on Overview once OV.1 turns that tab on (not both, and not in the welcome band). Confirm or name a different interim home.
 6. **Free-text fitness and wellness goals.** C says they are “Shown on the dashboard Overview,” and A has a Your goals card. F does not include that card, and F is the approved Overview. The cleanup ticket leaves the fields on the profile and does not add the card. Where should that text appear, if anywhere besides the profile form?
 7. **Check-in due card position.** Ticket 2.6 places it on `/mind`, under the stat row and above the 7-day mood strip, and only when it is due. Say if it should sit somewhere else on that page.
+8. **Fitness URL.** `docs/navigation-ia.md` lists Fitness Overview as `/fitness` (and `/fitness/workouts`, `/fitness/measurements`, `/fitness/library`). The app serves that shell at `/dashboard`. The header treats a `/fitness` prefix as Fitness, and there is no `/fitness` page. The IA does not choose which URL is canonical. OV.1 does not move the route.

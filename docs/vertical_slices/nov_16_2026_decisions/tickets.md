@@ -378,7 +378,7 @@ Library and the Workouts tab are not turned on by this ticket, except that **Vie
 - The A layout: Goal progress panel, Your goals free-text card, PRs / consistency, a separate journal streak, Mind stats on this page.
 - Building the workout logger, the exercise library, or Slice 3.1 import.
 - PRs, volume, or other Slice 4 analytics.
-- Moving `/dashboard` to `/fitness`. #56 mentions that route move. It is not required to turn this tab on.
+- Choosing or changing the Fitness URL. The app uses `/dashboard`. The IA also lists `/fitness`. Which path is canonical is an open question in `docs/navigation-ia.md`. This ticket does not pick one and does not move the route. It turns the Overview tab on in the Fitness shell that already exists.
 
 ### Acceptance Criteria
 

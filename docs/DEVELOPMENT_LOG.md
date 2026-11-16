@@ -29,6 +29,28 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-16 — Navigation IA owners
+
+### Completed
+
+- Gave every item in `docs/navigation-ia.md` an owner: a slice or ticket, **Done** where the code on `main` already does it, or **Unplanned**.
+- Recorded the `/fitness` vs `/dashboard` mismatch as an open question. Did not pick a URL.
+- Noted that Slice 3, Slice 4, and Slice 5 have no ticket folder. Did not add those tickets.
+
+### Decisions
+
+- None. The URL question is open on purpose.
+
+### Next
+
+- Ryan can answer the Fitness URL question before anyone treats `/fitness` or `/dashboard` as the permanent path.
+
+### AI Notes
+
+- Cursor Grok checked the navbar, profile menu, Fitness tabs, routes, and middleware against the tree, then updated the IA on the Nov 16 specs branch.
+
+---
+
 ## 2026-11-16 — Product decisions recorded as ticket specs
 
 ### Completed
