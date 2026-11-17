@@ -4,7 +4,7 @@ Design notes for app navigation: global navbar, domain switcher, in-domain tabs,
 
 **Sources of truth** for product and sequencing: [PRD](./PRD.md), [system design](./SYSTEM_DESIGN.md), [launch plan](./LAUNCH_PLAN.md). This file is a **draft IA**, not a license to build Community, Achievements, or AI prompts in Phase 1.
 
-**Status:** Draft — Fitness measurements shell is in progress (Slice 1.5). Mind is a single page with no tab bar (decided 2026-11-16). The Fitness Overview tab stays off until the workouts slice. Who builds each item is in [Who builds it](#who-builds-it), checked against the code on 2026-11-16.
+**Status:** Draft — Slice 1.5 (measurements) is done. Slice 2 is current; Mind routes are not built yet. Mind is a single page with no tab bar (decided 2026-11-16). The Fitness Overview tab stays off until the workouts slice. Life domains and which slice stores the check-in are [ADR-013](./ARCHITECTURE_DECISIONS.md). Who builds each item is in [Who builds it](#who-builds-it), checked against the code on 2026-11-16.
 
 **Phase 1 nav implication:** Fitness | Mind | Insights are the real destinations. Community stays omitted or “Coming soon” and **must not** become a Phase 1 build. Achievements stay out of the navbar. The subjective weekly check-in is Slice 2 (`/mind/check-in` and the due card on `/mind`). The Slice 5 coach report reads that check-in later ([ADR-013](./ARCHITECTURE_DECISIONS.md)). Do not add a Prompts tab. Mind has no tab bar.
 
@@ -178,6 +178,8 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 #### Mind (no tab bar)
 
 Decided 2026-11-16. [Option A](./mockups/nov_2026_tickets/E-mind-layout-compare.png) is the page. Do not build Option B (Overview / Journal / Check-ins tabs), and do not build the older Overview / Journal / Domains / Prompts bar.
+
+Life domains here are the Option B set in [ADR-013](./ARCHITECTURE_DECISIONS.md): Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, and optional Habits. The journal is mood and a reflection, with up to two of those domains as tags. Stress and energy are check-in fields, not journal fields. The weekly check-in is Slice 2. The Slice 5 coach report reads it later.
 
 | Surface | Route | Owner | Notes |
 |---------|-------|-------|-------|

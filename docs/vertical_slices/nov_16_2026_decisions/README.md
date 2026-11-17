@@ -26,7 +26,7 @@ Do not start a later row before the earlier one is underway. Hard dependencies a
 
 | Order | Work | Tickets |
 |-------|------|---------|
-| 1 | **Slice 2** (current) | CU.3 is merged in [#64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64), including the hosted Supabase settings. Slice 2 tickets are [`slice_2_journaling_life_domains/tickets.md`](../slice_2_journaling_life_domains/tickets.md). Start with **2.9**, then **2.1**. Ticket **2.6** is the single Mind page. Ticket **2.4** includes the read-only Your goals reminder. |
+| 1 | **Slice 2** (current) | CU.3 is merged in [#64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64), including the hosted Supabase settings. Slice 2 tickets are [`slice_2_journaling_life_domains/tickets.md`](../slice_2_journaling_life_domains/tickets.md). Ticket **2.9** aligned the pack and mapped saved domain priorities. Next is **2.1**. Ticket **2.6** is the single Mind page. Ticket **2.4** includes the read-only Your goals reminder. |
 | Alongside Slice 2, before Overview | **NAV.1** Fitness URLs | CU.3 is merged, so this can start now. Required before **OV.1**. Can run beside Slice 2, 2.5, or goals. |
 | 2 | **Slice 2.5** polish | **2.5.1** activity streak, **2.5.2** Weight now card (top of Measurements until OV.1) |
 | 3 | **Goals** | **G.1** structured goals, then **G.2** progress on the surfaces that already show the metric, and **G.3** profile cleanup |

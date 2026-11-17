@@ -5,8 +5,10 @@ import { useProfile } from "@/components/profile/profile-provider";
 import { updateProfile } from "@/lib/profile/actions";
 import {
   DOMAIN_FOCUS_AREAS,
+  DOMAIN_FOCUS_LABELS,
   EXPERIENCE_LEVELS,
   SHARING_PREFERENCES,
+  mapStoredDomainPriorities,
   type DomainPriority,
   type ExperienceLevel,
   type Profile,
@@ -29,16 +31,6 @@ const SHARING_LABELS: Record<SharingPreference, string> = {
   private: "Private",
   friends: "Friends only",
   public: "Public",
-};
-
-const DOMAIN_LABELS: Record<(typeof DOMAIN_FOCUS_AREAS)[number], string> = {
-  emotional: "Emotional",
-  physical: "Physical",
-  social: "Social",
-  environmental: "Environmental",
-  financial: "Financial",
-  occupational: "Occupational",
-  spiritual: "Spiritual",
 };
 
 const inputClassName =
@@ -69,25 +61,20 @@ function getPriorityLabel(rank: number, rowCount: number): string {
   return `${rank}`;
 }
 
-function isDomainFocusArea(
-  value: string,
-): value is (typeof DOMAIN_FOCUS_AREAS)[number] {
-  return DOMAIN_FOCUS_AREAS.includes(
-    value as (typeof DOMAIN_FOCUS_AREAS)[number],
-  );
-}
-
 function normalizeDomainRows(rows: DomainPriority[]): DomainPriority[] {
-  const trimmedRows = rows.slice(0, DOMAIN_FOCUS_AREAS.length);
+  const mappedRows = mapStoredDomainPriorities(rows).slice(
+    0,
+    DOMAIN_FOCUS_AREAS.length,
+  );
 
-  if (trimmedRows.length === 0) {
+  if (mappedRows.length === 0) {
     return [emptyDomainRow()];
   }
 
-  const maxPriority = trimmedRows.length;
+  const maxPriority = mappedRows.length;
 
-  return trimmedRows.map((row) => ({
-    domain: isDomainFocusArea(row.domain) ? row.domain : "",
+  return mappedRows.map((row) => ({
+    domain: row.domain,
     priority: Math.min(Math.max(1, row.priority), maxPriority),
   }));
 }
@@ -363,7 +350,7 @@ export default function ProfileForm({ initialProfile }: ProfileFormProps) {
                     );
                   }).map((domain) => (
                     <option key={domain} value={domain}>
-                      {DOMAIN_LABELS[domain]}
+                      {DOMAIN_FOCUS_LABELS[domain]}
                     </option>
                   ))}
                 </select>

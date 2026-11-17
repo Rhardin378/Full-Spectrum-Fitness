@@ -31,7 +31,7 @@ const initialProfile: Profile = {
   wellness_goal: "Reduce stress",
   experience_level: "beginner",
   sharing_preferences: "private",
-  domain_priorities: [{ domain: "physical", priority: 1 }],
+  domain_priorities: [{ domain: "physical_health", priority: 1 }],
   created_at: "2026-06-23T00:00:00.000Z",
   updated_at: "2026-06-23T00:00:00.000Z",
 };
@@ -54,8 +54,33 @@ describe("ProfileForm", () => {
     expect(screen.getByLabelText("Wellness goal")).toHaveValue("Reduce stress");
     expect(screen.getByLabelText("Experience level")).toHaveValue("beginner");
     expect(screen.getByLabelText("Sharing preference")).toHaveValue("private");
+    const domainSelect = screen.getByLabelText("Domain", {
+      selector: "#domain-name-0",
+    });
+    expect(domainSelect).toHaveValue("physical_health");
+    expect(
+      Array.from(domainSelect.querySelectorAll("option"), (option) => option.textContent),
+    ).toEqual([
+      "Select a domain",
+      "Physical health",
+      "Mental health",
+      "Family & relationships",
+      "Social",
+      "Career",
+      "Learning",
+      "Leisure",
+      "Habits",
+    ]);
+  });
+
+  it("shows a saved wheel slug as its mapped Option B domain", () => {
+    renderForm({
+      ...initialProfile,
+      domain_priorities: [{ domain: "emotional", priority: 1 }],
+    });
+
     expect(screen.getByLabelText("Domain", { selector: "#domain-name-0" })).toHaveValue(
-      "physical",
+      "mental_health",
     );
   });
 
@@ -81,7 +106,7 @@ describe("ProfileForm", () => {
           wellness_goal: "Reduce stress",
           experience_level: "beginner",
           sharing_preferences: "private",
-          domain_priorities: [{ domain: "physical", priority: 1 }],
+          domain_priorities: [{ domain: "physical_health", priority: 1 }],
         }),
       );
     });

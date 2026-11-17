@@ -20,9 +20,9 @@ Vertical-slice tickets implement this PRD; they do not override it. If implement
 | Field | Value |
 |-------|--------|
 | Product direction | Longitudinal personal performance and wellbeing |
-| Current implementation | Slice 1 done; **Slice 1.5 in progress** |
-| Phase 1 destination | Capture + deterministic insights + Weekly Coach Check-In v1 |
-| Last planning alignment | Weekly Coach as the recurring experience; RAG as evidence layer; social/achievements out of Phase 1 |
+| Current implementation | Slice 1 and Slice 1.5 done. **Slice 2 is current.** Journal and check-in screens are not built yet. |
+| Phase 1 destination | Capture + deterministic insights + weekly coach report v1 |
+| Last planning alignment | 2026-11-17 — [ADR-013](./ARCHITECTURE_DECISIONS.md) accepted. Option B domains. The weekly check-in is Slice 2. The coach report stays Slice 5. |
 
 ---
 
@@ -69,7 +69,7 @@ Language in the product and docs should prefer **wellbeing** and **performance**
 
 Change these here if they change; do not contradict them in a slice README.
 
-1. **Weekly Coach Check-In is the central recurring experience** — planned as Slice 5, not the next implementation task.
+1. **The weekly loop is a subjective check-in plus a structured coach report.** The check-in is Slice 2. The report is Slice 5, not the next implementation task. [ADR-013](./ARCHITECTURE_DECISIONS.md) amends [ADR-005](./ARCHITECTURE_DECISIONS.md).
 2. **Deterministic systems** store data, validate, calculate metrics/trends, and detect explicit rule-based patterns. **Probabilistic systems** interpret, summarize, explain possible relationships, retrieve evidence, and generate reflections and suggestions.
 3. **The LLM must not calculate core user metrics.** It receives a versioned analytics snapshot.
 4. **Coach output is structured** so the UI can render sections reliably. Open-ended chat is not the primary AI UX.
@@ -78,7 +78,7 @@ Change these here if they change; do not contradict them in a slice README.
 7. **Wellbeing is peer to fitness** — journal, scores, and mind trends are in Phase 1; they are not a sidebar.
 8. **Social, circles, and achievements are out of Phase 1.**
 9. **AI Workout Import (text PDF) is a follow-on to manual workouts** (Slice 3.1). Human review is mandatory. Screenshots/OCR are later.
-10. **Slice 1.5 (measurements) remains the current slice.** Profiles stay identity/preferences; measurements stay time-series.
+10. **Slice 1.5 (measurements) is done. Slice 2 is the current slice.** Journal and check-in screens are not built yet. Profiles stay identity and preferences; measurements stay time-series.
 11. **Low-friction capture:** optional daily journal; weekly check-in is the subjective ritual; workouts and weigh-ins when they happen.
 12. **Safety:** no medical or psychiatric diagnosis; cautious language; crisis content is not “coached.”
 
@@ -104,12 +104,12 @@ Change these here if they change; do not contradict them in a slice README.
 Ongoing capture (when it happens)
   • Log workout
   • Log weight / waist
-  • Optional journal entry
+  • Optional journal entry (mood, reflection, up to two domain tags)
         ↓
-Weekly Coach Check-In (~2–5 minutes)
-  • Mood, stress, energy, sleep/recovery, motivation
-  • Optional nutrition adherence, life-domain scores
-  • Significant context + optional free-form reflection
+Weekly check-in (Slice 2, ~2–5 minutes) — [ADR-013](./ARCHITECTURE_DECISIONS.md)
+  • Stress, energy, life-domain scores
+  • Last intention’s outcome, and one intention for the new week
+  • Optional notes
         ↓
 Analytics engine (deterministic)
   • Training volume, consistency, performance trends
@@ -117,8 +117,8 @@ Analytics engine (deterministic)
   • Wellbeing averages and deltas
   • Explicit rule-based pattern flags
         ↓
-Coach (probabilistic, structured)
-  • Interprets the snapshot + check-in
+Coach report (Slice 5, probabilistic, structured)
+  • Reads the snapshot and the stored check-in
   • May retrieve cited evidence (after RAG ships)
   • Few actionable suggestions + one reflection question
         ↓
@@ -136,11 +136,11 @@ Do not treat later rows as current work. Sequencing: [LAUNCH_PLAN.md](./LAUNCH_P
 ### Core MVP (Phase 1)
 
 - Authentication and profile (Slice 1 — **done**)
-- Measurements: weight, waist (Slice 1.5 — **current**)
-- Journal entries with mood / stress / energy and life-domain scores (Slice 2)
+- Measurements: weight, waist (Slice 1.5 — **done**)
+- Journal (mood, reflection, up to two domain tags) and the weekly check-in (Slice 2 — **current**; screens not built yet). [ADR-013](./ARCHITECTURE_DECISIONS.md)
 - Manual workout logging, history, and basic performance/volume (Slice 3)
 - Deterministic Insights (Slice 4)
-- Weekly Coach Check-In v1 + structured report (Slice 5)
+- Weekly coach report (Slice 5) — reads the Slice 2 check-in. [ADR-013](./ARCHITECTURE_DECISIONS.md)
 
 ### Near-term (Phase 1.5)
 
@@ -196,7 +196,7 @@ Status tags: **Done** · **Current** · **Phase 1** · **Follow-on** · **Later*
 
 ---
 
-## 1.5 Baseline measurements — Current (Slice 1.5)
+## 1.5 Baseline measurements — Done (Slice 1.5)
 
 Users log lightweight body metrics as time-series data, separate from profile preferences.
 
@@ -228,68 +228,70 @@ Slice spec: [`docs/vertical_slices/slice_1_5_measurements/`](./vertical_slices/s
 
 ### Purpose
 
-Give the mental / wellbeing side **equal standing** with fitness: structured scores plus optional narrative, without becoming a clinical journal product.
+Give the mental / wellbeing side **equal standing** with fitness: a short daily note and a weekly look at life domains, without becoming a clinical journal product.
+
+Behavior for this slice is specified once, in [`docs/vertical_slices/slice_2_journaling_life_domains/README.md`](./vertical_slices/slice_2_journaling_life_domains/README.md). This section is the product summary. The decision record is [ADR-013](./ARCHITECTURE_DECISIONS.md).
 
 ### Life domains
 
-- Emotional
-- Physical well-being
-- Social / relationships
-- Environmental
-- Financial
-- Occupational
-- Spiritual / purpose
+Option B (Peterson / Future Authoring), not the SAMHSA wellness wheel. Canonical order:
 
-### Journal entry (Phase 1)
+- Physical health
+- Mental health
+- Family & relationships
+- Social
+- Career
+- Learning
+- Leisure
+- Habits (optional on the weekly check-in)
 
-- Optional daily (or ad hoc) entries; **not required every day**
-- Free-text reflection
-- Mood, stress, energy (1–10)
-- Optional sleep quality and motivation on the entry **or** reserved for the weekly check-in (prefer **weekly check-in** for sleep/motivation if it reduces duplicate entry — Slice 2 should not invent a second full questionnaire)
-- Optional domain scores
-- Optional user tags (themes later can aggregate tags; no LLM theme extraction in Slice 2)
+“Mental health” is a life-domain label for how that part of the week felt, not a clinical claim ([ADR-011](./ARCHITECTURE_DECISIONS.md), [ADR-013](./ARCHITECTURE_DECISIONS.md)).
+
+Profile focus areas use these same slugs. Saved wellness-wheel priorities are mapped onto this set ([ADR-013](./ARCHITECTURE_DECISIONS.md)). The wheel slugs are not valid beside it.
+
+### Journal entry (Slice 2)
+
+- Optional daily entry; **not required every day**. One row per calendar day.
+- Mood (1–10) and a written reflection
+- Up to two domain tags from the list above
+- No stress, energy, sleep, or domain scores on the entry
 
 ### UX
 
 - Fast entry (about a minute)
-- Save complete entries; partial drafts are nice-to-have, not Slice 2 blockers
-- History and simple score trends on Mind surfaces
+- History on the Mind page
 
 ### Not in Slice 2
 
 - Context-aware AI prompts
-- Weekly AI summaries (those belong to Slice 5 coach)
+- Weekly AI summaries (those belong to the Slice 5 coach report)
 - Diagnosis, sentiment-as-clinical-label, or “mental exercises” prescribed as treatment
 
 ---
 
-## 2.5 Weekly Coach Check-In — Phase 1 destination (Slice 5)
+## 2.5 Weekly check-in and coach report — Phase 1
 
-The user periodically provides a **small** amount of subjective information. FSF combines it with structured data already logged.
+The weekly subjective check-in is **Slice 2**. The structured coach report is **Slice 5**. [ADR-013](./ARCHITECTURE_DECISIONS.md) amends [ADR-005](./ARCHITECTURE_DECISIONS.md): Slice 5 reads the stored check-in. It does not collect the form.
 
-### Subjective input (v1)
+The check-in screen is specified in the [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md). What Slice 2 stores:
 
-- Mood
-- Stress
-- Energy
-- Sleep / recovery
-- Motivation
-- Nutrition / diet adherence (optional)
-- Significant life events / context (short text)
-- Optional free-form reflection
-- Optional life-domain scores (if not already captured that week)
+- Stress and energy (1–10)
+- Seven required life-domain scores, plus optional Habits
+- The outcome of last week’s one intention, when that intention exists
+- Exactly one intention for the new week, in `weekly_intentions`, not as columns on the check-in. The domain locks once set. The text stays editable for 3 calendar days on the server.
+- Optional notes (the owner’s memory of the week, at most 1000 characters). Empty stores null. Nothing replies.
 
-Do not turn the check-in into a long form. Prefer defaults, last-week carry-forward of optional fields, and skip-able extras.
+The check-in does **not** store a second mood score, sleep / recovery, motivation, nutrition adherence, or life-event text. Sleep and motivation are later. Nutrition adherence is not built. Life events are Slice 7. Notes are not a message to a coach.
 
-### Combined automatically (from existing data)
+### Combined automatically when the coach report runs (Slice 5)
 
 **Fitness:** workouts completed, training volume, exercise performance, muscle-group volume (when exercise library supports it), consistency, strength trends.
 
 **Physical:** weight, waist, measurement trends.
 
-**Wellbeing:** mood / stress / energy from journals and this check-in, journal volume, domain scores when present.
+**Wellbeing:** journal mood, check-in stress and energy, journal volume, check-in domain scores.
 
-**Context:** goals from profile; check-in free text; later wins, events, and journal themes.
+**Context:** goals from profile; check-in notes; later wins, events, and journal themes.
 
 ### Coach report (structured UI)
 
@@ -419,15 +421,15 @@ Insights copy must not imply proven causation. Prefer “together with,” “wh
 - Training consistency (sessions, and the one activity streak in [ADR-014](./ARCHITECTURE_DECISIONS.md) — not a separate journal streak and a separate workout streak)
 - Exercise performance / plateau flags (rule-based)
 - Weight and waist deltas over a window
-- Average mood / stress / energy and deltas
-- Sleep/recovery from check-ins when present
+- Average journal mood, and check-in stress / energy, and their deltas ([ADR-013](./ARCHITECTURE_DECISIONS.md))
+- Sleep / recovery is later. It is not a Slice 2 check-in field.
 
 ### Visualizations (Phase 1)
 
 - Weight trend (already started in Slice 1.5)
 - Workout frequency / volume
-- Mood, stress, energy over time
-- Simple domain snapshot when scores exist
+- Mood over time, and stress / energy over time once check-ins exist
+- Simple domain snapshot from check-in scores when they exist
 
 ### Not Slice 4
 
@@ -441,7 +443,7 @@ Insights copy must not imply proven causation. Prefer “together with,” “wh
 
 ### v1 (Slice 5)
 
-- Server assembles: profile goals, date-range analytics snapshot, latest check-in, truncated recent journal text
+- Server assembles: profile goals, date-range analytics snapshot, the stored Slice 2 check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)), truncated recent journal text. Slice 5 does not collect the check-in form.
 - One model call behind a provider-neutral adapter
 - Zod-validated structured output persisted as a `coach_reports` row
 - No user-facing tool loop
@@ -500,15 +502,15 @@ User-history retrieval (“find my old entries about work stress”) is a **late
 
 | Piece | Role | When |
 |-------|------|------|
-| Journal | Narrative + optional scores/tags | Slice 2 |
-| Life domains | Structured life-area scores | Slice 2 |
-| Weekly check-in | Recurring subjective ritual | Slice 5 |
-| Mind trends | Charts for mood/stress/energy/domains | Slice 2–4 |
+| Journal | Mood, reflection, up to two domain tags | Slice 2 |
+| Life domains | Option B tags on the journal; scores on the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 2 |
+| Weekly check-in | Recurring subjective ritual | Slice 2 |
+| Mind trends | Charts for mood, stress, energy, and domains | Slice 2–4 |
 | Themes | Tag counts first; LLM extraction later | Near-term / Phase 2 |
 | Wins | Capture progress, not only problems | Slice 7 |
 | Life events | Context for variance (job, injury, travel) | Slice 7 |
 | Timeline | Unified longitudinal story | Phase 2 |
-| Coach | Interprets wellbeing **with** training/body data | Slice 5 |
+| Coach | Interprets wellbeing **with** training/body data. Reads the stored check-in. | Slice 5 |
 
 Users should be able to inspect underlying journal entries when themes ship.
 
@@ -534,17 +536,17 @@ Auth users live in Supabase Auth (`auth.users`). Application tables use `user_id
 
 ### Implemented
 
-**profiles** — `user_id`, `display_name`, `fitness_goal`, `wellness_goal`, `experience_level`, `sharing_preferences`, `domain_priorities`, timestamps. Structured goals (weight, waist, weekly workout count) are not extra columns on this row. They are specified in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](./vertical_slices/nov_16_2026_decisions/tickets.md) (ticket G.1) and are not migrated yet.
+**profiles** — `user_id`, `display_name`, `fitness_goal`, `wellness_goal`, `experience_level`, `sharing_preferences`, `domain_priorities`, timestamps. `domain_priorities` uses the Option B slugs in [ADR-013](./ARCHITECTURE_DECISIONS.md). Saved wellness-wheel values are mapped onto that set. Structured goals (weight, waist, weekly workout count) are not extra columns on this row. They are specified in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](./vertical_slices/nov_16_2026_decisions/tickets.md) (ticket G.1) and are not migrated yet.
 
 **measurements** — `user_id`, `measurement_type` (`weight` | `waist`), `value`, `unit`, `measured_on` (calendar date), `measured_at` (UTC midnight of that date), `notes`, timestamps; soft-delete via `deleted_at` per Slice 1.5 follow-up tickets.
 
 ### Phase 1 planned
 
-**life_domains** — seeded reference rows.
+**journal_entries** — one mood and reflection per user per calendar day. No stress, energy, or domain-score columns. Slice 2. [ADR-013](./ARCHITECTURE_DECISIONS.md).
 
-**journal_entries** — `user_id`, `entry_date`, `mood_score`, `stress_score`, `energy_score`, `reflection_text`, timestamps.
+**journal_entry_domains** — zero to two domain tags on an entry. Not a scores table.
 
-**journal_domain_scores** — `journal_entry_id`, `domain_id`, `score`.
+There is no `life_domains` lookup table and no `journal_domain_scores` table. Physical columns are in the [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md) and land in ticket 2.1. They are not migrated yet.
 
 **exercises** — canonical library (`slug`, name, aliases, primary/secondary muscles, equipment, optional pattern/difficulty/instructions).
 
@@ -562,7 +564,9 @@ ProgramTemplate
 
 Completed workout logs remain separate from reusable prescriptions.
 
-**weekly_check_ins** — `user_id`, `week_start`, mood/stress/energy/sleep/motivation, optional nutrition adherence, context text, reflection, timestamps.
+**weekly_check_ins** — one row per user per week: stress, energy, seven required domain scores, optional habits, optional notes. No second mood score, sleep, motivation, nutrition adherence, or life-event text. Slice 2. [ADR-013](./ARCHITECTURE_DECISIONS.md).
+
+**weekly_intentions** — exactly one intention per user per week, separate from the check-in. Slice 2. [ADR-013](./ARCHITECTURE_DECISIONS.md).
 
 **coach_reports** — `user_id`, period bounds, `analytics_snapshot` JSON, `analytics_snapshot_version`, `structured_output` JSON, model/provider ids, timestamps.
 
@@ -585,7 +589,7 @@ Completed workout logs remain separate from reusable prescriptions.
 | Kind | Examples |
 |------|----------|
 | Structured | Measurements, set rows, check-in scores, domain scores, exercise ids, analytics snapshots, coach report JSON |
-| Unstructured | Journal body, check-in reflection, life-event notes |
+| Unstructured | Journal body, check-in notes, life-event notes |
 | Deterministic | Volume, deltas, streaks, PR flags, theme **counts** from tags |
 | AI-generated | Interpretation, hypotheses, suggestions, reflection questions, PDF extraction drafts, later theme labels |
 
@@ -663,9 +667,9 @@ Users can:
 
 - Register, sign in, and maintain a profile
 - Log weight and waist and see a simple weight trend
-- Log journal entries with scores and life domains
+- Log a journal entry (mood, reflection, optional domain tags) and complete a weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md))
 - Log workouts and view history
 - View deterministic insights across training, body, and wellbeing
-- Complete a Weekly Coach Check-In and see a **structured** coach report grounded in an analytics snapshot
+- See a **structured** coach report grounded in an analytics snapshot and the stored Slice 2 check-in
 
 Users are **not** required to share posts, unlock badges, import PDFs, or chat with an unconstrained agent for Phase 1 to be done.
