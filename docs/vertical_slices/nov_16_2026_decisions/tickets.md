@@ -396,7 +396,7 @@ Until OV.1, do not turn Overview into a live home. This ticket only changes wher
 
 ### Dependencies
 
-- CU.3 is merged in #64, including the hosted Supabase settings. Nothing else blocks this ticket. Can start beside Slice 2. Must land before **OV.1**.
+- CU.3 is merged in #64, including the hosted Supabase settings. Nothing else blocks this ticket. Can start beside Slice 2. Must land before **OV.1**, and must merge before Slice 2 ticket 2.7 so the check-in due card can link to `/fitness/measurements`.
 
 ### Mockups
 
