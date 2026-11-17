@@ -86,7 +86,7 @@ These are product decisions, not suggestions. Change them here if they change.
 7. **Social feed, accountability circles, and achievement/badge catalogs are out of Phase 1.** They are post-validation, optional, and must not delay the coach loop.
 8. **Evidence RAG is planned, not current.** Do not embed user journals as the knowledge base. Do not scrape commercial fitness sites.
 9. **Screenshot/spreadsheet program ingestion is later than Slice 3.1.** Reuse the same human-review pattern; do not pull it into Phase 1.
-10. **Personal timeline, wins, and life events** are near-term *after* Phase 1, not blockers for the first coach report (optional free-text on the weekly check-in covers context for v1).
+10. **Personal timeline, wins, and life events** are near-term *after* Phase 1, not blockers for the first coach report (optional free-text on the weekly check-in covers context for v1). Slice 2’s optional “One win today” and “Grateful for” lines are lightweight fields on the journal entry. They are not these Slice 7 records, and they do not replace this decision.
 11. **After Slice 2’s capture work, a small Slice 2.5 polish, then goals, then Fitness Overview with the workouts slice.** Overview stays off until workouts exist. Mind home is one page (no Mind tab bar). The activity streak, the Weight now card, and structured goals are specified in [`docs/vertical_slices/nov_16_2026_decisions/`](./vertical_slices/nov_16_2026_decisions/README.md). Slice 2 is already the current slice. CU.3 is merged in [PR #64](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/64), including the hosted Supabase settings. **NAV.1** (same folder) can start now. It moves the Fitness shell from `/dashboard` to `/fitness` before Overview. `/dashboard` permanently redirects to `/fitness`.
 
 ---
@@ -95,7 +95,7 @@ These are product decisions, not suggestions. Change them here if they change.
 
 ```text
 Capture (ongoing, low friction)
-  workouts · measurements · optional journal (mood + reflection)
+  workouts · measurements · optional journal (mood + reflection, optional one-line win and gratitude)
         ↓
 Weekly check-in (Slice 2 — stress, energy, domain scores, one intention)
         ↓
@@ -126,7 +126,7 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 |------------|-------|--------|
 | Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
 | Weight & waist time-series | 1.5 (done) | Deterministic weight trend in-tab; no unit conversion |
-| Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal. Stress, energy, and domain scores on the check-in. One intention. No AI prompts. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
+| Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal, plus optional one-line win and gratitude. Stress, energy, and domain scores on the check-in. One intention. No AI prompts. The journal lines are not Slice 7’s structured wins. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
 | Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions |
 | Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
 | Weekly coach report | 5 | Reads the Slice 2 check-in. Does not collect the form. Server-built snapshot. Zod-validated report UI. [ADR-013](./ARCHITECTURE_DECISIONS.md). |
@@ -139,7 +139,7 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 - Coaching **agent tools** (beyond one server-assembled prompt)
 - AI Workout Import (Slice 3.1)
 - Image/screenshot/spreadsheet ingestion
-- Personal timeline, wins, and life-event objects (free-text context on the check-in is enough)
+- Personal timeline, and structured wins and life-event objects (Slice 7). Free-text context on the check-in is enough for v1. Slice 2’s optional journal lines are in Phase 1 and are not these objects.
 - Wearables, Stripe, marketplace, native apps, notifications
 - Therapy, diagnosis, or clinical claims
 
@@ -183,7 +183,7 @@ Start only after Phase 1 DoD is met (or a slice is unblocked and does not steal 
 | 3.1 AI Workout Import (text PDF) | Faster template creation; human review required |
 | 5.5 Evidence RAG | Small curated corpus; citations on coach suggestions |
 | 6 Coach agent tools | Server-side tools wrapping analytics and reads |
-| 7 Wins & life events | Structured context for later weeks |
+| 7 Wins & life events | Structured dated wins and life events for later weeks. Not the optional lines on the Slice 2 journal entry. |
 | Exercise library UX | Aliases, substitutions, muscle metadata (schema starts in Slice 3) |
 
 ---
@@ -224,7 +224,7 @@ Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tra
 | 3.1 | AI Workout Import | Import a text PDF as templates | Slice 3 | OCR, images, auto-save |
 | 5.5 | Evidence RAG | Cited training/recovery context | Slice 5 | Large crawled corpora |
 | 6 | Coach agent tools | Deeper, testable AI layer | 5, 5.5 | Client-side agents |
-| 7+ | Wins, events, timeline | Richer longitudinal story | Phase 1 | — |
+| 7+ | Wins, events, timeline | Structured wins, events, and a timeline. Not the Slice 2 journal lines. | Phase 1 | — |
 
 **MVP+ (non-blocking for Phase 1 beta):** Slice 3.1. It must not start before Slice 3 is stable. It is not required to call Phase 1 done.
 

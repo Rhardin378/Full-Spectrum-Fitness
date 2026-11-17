@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-17 — Optional journal lines: one win, grateful for
+
+### Completed
+
+- Specified two optional one-line fields on the Slice 2 journal entry, “One win today” (`win`) and “Grateful for” (`grateful_for`). Docs only. No application code.
+- Folded them into tickets 2.1, 2.2, 2.3, 2.6, 2.8, and 2.10, and into the slice README. Removed wins and gratitude from the Slice 2 deferred lists. Life events stay deferred with Slice 7.
+- Noted in the PRD, launch plan, system design, and ADR-013 that these lines are not the Slice 7 `wins` and `life_events` tables. That Slice 7 plan is unchanged. Gratitude is now in the PRD journal description.
+
+### Decisions
+
+- Ryan, 2026-11-17. Both fields are skippable, never required, and never block saving the entry. Nullable text, at most 200 characters, same empty-to-null rule as check-in notes. Same day rule as the reflection (today’s row only). Shown on the Mind history entry when present. No wins page, wins table, feed, insights, AI, or reminders.
+
+### Issues
+
+- Open questions are in the pull request. This entry does not decide whether Slice 5 later reads the lines, or whether the journal mockups should be redrawn.
+
+### Next
+
+- Ticket 2.1 remains next. The new columns are part of that migration.
+
+### AI Notes
+
+- Cursor Grok. Docs only, from Ryan’s 2026-11-17 decision.
+
+---
+
 ## 2026-11-17 — Ticket 2.9: handoff pack matches Option B
 
 ### Completed

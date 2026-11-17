@@ -169,6 +169,8 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 
   Do not delete ADR-005: keep the “not a chatbot / not the next slice after 1.5” decision, and point it here. Slice 5 still produces the structured coach report after deterministic insights. It does not collect this form. Journal and check-in copy must not prescribe care (ADR-011). Habits is optional on the check-in and is not the preselected intention domain unless it was scored. The check-in may also store optional `notes` (nullable text, at most 1000 characters; empty is allowed and stores null), checked in Zod and in the database. Notes are the owner’s memory of the week, not a message to a coach, and nothing replies. Slice 5 reads `notes` as context later (ADR-004) with no new table or column. Diet adherence / appetite tracking, and coach Q&A replies to notes, are not built. Progress photos stay backlog issue #54.
 
+  On 2026-11-17 Ryan added two optional one-line columns on `journal_entries`: `win` (“One win today”) and `grateful_for` (“Grateful for”). Both are nullable. Empty stores null. Neither is required, and neither blocks saving the entry. They are not a `wins` table. Structured wins and life events remain Slice 7. The Slice 2 README specifies the fields. The Why sentence above, that the daily journal “stays mood plus a written reflection, with up to two domain tags,” still describes what moved off the journal (stress, energy, and domain scores). It does not forbid these two columns.
+
 ---
 
 ## ADR-014 — One activity streak, one grace day per week
