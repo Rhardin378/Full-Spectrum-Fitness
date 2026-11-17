@@ -40,7 +40,7 @@ describe("normalizeProfile", () => {
     });
 
     expect(profile.domain_priorities).toEqual([
-      { domain: "physical", priority: 1 },
+      { domain: "physical_health", priority: 1 },
     ]);
   });
 

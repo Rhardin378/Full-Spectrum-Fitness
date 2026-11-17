@@ -33,7 +33,7 @@ FSF is a web application for **longitudinal personal performance and wellbeing**
 
 **Thesis:** help the user understand the relationship between how they train, how they feel, and how they live.
 
-**Phase 1 destination** (not all shipped): account, measurements, journal, workouts, deterministic insights, Weekly Coach Check-In with a structured report.
+**Phase 1 destination** (not all shipped): account, measurements, journal, the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)), workouts, deterministic insights, and a weekly coach report.
 
 **Implemented today:**
 
@@ -41,7 +41,7 @@ FSF is a web application for **longitudinal personal performance and wellbeing**
 2. Profile create/update
 3. Weight and waist measurements with an in-dashboard trend (Slice 1.5)
 
-**Not yet implemented (do not pretend otherwise):** workouts, journal, insights app, weekly coach, RAG, social, achievements.
+**Not yet implemented (do not pretend otherwise):** journal, weekly check-in, workouts, insights app, coach report, RAG, social, achievements.
 
 It is **not**:
 
@@ -223,13 +223,23 @@ Recent history **Edit** reuses the log modal (`updateMeasurement`). **Delete** c
 
 Hard `DELETE` is not granted. Column-level `UPDATE` covers measurement fields and `deleted_at` only.
 
-## Logging a journal entry (Slice 2 — planned)
+## Logging a journal entry (Slice 2 — not built yet)
 
 Frontend form  
 → server action  
-→ `journal_entries` + `journal_domain_scores`  
+→ `journal_entries` (mood, reflection) and up to two rows in `journal_entry_domains`  
 → stored in Postgres  
 No AI required to save.
+
+Stress, energy, and domain scores are not on this write. [ADR-013](./ARCHITECTURE_DECISIONS.md).
+
+## Submitting a weekly check-in (Slice 2 — not built yet)
+
+Frontend form  
+→ server action  
+→ one `weekly_check_ins` row and one `weekly_intentions` row, committed together  
+→ stored in Postgres  
+No model call. [ADR-013](./ARCHITECTURE_DECISIONS.md).
 
 ## Logging a workout (Slice 3 — planned)
 
@@ -247,18 +257,19 @@ Server loads owner data
 
 No AI required.
 
-## Weekly Coach Check-In (Slice 5 — planned)
+## Weekly coach report (Slice 5 — planned)
 
-User submits check-in  
-→ persist `weekly_check_ins`  
-→ build analytics snapshot for the week  
-→ (optional) retrieve evidence chunks  
+The report reads the stored Slice 2 check-in. It does not collect the form. [ADR-013](./ARCHITECTURE_DECISIONS.md).
+
+Load owner data and the latest check-in  
+→ build analytics snapshot for the period  
+→ (optional, after Slice 5.5) retrieve evidence chunks  
 → LLM returns JSON  
 → Zod validate  
 → persist `coach_reports`  
 → UI renders sections  
 
-If the model fails: show snapshot-only summary, keep the check-in.
+If the model fails: show a snapshot-only summary. The check-in is already stored.
 
 ## AI Workout Import (Slice 3.1 — planned follow-on)
 
@@ -280,21 +291,23 @@ The AI provider never writes workout tables directly. Manual logging remains ava
 
 # 9. Current feature scope (grounded)
 
-**You are currently building Slice 1.5:**
+**Slice 2 is the current slice.** Journal, check-in, and intention screens are not built yet. [ADR-013](./ARCHITECTURE_DECISIONS.md).
+
+Implemented:
 
 - Authentication (done)
-- Profile setup (done)
+- Profile setup (done). Focus areas use the Option B domains.
 - Baseline measurements (`weight`, `waist` time-series)
 - Light Fitness dashboard shell with Measurements as the working tab
 
 That is **now**. That is not the whole Phase 1 product.
 
-**Phase 1 remaining slices (do not start until 1.5 is done):**
+**Phase 1 remaining, in order** ([LAUNCH_PLAN.md](./LAUNCH_PLAN.md)):
 
-- Journal + life domains
-- Workout logging + exercise identity
-- Deterministic analytics / Insights
-- Weekly Coach Check-In v1
+- Journal, life domains, and the weekly check-in (Slice 2)
+- Workout logging + exercise identity (Slice 3)
+- Deterministic analytics / Insights (Slice 4)
+- Weekly coach report (Slice 5). It reads the Slice 2 check-in.
 
 **Follow-on, not beta-blocking:**
 
@@ -304,7 +317,7 @@ That is **now**. That is not the whole Phase 1 product.
 
 # 10. What is not being built right now
 
-Do not introduce these while Slice 1.5 is open:
+Do not introduce these while Slice 2 is the current slice:
 
 - RAG / pgvector / document ingest
 - Coaching agent tool registry
@@ -412,12 +425,14 @@ Not because the architecture diagram looks more impressive.
 
 # 16. Grounding statement
 
-**Right now** you are finishing **measurements on Next.js + Supabase**.
+**Right now** Slice 1.5 is done. Slice 2 is current: journal, life domains, and the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)). Those tables and screens are not built yet.
 
-**Next** you will add journal and workouts as ordinary CRUD + RLS.
+**Next** you will add them as ordinary CRUD + RLS (ticket 2.1, then the screens).
+
+**Then** workouts.
 
 **Then** you will compute snapshots in code.
 
-**Then** you will add a weekly check-in and a structured coach report.
+**Then** the Slice 5 coach report reads the stored check-in and the snapshot.
 
 Everything else is expansion. If a new idea does not fit this order, change [LAUNCH_PLAN.md](./LAUNCH_PLAN.md) first — do not sneak it into the current slice.

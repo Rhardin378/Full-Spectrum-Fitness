@@ -59,10 +59,10 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 
 - **Date:** 2026-10-05
 - **Status:** Accepted
-- **Decision:** The central user loop closes on a weekly check-in plus a **structured** coach report. Implementation order is still: finish Slice 1.5, then journal, workouts, analytics, then coach (Slice 5). Coach v1 is one server-assembled, Zod-validated report — not a chatbot and not a tool-calling agent.
+- **Amended by:** [ADR-013](#adr-013--option-b-life-domains-slice-2-check-in-one-weekly-intention) (accepted 2026-11-17). This ADR stays. Do not delete it.
+- **Decision:** The central user loop closes on a weekly subjective check-in plus a **structured** coach report. The check-in (recap, stress, energy, domain scores, one intention) is stored in Slice 2. The coach report is Slice 5. It reads that stored check-in and a deterministic analytics snapshot. It does not collect the form. Implementation order is still: Slice 1.5 (done), then journal and the check-in (Slice 2), workouts, analytics, then the coach report (Slice 5). Coach v1 is one server-assembled, Zod-validated report — not a chatbot and not a tool-calling agent.
 - **Why:** The product is longitudinal intelligence, not a tracker with a chat box bolted on. The coach cannot interpret data that does not exist yet.
-- **Consequence:** Do not start `src/lib/coach` or a chat UI during Slice 1.5–4. Agent tools and RAG wait until after v1.
-- **Proposed amendment:** [ADR-013](#adr-013--option-b-life-domains-slice-2-check-in-one-weekly-intention) moves stress, energy, and the subjective weekly check-in into Slice 2. Slice 5’s coach report reads that stored check-in later. This ADR stays Accepted until ADR-013 is accepted. Do not delete it.
+- **Consequence:** Do not start `src/lib/coach` or a chat UI during Slice 2–4. Agent tools and RAG wait until after v1. Domains, journal fields, and the one weekly intention are [ADR-013](#adr-013--option-b-life-domains-slice-2-check-in-one-weekly-intention).
 
 ---
 
@@ -139,10 +139,10 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 ## ADR-013 — Option B life domains, Slice 2 check-in, one weekly intention
 
 - **Date:** 2026-11-04 (records the 2026-11-03 Slice 2 lock)
-- **Status:** Proposed
+- **Status:** Accepted (2026-11-17, ticket 2.9)
 - **Amends:** ADR-005. Does not supersede it. Language stays under ADR-011.
 - **Decision:** Switch life domains from the SAMHSA wellness-wheel set to the Peterson / Future Authoring set (Option B): Physical health, Mental health, Family & relationships, Social, Career, Learning, and Leisure, plus optional Habits. Move stress and energy off the daily journal and onto the weekly check-in, and move that check-in from Slice 5 into Slice 2. The Slice 5 coach report reads the stored check-in later; it does not own the form. Store exactly one intention per week in its own `weekly_intentions` table, separate from the check-in, because the intention belongs to next week while the check-in scores last week. The intention is tied to one required domain. The lowest-scoring required domain is preselected (Habits counts only when the user scored it; ties use the canonical domain order). The user may change the domain before submit. Once set, the domain is locked. Intention text stays editable for 3 calendar days, enforced on the server (action plus a database trigger), not only in the client.
-- **Why:** Option B is a deliberate, recognizable framework about keeping life domains in balance, and it ties naturally into setting an intention for the week ahead. The wellness wheel (Emotional, Physical well-being, Social / relationships, Environmental, Financial, Occupational, Spiritual / purpose) is still what PRD §2 and `DOMAIN_FOCUS_AREAS` name. It is not the set Slice 2 scores or aims at. Stress and energy describe the week, not a single journal day; the daily journal stays mood plus a written reflection, with up to two domain tags. One intention, rather than a list, is the rule because a single concrete aim is what a person can hold in mind and still have time to act on. Several intentions in one week would split that focus. More than one intention per week is a future idea, not Slice 2.
+- **Why:** Option B is a deliberate, recognizable framework about keeping life domains in balance, and it ties naturally into setting an intention for the week ahead. The wellness wheel (Emotional, Physical well-being, Social / relationships, Environmental, Financial, Occupational, Spiritual / purpose) was what PRD §2 and `DOMAIN_FOCUS_AREAS` named before ticket 2.9. It is not the set Slice 2 scores or aims at. Stress and energy describe the week, not a single journal day; the daily journal stays mood plus a written reflection, with up to two domain tags. One intention, rather than a list, is the rule because a single concrete aim is what a person can hold in mind and still have time to act on. Several intentions in one week would split that focus. More than one intention per week is a future idea, not Slice 2.
 - **Language:** Wellbeing and self-awareness, not therapy (ADR-011). Domain scores and the weekly intention are not a diagnosis, a treatment plan, or prescribed mental exercises. “Mental health” is a life-domain label for how that part of the week felt, not a clinical claim. The coach report, when it reads this check-in, stays in the same language.
 - **Alternatives considered:**
 
@@ -151,7 +151,23 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
   - Store the next intention as columns on the check-in row. Rejected. The check-in is last week’s scores. The intention is next week’s aim and has to stay addressable after that check-in (journal line, Mind card, and a later outcome). Different weeks, different tables.
   - Allow a list of intentions each week. Rejected for this slice. Focus, and time to act, need one aim. A list can be reconsidered later.
   - Enforce the 3-day text window, or the locked domain, only in the client. Rejected. A modified client must not extend the window or retarget the domain. The server rejects both.
-- **Consequence:** This ADR is Proposed until ticket 2.9 accepts it into the handoff pack. Until then, build Slice 2 from `docs/vertical_slices/slice_2_journaling_life_domains/README.md`, and do not treat PRD §2 or ADR-005’s original check-in placement as the spec. Ticket 2.9 must make the PRD, system design, ADR-005, `docs/navigation-ia.md`, `docs/vertical_slices/tracking_setup.md`, and `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` align with and link to this ADR. That includes a mapping or migration for existing users’ saved `profiles.domain_priorities` (today the wheel slugs `emotional`, `physical`, `social`, `environmental`, `financial`, `occupational`, `spiritual`). Do not drop those saved values and do not leave the wheel slugs valid next to Option B. Do not delete ADR-005: keep the “not a chatbot / not the next slice after 1.5” decision, and point it here. Slice 5 still produces the structured coach report after deterministic insights. It does not collect this form. Journal and check-in copy must not prescribe care (ADR-011). Habits is optional on the check-in and is not the preselected intention domain unless it was scored. The check-in may also store optional `notes` (nullable text, at most 1000 characters; empty is allowed and stores null), checked in Zod and in the database. Notes are the owner’s memory of the week, not a message to a coach, and nothing replies. Slice 5 reads `notes` as context later (ADR-004) with no new table or column. Diet adherence / appetite tracking, and coach Q&A replies to notes, are not built. Progress photos stay backlog issue #54.
+- **Consequence:** Accepted into the handoff pack by ticket 2.9 (2026-11-17). The PRD, system design, launch plan, ADR-005, `docs/navigation-ia.md`, and `docs/vertical_slices/tracking_setup.md` match this ADR and link here. Slice 2 behavior stays specified in `docs/vertical_slices/slice_2_journaling_life_domains/README.md`. `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` is this Option B set. Wheel slugs are not valid beside it.
+
+  Saved `profiles.domain_priorities` keep every ranked row. The slug changes by the map below. The rank number stays. `mapStoredDomainPriorities` applies it on read. Migration `20261117170000_map_domain_priorities_to_option_b.sql` writes the same result. Unknown slugs are dropped.
+
+  | Saved wheel slug | Preferred Option B slug | Why |
+  |---|---|---|
+  | `emotional` | `mental_health` | Feelings and coping. |
+  | `physical` | `physical_health` | Body, sleep, nutrition. |
+  | `social` | `social` | Other people. The slug stays `social`. Family & relationships is the new split and has no saved wheel key. |
+  | `environmental` | `family_relationships` | Home. No surroundings domain remains. |
+  | `financial` | `career` | Livelihood. No money domain remains. |
+  | `occupational` | `career` | Work. |
+  | `spiritual` | `leisure` | Purpose and meaningful time. No spiritual domain remains. |
+
+  When two saved rows want the same Option B slug, the better rank (lower priority number) keeps it. The other row keeps its rank and takes the first free slug in this order: `learning`, `habits`, then the canonical Option B order. Habits is not a preferred target. A profile that saved all seven wheel domains still has seven rows. `learning` holds whichever of `financial` or `occupational` lost the `career` slot.
+
+  Do not delete ADR-005: keep the “not a chatbot / not the next slice after 1.5” decision, and point it here. Slice 5 still produces the structured coach report after deterministic insights. It does not collect this form. Journal and check-in copy must not prescribe care (ADR-011). Habits is optional on the check-in and is not the preselected intention domain unless it was scored. The check-in may also store optional `notes` (nullable text, at most 1000 characters; empty is allowed and stores null), checked in Zod and in the database. Notes are the owner’s memory of the week, not a message to a coach, and nothing replies. Slice 5 reads `notes` as context later (ADR-004) with no new table or column. Diet adherence / appetite tracking, and coach Q&A replies to notes, are not built. Progress photos stay backlog issue #54.
 
 ---
 

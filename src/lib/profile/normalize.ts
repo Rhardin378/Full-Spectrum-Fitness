@@ -1,7 +1,7 @@
 import {
   EXPERIENCE_LEVELS,
   SHARING_PREFERENCES,
-  type DomainPriority,
+  mapStoredDomainPriorities,
   type ExperienceLevel,
   type Profile,
   type SharingPreference,
@@ -34,18 +34,6 @@ function parseSharingPreference(value: string | null): SharingPreference | null 
     : null;
 }
 
-function parseDomainPriorities(value: unknown): DomainPriority[] {
-  if (!Array.isArray(value)) return [];
-
-  return value.filter(
-    (item): item is DomainPriority =>
-      typeof item === "object" &&
-      item !== null &&
-      typeof (item as DomainPriority).domain === "string" &&
-      typeof (item as DomainPriority).priority === "number",
-  );
-}
-
 export function normalizeProfile(row: ProfileRow): Profile {
   return {
     id: row.id,
@@ -55,7 +43,7 @@ export function normalizeProfile(row: ProfileRow): Profile {
     wellness_goal: row.wellness_goal,
     experience_level: parseExperienceLevel(row.experience_level),
     sharing_preferences: parseSharingPreference(row.sharing_preferences),
-    domain_priorities: parseDomainPriorities(row.domain_priorities),
+    domain_priorities: mapStoredDomainPriorities(row.domain_priorities),
     created_at: row.created_at,
     updated_at: row.updated_at,
   };

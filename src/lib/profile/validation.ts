@@ -8,7 +8,7 @@ import {
 
 const domainPrioritySchema = z.object({
   domain: z.enum(DOMAIN_FOCUS_AREAS, {
-    message: "Choose one of the seven focus domains.",
+    message: "Choose one of the life domains.",
   }),
   priority: z
     .number()

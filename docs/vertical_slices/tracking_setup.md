@@ -8,10 +8,10 @@ Create one milestone per vertical slice. Names and order must match [`docs/LAUNC
 
 - `Slice 1 - Auth & Profile Setup` (done)
 - `Slice 1.5 - Measurements & Baseline Tracking` (done)
-- `Slice 2 - Journaling & Life Domains` (**current**)
+- `Slice 2 - Journaling, Life Domains & Weekly Check-In` (**current**) — the subjective check-in is this slice ([ADR-013](../ARCHITECTURE_DECISIONS.md))
 - `Slice 3 - Workouts`
 - `Slice 4 - Deterministic Analytics & Insights`
-- `Slice 5 - Weekly Coach Check-In`
+- `Slice 5 - Weekly Coach Report` — reads the Slice 2 check-in and writes the structured report. It does not collect the form ([ADR-013](../ARCHITECTURE_DECISIONS.md))
 - `Slice 3.1 - AI Workout Import` (follow-on after Slice 3; not Phase 1 blocking)
 - `Slice 5.5 - Evidence RAG` (after Slice 5)
 - `Slice 6 - Coach Agent Tools` (after Slice 5)

@@ -22,7 +22,7 @@ If a later idea conflicts with this document, update the handoff pack **before**
 | What am I building **this week**? | The **current slice** below |
 | What is Phase 1 allowed to include? | **Phase 1 — Proof of Value** |
 | Can I start AI, RAG, social, or PDF import now? | **No** — see [Do not start yet](#do-not-start-yet) |
-| Where does Weekly Coach enter? | After capture + deterministic analytics exist (Slice 5) |
+| Where does Weekly Coach enter? | The subjective check-in is Slice 2. The coach report is Slice 5, after capture and deterministic analytics ([ADR-013](./ARCHITECTURE_DECISIONS.md)) |
 
 ---
 
@@ -32,10 +32,10 @@ If a later idea conflicts with this document, update the handoff pack **before**
 |-------|--------|
 | Slice 1 — Authentication & Profile Setup | **Done** |
 | Slice 1.5 — Measurements & Baseline Tracking | **Done** (closed 2026-11-16) |
-| **Slice 2 — Journaling & Life Domains** | **Current work** |
+| **Slice 2 — Journaling, Life Domains & Weekly Check-In** | **Current work** (screens not built yet) |
 | Slice 3+ | Planned — do not start |
 
-Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_2_journaling_life_domains/`](./vertical_slices/slice_2_journaling_life_domains/). Start with ticket **2.9** (align this handoff pack with ADR-013 and map saved `profiles.domain_priorities` to the new domains), then **2.1** (schema). Where the slice folder and this pack disagree, the slice folder is what to build until 2.9 lands.
+Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_2_journaling_life_domains/`](./vertical_slices/slice_2_journaling_life_domains/). Ticket **2.9** aligned this pack with [ADR-013](./ARCHITECTURE_DECISIONS.md) and mapped saved `profiles.domain_priorities` onto the Option B domains. Next is ticket **2.1** (schema). The journal and check-in screens are not built yet.
 
 **Cleanup backlog:** CU.1–CU.6 are done ([`docs/vertical_slices/cleanup_backlog/`](./vertical_slices/cleanup_backlog/)). CU.7 (invite-only beta sign-up) waits for “Before beta launch” below.
 
@@ -82,7 +82,7 @@ These are product decisions, not suggestions. Change them here if they change.
 3. **Journal (Slice 2) before workouts (Slice 3)** is acceptable and preferred: wellbeing capture is as important as fitness, and Slice 2 is smaller than a full workout model. Do not reverse this without updating this file.
 4. **Manual workout logging before AI import.** Slice 3.1 (text PDF) starts only after Slice 3’s canonical model and editor path exist.
 5. **Deterministic Insights (Slice 4) before Weekly Coach (Slice 5).** The coach consumes a versioned analytics snapshot; the LLM must not invent core metrics.
-6. **Weekly Coach v1 is a structured report, not an agent platform.** Tool-calling coach and evidence RAG come *after* a working check-in + snapshot + validated report.
+6. **Weekly Coach v1 is a structured report, not an agent platform.** The subjective check-in is Slice 2 ([ADR-013](./ARCHITECTURE_DECISIONS.md)). Tool-calling coach and evidence RAG come after a working Slice 2 check-in, a Slice 4 snapshot, and a validated Slice 5 report.
 7. **Social feed, accountability circles, and achievement/badge catalogs are out of Phase 1.** They are post-validation, optional, and must not delay the coach loop.
 8. **Evidence RAG is planned, not current.** Do not embed user journals as the knowledge base. Do not scrape commercial fitness sites.
 9. **Screenshot/spreadsheet program ingestion is later than Slice 3.1.** Reuse the same human-review pattern; do not pull it into Phase 1.
@@ -95,18 +95,20 @@ These are product decisions, not suggestions. Change them here if they change.
 
 ```text
 Capture (ongoing, low friction)
-  workouts · measurements · optional journal
+  workouts · measurements · optional journal (mood + reflection)
         ↓
-Weekly Coach Check-In (small subjective input)
+Weekly check-in (Slice 2 — stress, energy, domain scores, one intention)
         ↓
 Deterministic analytics snapshot
         ↓
-Structured coach report (AI interprets the snapshot)
+Structured coach report (Slice 5 — reads the snapshot and the stored check-in)
         ↓
 User reviews, adjusts, continues logging
         ↓
 History makes the next week more useful
 ```
+
+The check-in’s fields and the one weekly intention are [ADR-013](./ARCHITECTURE_DECISIONS.md). Sleep, motivation, nutrition adherence, and life-event text are not part of that check-in.
 
 Daily journaling is **optional**. The loop can close on **workouts + measurements + one weekly check-in**.
 
@@ -124,10 +126,10 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 |------------|-------|--------|
 | Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
 | Weight & waist time-series | 1.5 (done) | Deterministic weight trend in-tab; no unit conversion |
-| Journal + life domains + mood/stress/energy | 2 (current) | Fast entry; AI prompts are **not** required in Slice 2 |
+| Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal. Stress, energy, and domain scores on the check-in. One intention. No AI prompts. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
 | Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions |
 | Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
-| Weekly Coach Check-In v1 | 5 | Scores + optional reflection; server-built snapshot; Zod-validated report UI |
+| Weekly coach report | 5 | Reads the Slice 2 check-in. Does not collect the form. Server-built snapshot. Zod-validated report UI. [ADR-013](./ARCHITECTURE_DECISIONS.md). |
 
 ### Explicitly not Phase 1
 
@@ -215,10 +217,10 @@ Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tra
 |-------|-------|------------|------------|------------------------|
 | 1 | Auth & Profile | Account and goals | — | Circles, social privacy product |
 | 1.5 | Measurements | Body baseline over time | Slice 1 | Photos, extra tape measurements |
-| **2** | **Journaling & Life Domains** | Wellbeing capture | Slice 1 | LLM prompts, theme extraction |
+| **2** | **Journaling, Life Domains & Weekly Check-In** | Wellbeing capture and the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 1 | LLM prompts, theme extraction, the coach report |
 | 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest |
 | 4 | Deterministic Analytics & Insights | “What changed?” without AI | 1.5, 2, 3 | ML correlations presented as facts |
-| 5 | Weekly Coach Check-In | Recurring coach experience | Slice 4 | Tool-calling agent, RAG |
+| 5 | Weekly Coach Report | Structured report that reads the Slice 2 check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 4 | Tool-calling agent, RAG, collecting the check-in form |
 | 3.1 | AI Workout Import | Import a text PDF as templates | Slice 3 | OCR, images, auto-save |
 | 5.5 | Evidence RAG | Cited training/recovery context | Slice 5 | Large crawled corpora |
 | 6 | Coach agent tools | Deeper, testable AI layer | 5, 5.5 | Client-side agents |

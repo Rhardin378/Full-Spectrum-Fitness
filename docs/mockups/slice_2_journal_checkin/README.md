@@ -8,6 +8,6 @@ Approved UI references for [`docs/vertical_slices/slice_2_journaling_life_domain
 | `checkin-desktop.png` | Weekly check-in order: week recap, last intention outcome, stress and energy, life-domain scores, next intention. The next-intention domain still defaults to the lowest score ([ADR-013](../../ARCHITECTURE_DECISIONS.md)). A later composite, [`docs/mockups/nov_2026_tickets/B-checkin-journal.png`](../nov_2026_tickets/B-checkin-journal.png), includes a rejected idea (preselect the top profile focus area). Do not build that callout. |
 | `domains-compare-desktop.png` | Decision record only. **Option B is approved.** Do not build this comparison screen. |
 
-Option A in the comparison PNG is the SAMHSA-style wellness wheel still listed in [`docs/PRD.md`](../../PRD.md) §2. Option B (Peterson / Future Authoring inspired) replaces those names for journal tags and check-in scores. The handoff pack still describes Option A; ticket **2.9** is the pack update. Slice 2 build work follows Option B.
+Option A in the comparison PNG is the old SAMHSA-style wellness wheel. Option B (Peterson / Future Authoring inspired) is the set for journal tags and check-in scores. Ticket **2.9** aligned the handoff pack with Option B ([ADR-013](../../ARCHITECTURE_DECISIONS.md)). Slice 2 build work follows Option B.
 
 Chrome in the PNGs (charcoal bar, coral active states, warm page, coral primary buttons) matches `docs/brand_style_guide.md` and the v2 measurements UI. Copy the layout and the approved strings. Reuse existing tokens; do not introduce a new palette.

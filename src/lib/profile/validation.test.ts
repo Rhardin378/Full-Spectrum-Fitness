@@ -27,8 +27,8 @@ describe("profileUpdateSchema", () => {
   it("rejects duplicate focus domains", () => {
     const result = profileUpdateSchema.safeParse({
       domain_priorities: [
-        { domain: "physical", priority: 1 },
-        { domain: "physical", priority: 2 },
+        { domain: "physical_health", priority: 1 },
+        { domain: "physical_health", priority: 2 },
       ],
     });
 
@@ -45,8 +45,8 @@ describe("profileUpdateSchema", () => {
   it("rejects duplicate priority ranks", () => {
     const result = profileUpdateSchema.safeParse({
       domain_priorities: [
-        { domain: "physical", priority: 1 },
-        { domain: "emotional", priority: 1 },
+        { domain: "physical_health", priority: 1 },
+        { domain: "mental_health", priority: 1 },
       ],
     });
 
@@ -66,6 +66,27 @@ describe("profileUpdateSchema", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("rejects a wellness-wheel slug", () => {
+    const result = profileUpdateSchema.safeParse({
+      domain_priorities: [{ domain: "emotional", priority: 1 }],
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toBe(
+        "Choose one of the life domains.",
+      );
+    }
+  });
+
+  it("accepts an Option B domain", () => {
+    const result = profileUpdateSchema.safeParse({
+      domain_priorities: [{ domain: "mental_health", priority: 1 }],
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it("rejects display name over 100 characters", () => {

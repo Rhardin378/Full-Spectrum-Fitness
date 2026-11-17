@@ -29,6 +29,34 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-17 — Ticket 2.9: handoff pack matches Option B
+
+### Completed
+
+- Accepted [ADR-013](./ARCHITECTURE_DECISIONS.md) and amended ADR-005 so the weekly check-in is Slice 2 and the coach report stays Slice 5.
+- Aligned `docs/PRD.md`, `docs/SYSTEM_DESIGN.md`, `docs/LAUNCH_PLAN.md`, `docs/navigation-ia.md`, and `docs/vertical_slices/tracking_setup.md` with that decision. Slice 2 screen behavior stays in the slice README.
+- Switched `DOMAIN_FOCUS_AREAS` to the eight Option B slugs. Saved wellness-wheel priorities keep their rank and change slug by the map in ADR-013 (`mapStoredDomainPriorities`, migration `20261117170000_map_domain_priorities_to_option_b.sql`).
+- Profile focus-area dropdown shows the new labels. The fixed eight-row ranker is still a later ticket.
+
+### Decisions
+
+- ADR-013 is Accepted. `financial` and `occupational` both prefer `career`. The better rank keeps `career`. The other row keeps its rank and takes `learning` when that slot is free. Habits is not a preferred target. The three weaker pairs (`environmental` → `family_relationships`, `financial` → `career`, `spiritual` → `leisure`) are written in the ADR so the rewrite is not silent.
+
+### Issues
+
+- Journal, check-in, and intention tables are not built. Ticket 2.1 is next.
+- `docs/AI_ENGINEERING_CONTEXT.md` is still the 2026-10-05 audit. Ticket 2.9 does not require a refresh.
+
+### Next
+
+- Ticket 2.1: journal, check-in, and intention schema.
+
+### AI Notes
+
+- Cursor Grok. Slice 1.5 was already closed, so “You are here” stays on Slice 2. The screens are called out as not built.
+
+---
+
 ## 2026-11-16 — Goals reminder mockup
 
 ### Completed

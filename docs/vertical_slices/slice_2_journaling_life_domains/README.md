@@ -4,17 +4,17 @@
 
 Authenticated users can keep one short journal entry per calendar day, tag it with up to two life domains, and once a week score how life went, close last week’s intention, and set exactly one intention for the new week.
 
-**This is the current slice.** Slice 1.5 closed on 2026-11-16 and `docs/LAUNCH_PLAN.md` points here. Start with ticket 2.9, then 2.1.
+**This is the current slice.** Slice 1.5 closed on 2026-11-16 and `docs/LAUNCH_PLAN.md` points here. Ticket 2.9 aligned the handoff pack with ADR-013. Next is ticket 2.1. The screens are not built yet.
 
 ## Scope change (read this first)
 
-Ryan locked this on 2026-11-03. It **disagrees** with the handoff pack. Ticket **2.9** updates the pack. Do not “fix” the disagreement by building the old PRD.
+Ryan locked this on 2026-11-03. Ticket 2.9 aligned the handoff pack with [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted). Build this folder. Do not build the old wellness-wheel journal.
 
 1. **Weekly check-in moves from Slice 5 into Slice 2.** Slice 2 stores the subjective check-in (recap, stress, energy, domain scores, intention outcome, next intention). Slice 5 stays the **coach report**: analytics snapshot, model call, structured sections. Slice 2 does not call a model and does not render a coach report.
 2. **Life domains are Option B**, not the wellness wheel. Approved screen: [`docs/mockups/slice_2_journal_checkin/domains-compare-desktop.png`](../../mockups/slice_2_journal_checkin/domains-compare-desktop.png).
 3. **The daily journal is mood plus a written reflection.** Stress and energy are check-in fields. The journal does not store domain scores. Optional tags are a join table, not `journal_domain_scores`.
 
-`profiles.domain_priorities` still uses the seven wellness-wheel keys in `src/lib/types/profile.ts` (`DOMAIN_FOCUS_AREAS`). Journal and check-in tickets do not migrate that column. The decision record is [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Proposed): Option B domains, stress and energy on the weekly check-in, that check-in in Slice 2, and exactly one weekly intention. Ticket 2.9 makes the PRD, system design, ADR-005, `docs/navigation-ia.md`, `docs/vertical_slices/tracking_setup.md`, and `DOMAIN_FOCUS_AREAS` align with and link to ADR-013, including a mapping or migration for existing users’ saved values.
+`profiles.domain_priorities` uses the Option B slugs in `src/lib/types/profile.ts` (`DOMAIN_FOCUS_AREAS`). Ticket 2.9 mapped saved wellness-wheel values onto that set. Journal and check-in tickets do not migrate that column again. The decision record is [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted): Option B domains, stress and energy on the weekly check-in, that check-in in Slice 2, and exactly one weekly intention.
 
 ## Goal
 
@@ -158,7 +158,7 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 - AI prompts, summaries, theme extraction, or a coach report in this slice
 - Editing or backfilling past journal days
 - Soft-delete of journal rows
-- Migrating `profiles.domain_priorities` inside the journal or check-in tickets (the mapping or migration is ticket 2.9, with ADR-013)
+- Migrating `profiles.domain_priorities` again inside the journal or check-in tickets (ticket 2.9 already mapped saved values; see ADR-013)
 - Wellness-wheel names on new rows
 
 ## Done criteria
@@ -175,8 +175,8 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 
 ## Notes
 
-- Product sources of truth are still the handoff pack. Where this folder disagrees, **this folder is what to build**, and ticket 2.9 is what to change in the pack before or as the slice starts.
-- Decision record: [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Proposed) in `docs/ARCHITECTURE_DECISIONS.md`. It amends ADR-005 and keeps ADR-011’s wellbeing language (not therapy).
+- Product sources of truth are the handoff pack. Ticket 2.9 aligned that pack with this folder and with ADR-013. Screen behavior for this slice stays here.
+- Decision record: [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted) in `docs/ARCHITECTURE_DECISIONS.md`. It amends ADR-005 and keeps ADR-011’s wellbeing language (not therapy).
 - Mockups: [`docs/mockups/slice_2_journal_checkin/`](../../mockups/slice_2_journal_checkin/README.md).
 - Tickets: [`tickets.md`](./tickets.md).
 - Brand and supportive copy: `docs/brand_style_guide.md`. Wellbeing language, not therapy (`ARCHITECTURE_DECISIONS.md` ADR-011, and ADR-013).
