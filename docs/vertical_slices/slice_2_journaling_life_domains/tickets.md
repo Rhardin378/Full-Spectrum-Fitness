@@ -2,7 +2,7 @@
 
 Use each section below as one GitHub issue. Keep the order. The build spec is [`README.md`](./README.md). Mockups: [`docs/mockups/slice_2_journal_checkin/`](../../mockups/slice_2_journal_checkin/README.md).
 
-**Scope change:** the weekly subjective check-in is in this slice, not Slice 5. Domain names are Option B, not the wellness wheel. Ticket **2.9** aligned the handoff pack ([ADR-013](../../ARCHITECTURE_DECISIONS.md) is Accepted). Do not build the old journal (mood + stress + energy + domain scores).
+**Scope change:** the weekly subjective check-in is in this slice, not Slice 5. Domain names are Option B, not the wellness wheel. Ticket **2.9** aligned the handoff pack ([ADR-013](../../ARCHITECTURE_DECISIONS.md) is Accepted) and landed in [PR #68](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/68). Slice 2 implementation starts with ticket 2.1. **NAV.1** ([issue #80](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/80)) must merge before ticket 2.7. Do not build the old journal (mood + stress + energy + domain scores).
 
 Create the `slice-2` label when the first issue is opened. It is not in the repo label list yet (`docs/vertical_slices/tracking_setup.md` already reserves the name).
 
@@ -138,6 +138,8 @@ Expose journal save/list, check-in submit, intention text edit, the week recap, 
 
 New modules under `src/lib/journal/` and `src/lib/weekly/`. Import date helpers from `src/lib/measurements/calendar-date.ts`. Do not duplicate them.
 
+The eight domain slugs and labels live in `src/lib/life-domains/`. Zod schema checks, validation, and the journal, check-in, and Mind UI import them from that module. Do not copy the list into the journal or weekly modules. Ticket 2.1’s SQL checks still name the same eight slugs. They cannot import this module. Do not add a `life_domains` table. Ticket 2.9 left `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts`. This ticket does not move it.
+
 Every action:
 
 - calls `getUser()` the way `src/lib/measurements/actions.ts` does
@@ -228,7 +230,7 @@ Build `/mind/journal` to match [`journal-desktop.png`](../../mockups/slice_2_jou
 - Max 200 characters each. The server still normalizes blank and whitespace-only to null. The client does not block submit for an empty line.
 - Domain chips in canonical order. Habits chip shows “optional”. Zero, one, or two selected. A third click does not add a tag.
 - Primary button “Save entry”. Saving an existing today-row updates it. Button shows a pending state.
-- Field errors and a generic save error. Success is visible.
+- Field errors and a generic save error. Success is visible on this page. After a successful save, stay on `/mind/journal`. Do not redirect.
 - If today’s row exists, the form loads it (mood, reflection, tags, and the two lines). A null line loads as an empty input.
 - Leave a place directly under the date for the intention line (ticket 2.5). Do not invent stress or energy controls. Do not add a wins page, a gratitude page, or a link to one. `journal-desktop.png` does not show these two inputs. This ticket adds them.
 - Keyboard: each mood button and chip is a real button, the textarea and each one-line field have a label, submit works from the keyboard.
@@ -236,7 +238,7 @@ Build `/mind/journal` to match [`journal-desktop.png`](../../mockups/slice_2_jou
 
 ### Acceptance Criteria
 
-- A signed-in user can save today’s mood, reflection, and up to two tags, with both lines empty or filled, refresh, and see the same values.
+- A signed-in user can save today’s mood, reflection, and up to two tags, with both lines empty or filled, stay on `/mind/journal`, refresh, and see the same values.
 - Saving again updates that day; the history count for today stays one. Clearing a line on that second save stores null.
 - Three tags cannot be selected.
 - Empty reflection does not submit. Empty or whitespace-only win and gratitude lines do not block submit and come back empty.
@@ -271,13 +273,13 @@ Match [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desk
 
 1. Title “Weekly check-in” and subtitle “Week of {Mon} – {Sun}” for `lastCompletedWeekStart(today)` through that Sunday. Format those dates with the calendar-date helper.
 2. **Your week so far.** Average mood, “N of 7” days, top tagged domains, sparkline with hollow gaps. Data from ticket 2.2. No entries: short empty copy, not zeros, and the rest of the form still works.
-3. Last intention, when one exists for that `week_start`: the body in quotes and Yes / Partly / No. One of the three required. Hidden when there is no intention.
+3. Last intention, when a prior intention row exists for that `week_start`: the body in quotes and Yes / Partly / No. One of the three required. When no prior intention row exists (the first check-in), hide the last-intention block entirely. There is no heading, no quoted body, and no outcome control.
 4. Stress and energy, 1–10, legend “1 = low, 10 = high”.
 5. **Your goals.** A read-only reminder of the profile’s free-text fitness and wellness goals. Ryan added this on 2026-11-16. Layout: [`G-checkin-goals-reminder.png`](../../mockups/nov_2026_tickets/G-checkin-goals-reminder.png) (desktop and mobile). It sits after the week recap and last week’s intention, and directly above the life-domain scores (after stress and energy, immediately before the domain rows). The PNG draws the filled bar and leaves stress and energy out of that frame. Keep stress and energy. Muted bar, not a form. Labels “Fitness” and “Wellness”. No inputs, and the text is not editable here. Link, exact label “Edit in profile”, to `/profile`. Show a goal only when its trimmed text is non-empty. Each goal clamps to three lines; the rest is truncated. The full text stays on the profile. The PNG does not show that clamp or an empty bar. This ticket governs both. If both goals are empty, do not show blank lines: show a quiet link, exact label “Add goals in your profile”, to `/profile`. Hiding the whole block is also allowed by the decision; build the quiet link so the empty state is one thing. Do not show structured goals (weight, waist, weekly count) in this bar. Do not put this bar on the Fitness Overview. `checkin-desktop.png` does not show the bar.
 6. Seven domain rows plus Habits, in canonical order, not profile-priority order. Legend “1 = struggling, 10 = thriving”. Habits may be left blank. The other seven may not. `domain_priorities` does not change this block. Ryan confirmed that on 2026-11-16. A later callout, a later reorder, and passing priorities to the Slice 5 coach are Future ideas (gate D) in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](../nov_16_2026_decisions/tickets.md). Not this ticket.
-7. Intention for next week. Domain control defaults to the lowest score and can be changed before submit. Helper: “One concrete thing. Your lowest domain this week: {Label}.” The helper updates if the user changes scores before submit. Text required, max 200. On 2026-11-16 Ryan rejected a proposal to preselect the user’s top-ranked profile focus area instead ([`B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png)). [ADR-013](../../ARCHITECTURE_DECISIONS.md) is unchanged. Do not read `domain_priorities` to pick this default, to order the rows, or to write this helper.
+7. Intention label, exact: “Intention for the week of {Mon}–{Sun}”. {Mon} is `currentIntentionWeekStart(today)` and {Sun} is that Sunday, the week the new intention is for. Format those dates with the calendar-date helper. The subtitle stays “Week of {Mon} – {Sun}” for the check-in week (`lastCompletedWeekStart`). Domain control defaults to the lowest score and can be changed before submit. Helper: “One concrete thing. Your lowest domain this week: {Label}.” The helper updates if the user changes scores before submit. Text required, max 200. On 2026-11-16 Ryan rejected a proposal to preselect the user’s top-ranked profile focus area instead ([`B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png)). [ADR-013](../../ARCHITECTURE_DECISIONS.md) is unchanged. Do not read `domain_priorities` to pick this default, to order the rows, or to write this helper.
 8. Optional notes, last field before submit. Label and prompt, exact: “How did your training, energy and life go this week? Anything to remember?” The check-in submits when this is empty. Max 1000 characters. This is not a message to a coach. Nothing replies to it. Do not add a thread, a reply box, or any Q&A.
-9. “Submit check-in”. Pending, field errors, generic failure, and the already-submitted message.
+9. “Submit check-in”. Pending, field errors, generic failure, and the already-submitted message. The check-in does not save a draft. Nothing is written until submit succeeds. A successful submit redirects to `/mind`.
 
 Check-in history on this screen lists the caller’s past `weekly_check_ins`, newest first, read-only. Show `notes` when the value is non-null. A week with null notes does not render an empty notes block. This slice still does not edit a submitted check-in.
 
@@ -290,7 +292,9 @@ Do not add sleep, motivation, nutrition, diet or appetite tracking, alcohol, a s
 - Submitting a valid check-in persists scores, sets the previous intention outcome when that row exists, and creates one next intention.
 - The recap matches journal entries inside that Monday–Sunday window and ignores entries outside it.
 - A second visit in the same week cannot create another check-in.
-- First-time check-in (no prior intention) submits without an outcome control.
+- First-time check-in (no prior intention row) hides the last-intention block entirely. There is no heading, quoted body, or outcome control, and the check-in still submits.
+- The intention label is “Intention for the week of {Mon}–{Sun}” for `currentIntentionWeekStart(today)` through that Sunday.
+- The check-in does not save a draft. A successful submit redirects to `/mind`.
 - Unanswered Habits is stored as null. An unanswered required domain does not submit.
 - Empty notes are allowed and store null. Notes of 1000 characters submit. Longer notes do not.
 - Check-in history shows saved notes. A null notes week has no empty notes block.
@@ -324,16 +328,16 @@ Show the current week’s single intention above the journal form and as a card 
 ### Scope
 
 - Load `getCurrentIntention`. If none, render nothing (no empty placeholder sentence).
-- Journal: one line, coral tint, same role as the mockup bar (“This week’s intention: …”).
-- Mind: a card with the domain label, the body, and the outcome if it is already set (`done` / `partly` / `not_done` as Done / Partly / Not done). Outcome is read-only here.
-- While `today <= editable_until`, the body is an editable field and save calls `updateIntentionText`. After that date, the body is text, not a field.
-- The domain is never a control on this surface.
+- Journal: one line, coral tint, same role as the mockup bar (“This week’s intention: …”). The intention text on this line is editable inside the window below.
+- Mind: a card with the domain label, the body, and the outcome if it is already set (`done` / `partly` / `not_done` as Done / Partly / Not done). Outcome is read-only here. The intention text on this card is editable inside the same window.
+- While `today <= editable_until`, the body is an editable field on the journal line and on the Mind card, and save calls `updateIntentionText`. After that date, the body is text, not a field, on both.
+- The domain is never a control on either surface.
 - Server rejection (window closed, unauthenticated) is visible. The client clock is not the only check.
 
 ### Acceptance Criteria
 
 - The intention created by the check-in shows on the journal page and on `/mind` during its `week_start` week.
-- Text saves on `editable_until` and does not save the next calendar day.
+- Text saves from the journal line and from the Mind card on `editable_until`, and does not save the next calendar day.
 - Changing domain is not possible in the UI. A crafted action payload that includes `domain` fails.
 - A week with no intention does not show a fake sentence.
 
@@ -373,7 +377,7 @@ Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend,
   3. Check-in due card (ticket 2.7), under the stat row and above the mood strip, only when `isCheckInDue` is true. Ryan confirmed that placement on 2026-11-16.
   4. Mood trend for those same seven days, hollow when a day has no entry. This window includes today. It is not the check-in week window.
   5. Intention card (ticket 2.5).
-  6. History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap. Each entry shows the date, mood, reflection, and tags, as on [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). When `win` is non-null, show the label “One win today” and the text under the reflection and before the domain chips. When `grateful_for` is non-null, show “Grateful for” and the text in that same spot, after the win line. A null value does not render an empty line. Do not add a Wins list, a `/mind/wins` route, a filter, or a second page for these lines. They are not stats and they are not part of the mood trend.
+  6. History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap. Each entry is read-only. It shows the date, mood, tags, and the reflection clamped to about 2–3 lines, as on [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). That PNG does not specify the clamp. When `win` is non-null, show the label “One win today” and the text under the reflection and before the domain chips. When `grateful_for` is non-null, show “Grateful for” and the text in that same spot, after the win line. A null value does not render an empty line. Do not add a Wins list, a `/mind/wins` route, a filter, or a second page for these lines. They are not stats and they are not part of the mood trend.
 - Layout reference: [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). Sample numbers and the “rules are not decided yet” line are not product copy. The streak rules are ADR-014.
 - Empty history: supportive copy and the new-entry action. No sample numbers.
 
@@ -381,9 +385,9 @@ Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend,
 
 - Signed-out visitors to `/mind` and `/mind/journal` land on `/auth`.
 - Mind in the navbar is a real link and shows the coral active state on `/mind` (desktop and the mobile menu).
-- Stats and the trend match journal rows in the rolling seven days and ignore older rows. The stat row does not show “N of 7” or a “Journal streak” number. When ticket 2.5.1 has merged, Activity streak is the first stat and its number comes from that server result.
+- Stats and the trend match journal rows in the rolling seven days and ignore older rows. The stat row does not show “N of 7” or a “Journal streak” number. Before ticket 2.5.1 merges, the streak card is omitted. When ticket 2.5.1 has merged, Activity streak is the first stat and its number comes from that server result.
 - History Show more / Show less behaves like Recent history on the Measurements tab.
-- A saved win or gratitude line shows on that history entry. A null line is omitted, including after the user clears it on a later save of today.
+- A history entry is read-only. It shows the date, mood, tags, and the reflection clamped to about 2–3 lines. A saved win or gratitude line shows on that entry. A null line is omitted, including after the user clears it on a later save of today.
 - The page does not show a tab bar, an Insights tab, a domain radar, a wins page, or hard-coded demo stats.
 
 ### Dependencies
@@ -412,7 +416,7 @@ On `/mind`, show a card when last week’s check-in is missing. Compute it when 
 
 - Server component (or the Mind page loader) calls the due predicate from ticket 2.2.
 - Visible only when `isCheckInDue` is true. Copy is calm and specific, for example that last week’s check-in is ready, with a link to `/mind/check-in`.
-- Secondary link, exact label “Log this week’s weight”, to `/fitness/measurements`. That is the measurements logging flow: the Measurements tab and `+ Log measurement`, which opens `LogMeasurementModal`. **NAV.1** is the ticket that creates that path. Do not add a second route, a modal, a query param, or a weight-only form. The link does not insert a measurement. Do not point it at `/dashboard`.
+- Secondary link, exact label “Log this week’s weight”, to `/fitness/measurements`. That is the measurements logging flow: the Measurements tab and `+ Log measurement`, which opens `LogMeasurementModal`. **NAV.1** ([issue #80](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/80)) creates that path and must merge before this ticket. Do not add a second route, a modal, a query param, or a weight-only form. The link does not insert a measurement. Do not point it at `/dashboard`.
 - After a successful submit, the next load of `/mind` does not show the card for that week.
 - No email, push, badge count in the navbar, cron, or `notifications` table.
 - The card does not appear on Fitness `/dashboard` in this ticket.
@@ -429,6 +433,7 @@ On `/mind`, show a card when last week’s check-in is missing. Compute it when 
 
 - Ticket 2.2
 - Ticket 2.6
+- **NAV.1** ([issue #80](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/80), [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](../nov_16_2026_decisions/tickets.md)) must merge before this ticket
 
 ### Suggested GitHub title
 
@@ -448,9 +453,9 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 
 ### Scope
 
-- Unit: week fixtures, inclusive `editable_until`, recap rounding and empty input, tag ranking, lowest domain, due predicate. Extend the ticket 2.2 tests rather than forking a second copy.
+- Unit: week fixtures, inclusive `editable_until`, recap rounding and empty input, tag ranking, lowest domain, due predicate, and the `src/lib/life-domains/` list (the same eight slugs, canonical order). Extend the ticket 2.2 tests rather than forking a second copy.
 - Action tests: unauthorized journal save, check-in submit, and intention update; invalid mood, tags, and body; `today` outside the slack window; intention update rejected after the window; `.strict()` rejects `domain` on text update; check-in unique violation mapped to the friendly error. Notes: omitted, null, and whitespace-only store null; 1000 characters pass; 1001 fail. A signed-out caller cannot submit notes or read them back. `listWeeklyCheckIns` returns only the session user’s rows. Journal `win` and `grateful_for`: omitted, null, and whitespace-only store null; 200 characters pass; 201 fail. A save with both absent still succeeds when mood and reflection are valid. A signed-out caller cannot save or read those columns. `listJournalEntries` returns them only for the session user.
-- Component: journal blocks a third tag and requires reflection; the journal still submits when both optional lines are empty; a filled line reloads after save; check-in hides outcome when there is no prior intention and shows the empty recap without zeros; empty notes still submit; check-in history shows notes text and hides the block when notes are null; Mind history shows “One win today” and “Grateful for” when the values are non-null and hides each line when it is null; history Show more reveals the next 10 and Show less returns to 5; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/fitness/measurements`. The journal and Mind pages do not link to a wins route.
+- Component: journal blocks a third tag and requires reflection; the journal still submits when both optional lines are empty; a filled line reloads after save; a successful journal save stays on `/mind/journal`; check-in hides the last-intention block entirely when there is no prior intention (no heading, quote, or outcome control) and shows the empty recap without zeros; the intention label is “Intention for the week of {Mon}–{Sun}”; a successful check-in does not save a draft and redirects to `/mind`; empty notes still submit; check-in history shows notes text and hides the block when notes are null; Mind history is read-only and shows the date, mood, tags, and the reflection clamped to about 2–3 lines; Mind history shows “One win today” and “Grateful for” when the values are non-null and hides each line when it is null; before ticket 2.5.1 merges, the Mind stat row omits the streak card; history Show more reveals the next 10 and Show less returns to 5; intention text saves from the journal line and from the Mind card inside the edit window; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/fitness/measurements`. The journal and Mind pages do not link to a wins route.
 - Run under `TZ=America/Chicago` and `TZ=UTC` the way measurement calendar tests do, with `vi.setSystemTime` where the clock matters.
 - Do not add Playwright in this ticket.
 
@@ -459,6 +464,7 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 - `npm test` passes, including the new cases.
 - Existing measurement and profile tests still pass.
 - A reviewer can point at the SQL policy and the grant list for each new table, and at an action test that rejects a signed-out caller. `weekly_check_ins` owner RLS covers `notes`. `journal_entries` owner RLS covers `win` and `grateful_for`, and the update grant lists those columns with `mood` and `reflection`. Tests do not need a live database. Empty notes, the 1000-character limit, empty win and gratitude lines, the 200-character limit, and that ownership rejection are all in the action tests.
+- Component tests cover the intention label “Intention for the week of {Mon}–{Sun}”, the hidden last-intention block on a first check-in, the check-in redirect to `/mind` with no draft, and a journal save that stays on `/mind/journal`.
 
 ### Dependencies
 
@@ -478,7 +484,7 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 
 ### Description
 
-**Status:** Landed 2026-11-17. [ADR-013](../../ARCHITECTURE_DECISIONS.md) is Accepted. The handoff pack, `docs/navigation-ia.md`, `docs/vertical_slices/tracking_setup.md`, and `DOMAIN_FOCUS_AREAS` match it. Saved `profiles.domain_priorities` are mapped by `mapStoredDomainPriorities` and by `supabase/migrations/20261117170000_map_domain_priorities_to_option_b.sql`. The notes below are the spec this ticket applied.
+**Status:** Landed 2026-11-17 in [PR #68](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/68). [ADR-013](../../ARCHITECTURE_DECISIONS.md) is Accepted. The handoff pack, `docs/navigation-ia.md`, `docs/vertical_slices/tracking_setup.md`, and `DOMAIN_FOCUS_AREAS` match it. Saved `profiles.domain_priorities` are mapped by `mapStoredDomainPriorities` and by `supabase/migrations/20261117170000_map_domain_priorities_to_option_b.sql`. The notes below are the spec this ticket applied.
 
 These align with ADR-013 and link to it:
 
@@ -546,13 +552,13 @@ Walk the Mind loop on a real account after the feature tickets merge. Capture ga
 
 ### Scope
 
-- Sign in, open Mind from the navbar (desktop and a phone-width menu), save today’s journal, refresh, confirm one row.
-- Save today’s journal once with “One win today” and “Grateful for” left blank, and confirm the row still saves. Save again with both lines filled, refresh, and confirm both show on the form and on the Mind history entry. On a phone-width journal screen the two inputs are stacked and labeled. Clear one line, save, and confirm that history entry no longer shows an empty line for it. Confirm there is no wins list page.
+- Sign in, open Mind from the navbar (desktop and a phone-width menu), save today’s journal, refresh, confirm one row. After the successful save the address is still `/mind/journal`.
+- Save today’s journal once with “One win today” and “Grateful for” left blank, and confirm the row still saves. Save again with both lines filled, refresh, and confirm both show on the form and on the Mind history entry. The history entry is read-only and shows the date, mood, tags, and the reflection clamped to about 2–3 lines. On a phone-width journal screen the two inputs are stacked and labeled. Clear one line, save, and confirm that history entry no longer shows an empty line for it. Confirm there is no wins list page.
 - Save the same day again and confirm the row updated.
 - Confirm a Chicago-timezone evening still stores the local calendar day the screen showed (same class of bug as measurements before `measured_on`).
-- Submit the check-in with notes left blank, then once with a short note on a later week if a second week is available. Blank stores no note. The saved note shows in check-in history. A note over 1000 characters is refused. Nothing replies to the note.
+- Submit the check-in with notes left blank, then once with a short note on a later week if a second week is available. Blank stores no note. The saved note shows in check-in history. A note over 1000 characters is refused. Nothing replies to the note. The first check-in hides the last-intention block entirely (no heading, quoted body, or outcome control). The intention label is “Intention for the week of {Mon}–{Sun}”. There is no draft. A successful submit lands on `/mind`.
 - Recap counts match the journal. Outcome buttons match an existing intention. A second submit is refused.
-- Edit intention text today. Confirm the domain control is absent. Confirm text is refused after `editable_until` (the unit fixture is enough if the calendar day cannot be waited out).
+- Edit intention text today from the Mind card and from the journal, inside the edit window. Confirm the domain control is absent. Confirm text is refused after `editable_until` (the unit fixture is enough if the calendar day cannot be waited out).
 - Due card visible before submit and gone after. “Log this week’s weight” goes to `/fitness/measurements` and does not add a weigh-in.
 - Sign out. `/mind` redirects to `/auth`.
 - Confirm deferred items are absent: second intention, alcohol, diet or appetite tracking, coach Q&A replies to notes, Insights, monthly reflection, workout mood, a wins table or wins page, life events, notifications, AI, progress photos (backlog #54), example-data pill. The optional journal lines are present. They are not this deferred list.
@@ -561,6 +567,7 @@ Walk the Mind loop on a real account after the feature tickets merge. Capture ga
 ### Acceptance Criteria
 
 - Done criteria in the slice README are checked off or have a follow-up issue.
+- The walk confirms the intention label “Intention for the week of {Mon}–{Sun}”, a first check-in with the last-intention block hidden, a successful check-in on `/mind`, and a successful journal save still on `/mind/journal`.
 - No wellness-wheel labels on the new screens.
 - Slice 2 is ready to call done only after this list and ticket 2.8 are green.
 

@@ -4,7 +4,7 @@
 
 Authenticated users can keep one short journal entry per calendar day, tag it with up to two life domains, and once a week score how life went, close last week’s intention, and set exactly one intention for the new week. The entry may also include two optional one-line fields, “One win today” and “Grateful for”. Both can be skipped. Neither is required to save.
 
-**This is the current slice.** Slice 1.5 closed on 2026-11-16 and `docs/LAUNCH_PLAN.md` points here. Ticket 2.9 aligned the handoff pack with ADR-013. Next is ticket 2.1. The screens are not built yet.
+**This is the current slice.** Slice 1.5 closed on 2026-11-16 and `docs/LAUNCH_PLAN.md` points here. Ticket 2.9 aligned the handoff pack with ADR-013 and landed in [PR #68](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/68). Slice 2 implementation starts with ticket 2.1. [NAV.1](../nov_16_2026_decisions/tickets.md) ([issue #80](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/80)) must merge before ticket 2.7. The screens are not built yet.
 
 ## Scope change (read this first)
 
@@ -36,6 +36,8 @@ Slugs are stable. Labels are the approved copy.
 | `habits` | Habits | Optional 1–10 | Allowed (show “optional”) |
 
 Canonical order is the table order. Tie-breaks use this order.
+
+Those slugs and labels are the constants in `src/lib/life-domains/` (ticket 2.2). Zod schema checks, validation, and the journal, check-in, and Mind UI import that module. The SQL checks in ticket 2.1 name the same eight slugs. They do not import the module, and this slice does not seed a `life_domains` table. `DOMAIN_FOCUS_AREAS` stays in `src/lib/types/profile.ts` (ticket 2.9). Ticket 2.2 does not move it.
 
 Recap chips may shorten Family & relationships to **Family**. Score rows and tag buttons use the full label.
 
@@ -83,7 +85,7 @@ One row per user per `entry_on`. The screen is for **local today** only (the val
 
 Field order: mood, reflection, “One win today”, “Grateful for”, then domain tags. The 200-character cap is the same cap as the weekly intention body. Both are one line, not a second reflection.
 
-The two lines use the same day rule as the reflection. The screen edits local today only. A second save the same day updates them on that row. Past days are history, not an editor. There is no extra edit window and no database trigger for these columns. The 3-day window is only for intention text (ticket 2.1).
+The two lines use the same day rule as the reflection. The screen edits local today only. A second save the same day updates them on that row. Past days are history, not an editor. There is no extra edit window and no database trigger for these columns. The 3-day window is only for intention text (ticket 2.1). After a successful save, stay on `/mind/journal`. Success is visible on that page.
 
 [`journal-desktop.png`](../../mockups/slice_2_journal_checkin/journal-desktop.png) does not show these two inputs. This list is the approved form. Do not leave the fields out because the PNG is older.
 
@@ -98,12 +100,14 @@ One row per user per check-in `week_start`. A second submit for that week is rej
 Screen order matches [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desktop.png) through the next intention, plus the Your goals bar and the notes field, which that PNG does not show. The list here is the approved order.
 
 1. **Your week so far** — deterministic recap of journal rows whose `entry_on` falls on the seven days of the check-in week (not a rolling window that includes today). Average mood to one decimal, days journaled as “N of 7”, top two tagged domains with counts, mood sparkline. Hollow point = no entry. Caption may say “Mood, last 7 days”. Empty week: honest empty copy, not zeros.
-2. **Last week’s intention** — the `weekly_intentions` row whose `week_start` equals this check-in week. “Did you do it?” maps Yes → `done`, Partly → `partly`, No → `not_done`. Hidden when that row does not exist (first check-in). Required when it exists.
+2. **Last week’s intention** — the `weekly_intentions` row whose `week_start` equals this check-in week. “Did you do it?” maps Yes → `done`, Partly → `partly`, No → `not_done`. When that row does not exist (first check-in), hide the block entirely: no heading, no quoted body, and no outcome control. Required when it exists.
 3. **Stress and energy** — each integer 1–10. Copy: “1 = low, 10 = high”.
 4. **Your goals** — read-only reminder of the profile’s free-text fitness and wellness goals, directly above the life-domain scores. “Edit in profile” goes to `/profile`. No inputs. Layout: [`G-checkin-goals-reminder.png`](../../mockups/nov_2026_tickets/G-checkin-goals-reminder.png). Both empty, and the three-line clamp, are not in that PNG. Ticket 2.4 governs them: a quiet “Add goals in your profile” link, not blank lines. Not shown on the Fitness Overview.
 5. **Life domains** — seven required scores plus optional Habits, canonical order, not profile-priority order. Copy: “1 = struggling, 10 = thriving”. Profile focus areas do not affect this screen for now. [ADR-013](../../ARCHITECTURE_DECISIONS.md) is unchanged.
-6. **Intention for next week** — exactly one. Domain required, preselected to the lowest required score (Habits counts only if it was scored). Ties use canonical order. The user can change the domain before submit. Text required, 1–200 characters. Copy: “One concrete thing. Your lowest domain this week: {Label}.” Profile focus-area rank does not change this default. On 2026-11-16 Ryan rejected a proposal to preselect the top-ranked profile domain, and confirmed focus areas do not affect the check-in for now. See [`docs/mockups/nov_2026_tickets/B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png).
+6. **Intention for the week of {Mon}–{Sun}** — label, exact. {Mon} is `currentIntentionWeekStart(today)` and {Sun} is that Sunday. Exactly one. Domain required, preselected to the lowest required score (Habits counts only if it was scored). Ties use canonical order. The user can change the domain before submit. Text required, 1–200 characters. Copy: “One concrete thing. Your lowest domain this week: {Label}.” Profile focus-area rank does not change this default. On 2026-11-16 Ryan rejected a proposal to preselect the top-ranked profile domain, and confirmed focus areas do not affect the check-in for now. See [`docs/mockups/nov_2026_tickets/B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png).
 7. **Notes** — optional, last field before submit. Prompt: “How did your training, energy and life go this week? Anything to remember?” Nullable text, at most 1000 characters. Empty is allowed and stores null. This is not a message to a coach. Nothing replies, and there is no Q&A. The Slice 5 coach report reads `notes` as context later (ADR-004). That read does not need a new column or table.
+
+The check-in does not save a draft. Nothing is written until submit succeeds. A successful submit redirects to `/mind`.
 
 The new intention’s `week_start` is `currentIntentionWeekStart(today)`. `created_from_checkin_id` points at the check-in that created it. `outcome` starts null. `editable_until` is the validated create date plus 3 days.
 
@@ -116,16 +120,16 @@ Check-in history lists the owner’s past check-ins and shows `notes` when prese
 Shown as the coral line above the journal form, and as a card on the Mind page. The row is the one whose `week_start` is `currentIntentionWeekStart(today)`.
 
 - Domain is immutable after insert (not granted to `authenticated`, and a trigger rejects a change).
-- Body text is editable only through `editable_until`, enforced in the server action and by a trigger backstop (ticket 2.1).
-- Outcome is set only by a later check-in, not by the journal line.
+- Body text is editable from the journal line and from the Mind card only through `editable_until`, enforced in the server action and by a trigger backstop (ticket 2.1). After that date, both show the text, not a field.
+- Outcome is set only by a later check-in, not by the journal line or the Mind card.
 
 ### Mind page and due card
 
 `/mind` is one page with no tab bar (confirmed 2026-11-16; [`E-mind-layout-compare.png`](../../mockups/nov_2026_tickets/E-mind-layout-compare.png) Option A). It shows a stat row, a 7-day mood trend for the seven calendar days ending on validated local today, the intention card, the check-in-due card when it is due, and journal history. The stat row is activity streak ([ADR-014](../../ARCHITECTURE_DECISIONS.md), ticket 2.5.1), average mood, domains touched, and last entry. It is not “N of 7”. The check-in recap still uses “N of 7” for days journaled in the check-in week. If the streak ticket has not merged, the Mind page omits that card rather than showing a days-journaled fraction. Layout: [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). The PNG’s “Journal streak” label is superseded.
 
-History reuses the measurements window from PR #52: 5 rows, then 10 more per **Show more**, **Show less** back to 5, “Showing N of M”, over one fetched page of 25. See `HISTORY_INITIAL_VISIBLE` and `HISTORY_VISIBLE_STEP` in `src/components/measurements/measurements-tab-panel.tsx`. Each entry shows that day’s reflection and, when the value is non-null, the “One win today” and “Grateful for” lines under the reflection. A null line does not render an empty block. [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png) does not draw these lines. There is no Wins list and no `/mind/wins` route. These lines are not in the stat row, the 7-day mood trend, or the check-in recap.
+History reuses the measurements window from PR #52: 5 rows, then 10 more per **Show more**, **Show less** back to 5, “Showing N of M”, over one fetched page of 25. See `HISTORY_INITIAL_VISIBLE` and `HISTORY_VISIBLE_STEP` in `src/components/measurements/measurements-tab-panel.tsx`. Each entry is read-only. It shows the date, mood, tags, and the reflection clamped to about 2–3 lines, plus, when the value is non-null, the “One win today” and “Grateful for” lines under the reflection. A null line does not render an empty block. [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png) does not draw the clamp or these lines. There is no Wins list and no `/mind/wins` route. These lines are not in the stat row, the 7-day mood trend, or the check-in recap.
 
-The due card is computed on page load. It sits under the stat row and above the 7-day mood strip. Ryan confirmed that spot on 2026-11-16. It is shown when no `weekly_check_ins` row exists for `lastCompletedWeekStart(today)`. It writes nothing and sends nothing. No notification system. The primary link goes to `/mind/check-in`. A secondary link, “Log this week’s weight”, goes to `/fitness/measurements` (ticket **NAV.1**), the measurements log (`+ Log measurement` opens the current modal). The link does not log a weight by itself.
+The due card is computed on page load. It sits under the stat row and above the 7-day mood strip. Ryan confirmed that spot on 2026-11-16. It is shown when no `weekly_check_ins` row exists for `lastCompletedWeekStart(today)`. It writes nothing and sends nothing. No notification system. The primary link goes to `/mind/check-in`. A secondary link, “Log this week’s weight”, goes to `/fitness/measurements` (ticket **NAV.1**, [issue #80](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/80)), the measurements log (`+ Log measurement` opens the current modal). NAV.1 must merge before ticket 2.7. The link does not log a weight by itself.
 
 ## Routes
 
@@ -173,13 +177,13 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 
 ## Done criteria
 
-- A signed-in user can save today’s journal (mood, reflection, up to two tags) and see it after refresh. A second save the same day updates the same row.
+- A signed-in user can save today’s journal (mood, reflection, up to two tags) and see it after refresh. A second save the same day updates the same row. A successful save stays on `/mind/journal`.
 - “One win today” and “Grateful for” are optional. Leaving both blank still saves the entry and stores null. Mind history shows a line only when its value is non-null. There is no wins page.
 - Stress and energy are not on the journal.
-- A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice.
+- A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice. There is no draft. A successful submit redirects to `/mind`. The first check-in hides the last-intention block. The intention label is “Intention for the week of {Mon}–{Sun}”.
 - Optional notes may be empty. When present, check-in history shows them. Nothing replies.
-- Exactly one next intention is stored. Its domain does not change later. Its text changes only through `editable_until`.
-- `/mind` is one page (no tab bar) and shows the stat row, a 7-day mood trend, history with Show more, the intention, and a due card that appears and disappears from data alone. The stat row does not show “N of 7”. Activity streak is ticket 2.5.1.
+- Exactly one next intention is stored. Its domain does not change later. Its text changes only through `editable_until`, from the journal line and from the Mind card.
+- `/mind` is one page (no tab bar) and shows the stat row, a 7-day mood trend, history with Show more, the intention, and a due card that appears and disappears from data alone. The stat row does not show “N of 7”. Before ticket 2.5.1 merges, the streak card is omitted. Activity streak is ticket 2.5.1. A history entry is read-only and clamps the reflection to about 2–3 lines.
 - Another user cannot read or write these rows. Unauthenticated requests fail.
 - `npm test` covers week math, the edit lock, recap math, validation, and the main screens.
 - Empty weeks and empty history do not show fake numbers. The “Example data” pill is not in the product UI.

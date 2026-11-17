@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-17 — Slice 2 screen decisions folded into the tickets
+
+### Completed
+
+- Folded Ryan’s 2026-11-17 Slice 2 decisions into the slice tickets and README. They had lived only in the footers of GitHub issues #71–#79. Docs only. No application code.
+- Noted the same build order on NAV.1, the Nov 16 sequence, `docs/navigation-ia.md`, and the launch plan: ticket 2.9 landed in PR #68, implementation starts at 2.1, and NAV.1 (issue #80) merges before ticket 2.7.
+
+### Decisions
+
+- Ryan, 2026-11-17. Check-in intention label, exact: “Intention for the week of {Mon}–{Sun}” for the intention week. First check-in hides the last-intention block entirely. Check-in does not save a draft and redirects to `/mind` after a successful submit. Journal save stays on `/mind/journal`. Mind history entries are read-only: date, mood, tags, reflection clamped to about 2–3 lines, plus the win and gratitude lines when present. Intention text is editable from the Mind card and the journal inside the existing edit window. Domain slugs and labels for schema checks, validation, and UI live in `src/lib/life-domains/`.
+- Already in the docs, left as written: no journal RPC in ticket 2.1 (the save is the ticket 2.2 server action). Before ticket 2.5.1 merges, the Mind stat row omits the streak card.
+
+### Issues
+
+- Open question, in the pull request: ticket 2.9 left `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts`. This entry does not move that profile list into `src/lib/life-domains/`.
+
+### Next
+
+- Ticket 2.1. NAV.1 must merge before ticket 2.7.
+
+### AI Notes
+
+- Cursor Grok. Docs only, from Ryan’s 2026-11-17 decisions on issues #71–#79.
+
+---
+
 ## 2026-11-17 — Optional journal lines: one win, grateful for
 
 ### Completed
