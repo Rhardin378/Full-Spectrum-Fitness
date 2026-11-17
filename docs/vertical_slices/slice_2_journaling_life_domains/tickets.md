@@ -138,7 +138,7 @@ Expose journal save/list, check-in submit, intention text edit, the week recap, 
 
 New modules under `src/lib/journal/` and `src/lib/weekly/`. Import date helpers from `src/lib/measurements/calendar-date.ts`. Do not duplicate them.
 
-The eight domain slugs and labels live in `src/lib/life-domains/`. Zod schema checks, validation, and the journal, check-in, and Mind UI import them from that module. Do not copy the list into the journal or weekly modules. Ticket 2.1’s SQL checks still name the same eight slugs. They cannot import this module. Do not add a `life_domains` table. Ticket 2.9 left `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts`. This ticket does not move it.
+Ticket 2.2 creates `src/lib/life-domains/` as the single source for the eight Option B slugs, their canonical order, the labels, and the `LifeDomain` type. It moves `DOMAIN_FOCUS_AREAS` and `DOMAIN_FOCUS_LABELS` out of `src/lib/types/profile.ts`, and profile code imports from `src/lib/life-domains/`. Keep `DomainFocusArea` as an alias of the shared type, or rename it at call sites, whichever keeps the diff small. The ADR-013 wheel-slug mapping (`WHEEL_DOMAIN_PREFERRED_OPTION_B`, `DOMAIN_PRIORITY_OVERFLOW`, `mapStoredDomainPriorities`) stays profile-only but uses the shared list. No change to the profile UI, saved data, or the database. No new table. Ticket 2.1’s SQL checks still spell out the slugs. Profile focus-area priorities still do not reorder or preselect anything in the check-in or journal. That stays a gate-D future idea per the Nov 16 decisions.
 
 Every action:
 
@@ -198,6 +198,9 @@ Ship unit tests in this ticket for week boundaries (the README fixture, plus Sun
 - Second check-in for the same week fails cleanly.
 - Intention domain cannot be changed through the action.
 - Recap numbers come from stored journal rows only.
+- The slugs and labels are defined only once, in `src/lib/life-domains/`, with no copy left in `src/lib/types/profile.ts`, journal, or weekly modules.
+- The profile focus-area picker shows the same eight labels in the same order as before.
+- Existing profile tests and the `mapStoredDomainPriorities` tests pass unchanged except for import paths.
 
 ### Dependencies
 
@@ -453,7 +456,7 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 
 ### Scope
 
-- Unit: week fixtures, inclusive `editable_until`, recap rounding and empty input, tag ranking, lowest domain, due predicate, and the `src/lib/life-domains/` list (the same eight slugs, canonical order). Extend the ticket 2.2 tests rather than forking a second copy.
+- Unit: week fixtures, inclusive `editable_until`, recap rounding and empty input, tag ranking, lowest domain, due predicate, and the `src/lib/life-domains/` list (the same eight slugs and labels, canonical order, with no second copy in `src/lib/types/profile.ts`, journal, or weekly). Extend the ticket 2.2 tests rather than forking a second copy.
 - Action tests: unauthorized journal save, check-in submit, and intention update; invalid mood, tags, and body; `today` outside the slack window; intention update rejected after the window; `.strict()` rejects `domain` on text update; check-in unique violation mapped to the friendly error. Notes: omitted, null, and whitespace-only store null; 1000 characters pass; 1001 fail. A signed-out caller cannot submit notes or read them back. `listWeeklyCheckIns` returns only the session user’s rows. Journal `win` and `grateful_for`: omitted, null, and whitespace-only store null; 200 characters pass; 201 fail. A save with both absent still succeeds when mood and reflection are valid. A signed-out caller cannot save or read those columns. `listJournalEntries` returns them only for the session user.
 - Component: journal blocks a third tag and requires reflection; the journal still submits when both optional lines are empty; a filled line reloads after save; a successful journal save stays on `/mind/journal`; check-in hides the last-intention block entirely when there is no prior intention (no heading, quote, or outcome control) and shows the empty recap without zeros; the intention label is “Intention for the week of {Mon}–{Sun}”; a successful check-in does not save a draft and redirects to `/mind`; empty notes still submit; check-in history shows notes text and hides the block when notes are null; Mind history is read-only and shows the date, mood, tags, and the reflection clamped to about 2–3 lines; Mind history shows “One win today” and “Grateful for” when the values are non-null and hides each line when it is null; before ticket 2.5.1 merges, the Mind stat row omits the streak card; history Show more reveals the next 10 and Show less returns to 5; intention text saves from the journal line and from the Mind card inside the edit window; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/fitness/measurements`. The journal and Mind pages do not link to a wins route.
 - Run under `TZ=America/Chicago` and `TZ=UTC` the way measurement calendar tests do, with `vi.setSystemTime` where the clock matters.
@@ -509,7 +512,7 @@ These align with ADR-013 and link to it:
 
 **Navigation.** Slice 2 ships `/mind`, `/mind/journal`, and `/mind/check-in` only. Mind stays one page with no tab bar. The activity streak on `/mind` is [ADR-014](../../ARCHITECTURE_DECISIONS.md), not a change to ADR-013.
 
-**Profile keys.** `DOMAIN_FOCUS_AREAS` is the Option B set. Saved wheel slugs are mapped, not left valid and not dropped. The map is in ADR-013. Journal and check-in tickets do not run it again.
+**Profile keys.** `DOMAIN_FOCUS_AREAS` is the Option B set. Saved wheel slugs are mapped, not left valid and not dropped. The map is in ADR-013. Journal and check-in tickets do not run it again. Ticket 2.2 moves `DOMAIN_FOCUS_AREAS` and `DOMAIN_FOCUS_LABELS` out of `src/lib/types/profile.ts` into `src/lib/life-domains/`. The `profile.ts` path in this ticket’s scope is where 2.9 left the list, not where it stays.
 
 **Tracking.** The Slice 2 milestone includes the weekly check-in. Slice 5 is the coach report. Both link to ADR-013.
 
@@ -521,7 +524,7 @@ These align with ADR-013 and link to it:
 - Update `docs/navigation-ia.md` and `docs/vertical_slices/tracking_setup.md` so they align with ADR-013 and link to it.
 - Align `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts` with ADR-013, including a mapping or migration for existing users’ saved values, and point readers at the ADR.
 - Leave Slice 2 behavior described once, in the slice README, and point the pack at it and at ADR-013.
-- The ADR pull request does not change application code. This ticket is the one that changes `DOMAIN_FOCUS_AREAS` and the saved-value mapping or migration.
+- The ADR pull request does not change application code. This ticket is the one that changes `DOMAIN_FOCUS_AREAS` to the Option B slugs and adds the saved-value mapping or migration. Ticket 2.2 later moves `DOMAIN_FOCUS_AREAS` and `DOMAIN_FOCUS_LABELS` to `src/lib/life-domains/`.
 
 ### Acceptance Criteria
 
