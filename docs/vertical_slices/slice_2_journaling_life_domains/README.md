@@ -14,7 +14,7 @@ Ryan locked this on 2026-11-03. Ticket 2.9 aligned the handoff pack with [ADR-01
 2. **Life domains are Option B**, not the wellness wheel. Approved screen: [`docs/mockups/slice_2_journal_checkin/domains-compare-desktop.png`](../../mockups/slice_2_journal_checkin/domains-compare-desktop.png).
 3. **The daily journal is mood plus a written reflection, plus two optional one-line fields.** Stress and energy are check-in fields. The journal does not store domain scores. Optional tags are a join table, not `journal_domain_scores`. Ryan added “One win today” and “Grateful for” on 2026-11-17. They are nullable columns on `journal_entries`, not a wins table. Structured dated wins and life events stay Slice 7.
 
-`profiles.domain_priorities` uses the Option B slugs in `src/lib/types/profile.ts` (`DOMAIN_FOCUS_AREAS`). Ticket 2.9 mapped saved wellness-wheel values onto that set. Journal and check-in tickets do not migrate that column again. The decision record is [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted): Option B domains, stress and energy on the weekly check-in, that check-in in Slice 2, and exactly one weekly intention.
+`profiles.domain_priorities` uses the Option B slugs from `src/lib/life-domains/` (`DOMAIN_FOCUS_AREAS`, which ticket 2.2 moves out of `src/lib/types/profile.ts`). Ticket 2.9 mapped saved wellness-wheel values onto that set. Journal and check-in tickets do not migrate that column again. The decision record is [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted): Option B domains, stress and energy on the weekly check-in, that check-in in Slice 2, and exactly one weekly intention.
 
 ## Goal
 
@@ -37,7 +37,7 @@ Slugs are stable. Labels are the approved copy.
 
 Canonical order is the table order. Tie-breaks use this order.
 
-Those slugs and labels are the constants in `src/lib/life-domains/` (ticket 2.2). Zod schema checks, validation, and the journal, check-in, and Mind UI import that module. The SQL checks in ticket 2.1 name the same eight slugs. They do not import the module, and this slice does not seed a `life_domains` table. `DOMAIN_FOCUS_AREAS` stays in `src/lib/types/profile.ts` (ticket 2.9). Ticket 2.2 does not move it.
+Those slugs and labels are the constants in `src/lib/life-domains/` (ticket 2.2). Zod schema checks, validation, and the journal, check-in, and Mind UI import that module. Profile code imports `DOMAIN_FOCUS_AREAS` and `DOMAIN_FOCUS_LABELS` from the same module. The SQL checks in ticket 2.1 name the same eight slugs. They do not import the module, and this slice does not seed a `life_domains` table.
 
 Recap chips may shorten Family & relationships to **Family**. Score rows and tag buttons use the full label.
 

@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-17 — One shared life-domain list
+
+### Completed
+
+- Specified that ticket 2.2 creates `src/lib/life-domains/` as the single source for the eight Option B slugs, their canonical order, the labels, and the `LifeDomain` type. Docs only. No application code.
+- Moved `DOMAIN_FOCUS_AREAS` and `DOMAIN_FOCUS_LABELS` out of `src/lib/types/profile.ts` in that ticket’s spec. Profile imports them. The ADR-013 wheel-slug map stays profile-only and uses the shared list.
+- Pointed the slice README and ADR-013 at `src/lib/life-domains/` after ticket 2.2. `docs/navigation-ia.md` and `docs/vertical_slices/tracking_setup.md` do not name `profile.ts` as the list, so they stay as written.
+
+### Decisions
+
+- Ryan, 2026-11-17. Profile, journal, check-in, and Mind share one life-domain list. No change to the profile UI, saved data, or the database. No new table. Ticket 2.1’s SQL checks still spell out the slugs. Profile focus-area priorities still do not reorder or preselect the check-in or journal. That stays a gate-D idea from Nov 16.
+
+### Issues
+
+- Closes the open question in the earlier 2026-11-17 screen-decisions entry, which left `DOMAIN_FOCUS_AREAS` in `src/lib/types/profile.ts`.
+
+### Next
+
+- Ticket 2.1. NAV.1 must merge before ticket 2.7.
+
+### AI Notes
+
+- Cursor Grok. Docs only, from Ryan’s 2026-11-17 decision.
+
+---
+
 ## 2026-11-17 — Slice 2 screen decisions folded into the tickets
 
 ### Completed
