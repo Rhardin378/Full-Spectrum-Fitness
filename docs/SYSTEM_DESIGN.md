@@ -227,11 +227,11 @@ Hard `DELETE` is not granted. Column-level `UPDATE` covers measurement fields an
 
 Frontend form  
 → server action  
-→ `journal_entries` (mood, reflection) and up to two rows in `journal_entry_domains`  
+→ `journal_entries` (mood, reflection, optional `win` and `grateful_for`) and up to two rows in `journal_entry_domains`  
 → stored in Postgres  
 No AI required to save.
 
-Stress, energy, and domain scores are not on this write. [ADR-013](./ARCHITECTURE_DECISIONS.md).
+Stress, energy, and domain scores are not on this write. `win` and `grateful_for` are nullable text on the journal row. They are not a `wins` table. [ADR-013](./ARCHITECTURE_DECISIONS.md). The [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md) specifies them.
 
 ## Submitting a weekly check-in (Slice 2 — not built yet)
 

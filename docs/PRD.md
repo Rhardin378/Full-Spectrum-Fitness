@@ -104,7 +104,7 @@ Change these here if they change; do not contradict them in a slice README.
 Ongoing capture (when it happens)
   • Log workout
   • Log weight / waist
-  • Optional journal entry (mood, reflection, up to two domain tags)
+  • Optional journal entry (mood, reflection, optional one-line win and gratitude, up to two domain tags)
         ↓
 Weekly check-in (Slice 2, ~2–5 minutes) — [ADR-013](./ARCHITECTURE_DECISIONS.md)
   • Stress, energy, life-domain scores
@@ -137,7 +137,7 @@ Do not treat later rows as current work. Sequencing: [LAUNCH_PLAN.md](./LAUNCH_P
 
 - Authentication and profile (Slice 1 — **done**)
 - Measurements: weight, waist (Slice 1.5 — **done**)
-- Journal (mood, reflection, up to two domain tags) and the weekly check-in (Slice 2 — **current**; screens not built yet). [ADR-013](./ARCHITECTURE_DECISIONS.md)
+- Journal (mood, reflection, optional one-line win and gratitude, up to two domain tags) and the weekly check-in (Slice 2 — **current**; screens not built yet). [ADR-013](./ARCHITECTURE_DECISIONS.md)
 - Manual workout logging, history, and basic performance/volume (Slice 3)
 - Deterministic Insights (Slice 4)
 - Weekly coach report (Slice 5) — reads the Slice 2 check-in. [ADR-013](./ARCHITECTURE_DECISIONS.md)
@@ -148,7 +148,7 @@ Do not treat later rows as current work. Sequencing: [LAUNCH_PLAN.md](./LAUNCH_P
 - AI Workout Import, text PDF (Slice 3.1)
 - Evidence RAG for the coach (Slice 5.5)
 - Coach agent tools (Slice 6)
-- Wins and life-event records (Slice 7)
+- Wins and life-event records (Slice 7). Structured dated rows (`wins`, `life_events`). Not the optional one-line win on the Slice 2 journal entry.
 
 ### Later (Phase 2)
 
@@ -254,7 +254,10 @@ Profile focus areas use these same slugs. Saved wellness-wheel priorities are ma
 - Optional daily entry; **not required every day**. One row per calendar day.
 - Mood (1–10) and a written reflection
 - Up to two domain tags from the list above
+- Optional one-line “One win today” and “Grateful for”. Both are skippable. Empty, omitted, or whitespace-only stores null. Neither blocks saving the entry. Each is at most 200 characters.
 - No stress, energy, sleep, or domain scores on the entry
+
+“One win today” is a lightweight field on the journal row (`journal_entries.win`). It is not the Slice 7 `wins` table. Structured dated wins and life-event records stay Slice 7, in the near-term list above. Gratitude is this optional journal field (`journal_entries.grateful_for`). It is not a separate record type. Behavior stays in the [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md).
 
 ### UX
 
@@ -291,7 +294,7 @@ The check-in does **not** store a second mood score, sleep / recovery, motivatio
 
 **Wellbeing:** journal mood, check-in stress and energy, journal volume, check-in domain scores.
 
-**Context:** goals from profile; check-in notes; later wins, events, and journal themes.
+**Context:** goals from profile; check-in notes; later structured wins and life events (Slice 7), and journal themes. The Slice 2 journal lines are not those Slice 7 records.
 
 ### Coach report (structured UI)
 
@@ -502,12 +505,12 @@ User-history retrieval (“find my old entries about work stress”) is a **late
 
 | Piece | Role | When |
 |-------|------|------|
-| Journal | Mood, reflection, up to two domain tags | Slice 2 |
+| Journal | Mood, reflection, optional one-line win and gratitude, up to two domain tags | Slice 2 |
 | Life domains | Option B tags on the journal; scores on the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 2 |
 | Weekly check-in | Recurring subjective ritual | Slice 2 |
 | Mind trends | Charts for mood, stress, energy, and domains | Slice 2–4 |
 | Themes | Tag counts first; LLM extraction later | Near-term / Phase 2 |
-| Wins | Capture progress, not only problems | Slice 7 |
+| Wins | Structured dated records. Not the Slice 2 journal line. | Slice 7 |
 | Life events | Context for variance (job, injury, travel) | Slice 7 |
 | Timeline | Unified longitudinal story | Phase 2 |
 | Coach | Interprets wellbeing **with** training/body data. Reads the stored check-in. | Slice 5 |
@@ -542,7 +545,7 @@ Auth users live in Supabase Auth (`auth.users`). Application tables use `user_id
 
 ### Phase 1 planned
 
-**journal_entries** — one mood and reflection per user per calendar day. No stress, energy, or domain-score columns. Slice 2. [ADR-013](./ARCHITECTURE_DECISIONS.md).
+**journal_entries** — one mood and reflection per user per calendar day, plus optional nullable `win` and `grateful_for` (one line each, at most 200 characters; empty stores null). No stress, energy, or domain-score columns. Slice 2. [ADR-013](./ARCHITECTURE_DECISIONS.md).
 
 **journal_entry_domains** — zero to two domain tags on an entry. Not a scores table.
 
@@ -574,7 +577,7 @@ Completed workout logs remain separate from reusable prescriptions.
 
 **workout_imports** — as specified in Slice 3.1 (status, hash, draft, expiry, provenance). Transient artifacts off the public schema.
 
-**wins**, **life_events** — dated user context.
+**wins**, **life_events** — dated user context. Separate from `journal_entries.win` and `journal_entries.grateful_for`, which are optional Slice 2 journal lines, not these tables.
 
 **knowledge_documents**, **knowledge_chunks** — evidence corpus + embeddings (Slice 5.5). Prefer pgvector on Postgres when that slice starts.
 
@@ -589,7 +592,7 @@ Completed workout logs remain separate from reusable prescriptions.
 | Kind | Examples |
 |------|----------|
 | Structured | Measurements, set rows, check-in scores, domain scores, exercise ids, analytics snapshots, coach report JSON |
-| Unstructured | Journal body, check-in notes, life-event notes |
+| Unstructured | Journal body, optional win and gratitude lines, check-in notes, life-event notes |
 | Deterministic | Volume, deltas, streaks, PR flags, theme **counts** from tags |
 | AI-generated | Interpretation, hypotheses, suggestions, reflection questions, PDF extraction drafts, later theme labels |
 
@@ -667,7 +670,7 @@ Users can:
 
 - Register, sign in, and maintain a profile
 - Log weight and waist and see a simple weight trend
-- Log a journal entry (mood, reflection, optional domain tags) and complete a weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md))
+- Log a journal entry (mood, reflection, optional one-line win and gratitude, optional domain tags) and complete a weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md))
 - Log workouts and view history
 - View deterministic insights across training, body, and wellbeing
 - See a **structured** coach report grounded in an analytics snapshot and the stored Slice 2 check-in

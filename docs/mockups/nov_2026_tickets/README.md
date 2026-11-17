@@ -53,6 +53,8 @@ E Option A is the Mind home: one page, no tab bar. D is that page at full size. 
 
 The first stat is the **activity streak** (one streak: journal or workout, one grace day per week). D still says “Journal streak” and “rules are not decided yet.” Those words are sample notes from before ADR-014.
 
+Recent entries on D do not draw the optional “One win today” and “Grateful for” lines. Ticket 2.6 shows each line on that entry, under the reflection, when the value is non-null. Do not leave them out because this PNG omits them.
+
 E Option B (Overview / Journal / Check-ins tabs) is not built. The bottom of E, “Optional later: compact Mind card on Fitness Overview,” waits. It is not part of F’s first Overview.
 
 ## How to read F
