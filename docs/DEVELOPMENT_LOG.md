@@ -55,6 +55,33 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-18 — Hiring-manager README
+
+### Completed
+
+- Rewrote the root `README.md` so a reader can see the product, what ships, and what is still a design. Docs only. No application code.
+- Added live-app screenshots of the demo account Alex Rivera under `docs/screenshots/` (`dashboard-measurements.png` is the README hero).
+- Corrected the local-run block: real clone URL, `.env.local`, and the env vars the app and `npm run db:push` actually read.
+
+### Decisions
+
+- No product decision. README status matches `docs/LAUNCH_PLAN.md`: Slice 1 and Slice 1.5 are done, Slice 2 is current, and its screens are not built.
+
+### Issues
+
+- The repo has no `LICENSE` file. The README states MIT, which is what the previous README claimed, and does not link a missing file.
+
+### Next
+
+- Ticket 2.1. NAV.1 must merge before ticket 2.7.
+
+### AI Notes
+
+- Cursor Grok. Docs only. Screenshot files were copied in unchanged from the supplied `readme-shots` set.
+- Restored the vision section after Ryan's review.
+
+---
+
 ## 2026-11-17 — One shared life-domain list
 
 ### Completed
