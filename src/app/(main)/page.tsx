@@ -2,20 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { FounderTeaser } from "@/components/founder-teaser";
 
+type LandingFeature = {
+  title: string;
+  description: string;
+  bullets: string[];
+  comingLater?: boolean;
+};
+
 const stats = [
   { value: "NASM-CPT", label: "Certified Trainer" },
   { value: "Research", label: "Exercise & Mental Health" },
   { value: "Psychology", label: "King University" },
-  { value: "Free", label: "To Get Started" },
+  { value: "Weekly", label: "AI coach report" },
 ];
 
 const trustBadges = [
-  "Free Forever",
-  "No Credit Card Required",
-  "Get Started in 30 Seconds",
+  "Free during early access",
+  "No credit card required",
+  "Set up in 30 seconds",
 ];
 
-const features = [
+const features: LandingFeature[] = [
   {
     title: "Fitness Tracking",
     description:
@@ -23,15 +30,15 @@ const features = [
     bullets: ["Workout log", "Progress analytics", "Personal records"],
   },
   {
-    title: "Mental Health Journal",
+    title: "Wellbeing Journal",
     description:
       "Track moods, journal thoughts, and nurture your mental wellness with AI-powered insights.",
     bullets: ["Mood tracking", "Daily prompts", "Wellness insights"],
   },
   {
-    title: "Wellness Insights",
+    title: "Weekly AI Coach",
     description:
-      "AI-powered insights to help you understand your patterns and optimize your health journey.",
+      "Each week, AI turns your trends into a few observations, suggestions, and one reflection question. The math is calculated first, so insights are grounded in your real data.",
     bullets: ["Pattern recognition", "Personalized tips", "Progress reports"],
   },
   {
@@ -45,12 +52,14 @@ const features = [
     description:
       "Connect with others on similar wellness journeys and share your achievements.",
     bullets: ["Community forums", "Shared goals", "Motivation feed"],
+    comingLater: true,
   },
   {
     title: "Achievement System",
     description:
       "Celebrate milestones and stay motivated with our comprehensive reward system.",
     bullets: ["Milestone tracking", "Reward system", "Motivation boost"],
+    comingLater: true,
   },
 ];
 
@@ -82,8 +91,9 @@ export default function Home() {
                 Strength of body and mind.
               </h1>
               <p className="mt-4 text-lg leading-relaxed text-white/95 sm:text-xl lg:mt-5">
-                The complete platform for fitness tracking and mental wellness.
-                Start your transformation today — completely free.
+                Track your training, body metrics, mood, and life together —
+                and get a weekly AI coach report that shows how they connect.
+                Start your transformation today.
               </p>
 
               <div className="mt-6 flex flex-col items-center gap-3 lg:mt-8 lg:flex-row lg:items-center lg:justify-start">
@@ -97,7 +107,7 @@ export default function Home() {
                   href="/auth"
                   className="inline-flex items-center justify-center rounded-full border-2 border-white/80 px-6 py-3 text-sm font-semibold text-text-on-dark transition hover:bg-white/10 sm:text-base"
                 >
-                  Begin Mental Wellness →
+                  Start Your Journal →
                 </Link>
               </div>
 
@@ -164,9 +174,16 @@ export default function Home() {
                 key={feature.title}
                 className="rounded-2xl border border-black/5 bg-surface-card p-6 text-left shadow-sm"
               >
-                <h3 className="text-lg font-bold text-text-primary">
-                  {feature.title}
-                </h3>
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-bold text-text-primary">
+                    {feature.title}
+                  </h3>
+                  {feature.comingLater ? (
+                    <span className="shrink-0 rounded-full bg-brand-coral-light px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-brand-coral-deep">
+                      Coming later
+                    </span>
+                  ) : null}
+                </div>
                 <p className="mt-3 text-sm leading-relaxed text-text-muted">
                   {feature.description}
                 </p>
@@ -196,7 +213,7 @@ export default function Home() {
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/95 sm:text-lg">
             Built by a trainer, researcher, and engineer who understands both
-            sides of wellness. Start your journey today — completely free.
+            sides of wellness. Start your transformation today.
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -210,7 +227,7 @@ export default function Home() {
               href="/auth"
               className="inline-flex items-center justify-center rounded-full bg-surface-card px-6 py-3 text-sm font-semibold text-brand-coral-deep transition hover:bg-white/90 sm:text-base"
             >
-              Begin Mental Wellness →
+              Start Your Journal →
             </Link>
           </div>
         </div>

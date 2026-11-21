@@ -70,6 +70,16 @@ describe("AppHeader", () => {
     expect(screen.queryByRole("link", { name: "Get started" })).toBeNull();
   });
 
+  it("sticks to the top of the viewport", () => {
+    render(<Header userId={null} initialProfile={null} />);
+
+    const header = screen.getByRole("banner");
+    expect(header.className).toContain("sticky");
+    expect(header.className).toContain("top-0");
+    expect(header.className).toContain("z-50");
+    expect(header.className).toContain("bg-surface-header");
+  });
+
   it("shows the signed-in menu even before a profile row exists", async () => {
     render(<Header userId="user-1" initialProfile={null} />);
 
