@@ -1,3 +1,11 @@
+import {
+  DOMAIN_FOCUS_AREAS,
+  DOMAIN_FOCUS_LABELS,
+  isLifeDomain,
+  type DomainFocusArea,
+  type LifeDomain,
+} from "@/lib/life-domains";
+
 export const EXPERIENCE_LEVELS = [
   "beginner",
   "intermediate",
@@ -6,34 +14,8 @@ export const EXPERIENCE_LEVELS = [
 
 export const SHARING_PREFERENCES = ["private", "friends", "public"] as const;
 
-/**
- * Option B life domains, canonical order.
- * ADR-013 in docs/ARCHITECTURE_DECISIONS.md.
- * Wheel slugs are not valid beside this set.
- */
-export const DOMAIN_FOCUS_AREAS = [
-  "physical_health",
-  "mental_health",
-  "family_relationships",
-  "social",
-  "career",
-  "learning",
-  "leisure",
-  "habits",
-] as const;
-
-export type DomainFocusArea = (typeof DOMAIN_FOCUS_AREAS)[number];
-
-export const DOMAIN_FOCUS_LABELS: Record<DomainFocusArea, string> = {
-  physical_health: "Physical health",
-  mental_health: "Mental health",
-  family_relationships: "Family & relationships",
-  social: "Social",
-  career: "Career",
-  learning: "Learning",
-  leisure: "Leisure",
-  habits: "Habits",
-};
+export type { DomainFocusArea, LifeDomain };
+export { DOMAIN_FOCUS_AREAS, DOMAIN_FOCUS_LABELS };
 
 /**
  * Preferred Option B slug for a saved wellness-wheel slug.
@@ -65,10 +47,6 @@ export type DomainPriority = {
   priority: number;
 };
 
-function isDomainFocusArea(value: string): value is DomainFocusArea {
-  return (DOMAIN_FOCUS_AREAS as readonly string[]).includes(value);
-}
-
 /**
  * Rewrite saved focus-area rows onto the Option B slugs.
  * Keeps every ranked row. The rank number stays. Unknown slugs are dropped.
@@ -91,7 +69,7 @@ export function mapStoredDomainPriorities(value: unknown): DomainPriority[] {
     const priority = (item as DomainPriority).priority;
     if (typeof domain !== "string" || typeof priority !== "number") return;
 
-    const preferred = isDomainFocusArea(domain)
+    const preferred = isLifeDomain(domain)
       ? domain
       : WHEEL_DOMAIN_PREFERRED_OPTION_B[domain];
     if (!preferred) return;
