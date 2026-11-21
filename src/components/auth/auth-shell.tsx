@@ -2,7 +2,7 @@ import { BrandLogo } from "@/components/brand-logo";
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+    <div className="relative flex flex-1 items-center justify-center overflow-y-auto p-4">
       <div className="absolute inset-0 bg-gradient-auth" aria-hidden />
 
       <main className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-surface-card/90 p-6 shadow-2xl backdrop-blur-md">

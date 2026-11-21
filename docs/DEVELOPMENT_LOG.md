@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-21 — Hero copy, MIT license, sticky navbar
+
+### Completed
+
+- Landing page copy now matches issue #84: early-access language, Weekly AI Coach, Wellbeing Journal, Start Your Journal (still `/auth`), and a visible Coming later tag on Community Support and Achievement System. The headline and founder section are unchanged.
+- Added a standard MIT `LICENSE` at the repo root, copyright 2026 Ryan Hardin.
+- The shared app header is `sticky top-0 z-50` with a solid background. It is rendered once from the root layout, so it stays on landing, auth, profile, dashboard, and every other page. Measurement dialogs use `z-[60]` so they paint above it.
+
+### Decisions
+
+- Ryan, 2026-11-21. The header sticks on every route, like an app header, from the one shared layout rather than per page.
+
+### Issues
+
+- Closes #84.
+
+### Next
+
+- Ticket 2.1. NAV.1 must merge before ticket 2.7.
+
+### AI Notes
+
+- Cursor Grok. Copy, license, and sticky header from issue #84, including the follow-up that the header sticks on every route.
+
+---
+
 ## 2026-11-18 — Hiring-manager README
 
 ### Completed

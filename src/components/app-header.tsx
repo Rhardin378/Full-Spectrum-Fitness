@@ -87,7 +87,7 @@ export default function AppHeader() {
   const isMind = pathname.startsWith("/mind");
 
   return (
-    <header className="relative z-50 bg-surface-header shadow-md">
+    <header className="sticky top-0 z-50 bg-surface-header shadow-md backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 md:h-16">
         <BrandLogo variant="on-dark" compactOnMobile className="shrink-0" />
 

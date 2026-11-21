@@ -51,6 +51,12 @@ describe("LogMeasurementModal (create)", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("renders above the sticky app header", async () => {
+    renderCreateModal();
+    const dialog = await getCreateDialog();
+    expect(dialog.parentElement).toHaveClass("z-[60]");
+  });
+
   it("shows client validation when value is not a positive decimal", async () => {
     renderCreateModal();
     const dialog = await getCreateDialog();
