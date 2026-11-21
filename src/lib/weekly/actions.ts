@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { addUtcCalendarDays } from "@/lib/measurements/calendar-date";
 import {
   normalizeWeeklyCheckIn,
   normalizeWeeklyIntention,
@@ -23,8 +22,8 @@ import {
   updateIntentionTextSchema,
 } from "@/lib/weekly/validation";
 import {
+  cappedEditableUntil,
   currentIntentionWeekStart,
-  editableUntil,
   lastCompletedWeekStart,
 } from "@/lib/weekly/week-math";
 
@@ -147,13 +146,10 @@ export async function submitWeeklyCheckIn(
     };
   }
 
-  // Product window is today+3; hardening caps it to the intention week (Sun).
-  const rawEditableUntil = editableUntil(parsed.data.today);
-  const intentionWeekEnd = addUtcCalendarDays(nextWeekStart, 6);
-  const editableUntilDate =
-    rawEditableUntil <= intentionWeekEnd
-      ? rawEditableUntil
-      : intentionWeekEnd;
+  const editableUntilDate = cappedEditableUntil(
+    parsed.data.today,
+    nextWeekStart,
+  );
 
   const { data: rpcRows, error: rpcError } = await supabase.rpc(
     "submit_weekly_check_in",

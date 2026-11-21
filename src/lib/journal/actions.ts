@@ -11,14 +11,19 @@ import type {
 } from "@/lib/journal/types";
 import {
   formatJournalValidationErrors,
+  getWeekRecapSchema,
   listJournalEntriesSchema,
   saveJournalEntrySchema,
-  todaySchema,
 } from "@/lib/journal/validation";
 import { lastCompletedWeekStart } from "@/lib/weekly/week-math";
 
-const JOURNAL_COLUMNS =
-  "id, user_id, entry_on, mood, reflection, win, grateful_for, created_at, updated_at, journal_entry_domains(domain)";
+const JOURNAL_ENTRY_COLUMNS =
+  "id, user_id, entry_on, mood, reflection, win, grateful_for, created_at, updated_at";
+
+const JOURNAL_COLUMNS = `${JOURNAL_ENTRY_COLUMNS}, journal_entry_domains(domain)`;
+
+const DATABASE_SAVE_MESSAGE =
+  "Unable to save your journal entry. Please try again.";
 
 export type SaveJournalEntryResult =
   | { success: true; entry: JournalEntry }
@@ -77,30 +82,101 @@ export async function saveJournalEntry(
   }
 
   const entryOn = parsed.data.today;
-  const { data: savedRow, error: upsertError } = await supabase
-    .from("journal_entries")
-    .upsert(
-      {
-        user_id: user.id,
-        entry_on: entryOn,
-        mood: parsed.data.mood,
-        reflection: parsed.data.reflection,
-        win: parsed.data.win,
-        grateful_for: parsed.data.grateful_for,
-      },
-      { onConflict: "user_id,entry_on" },
-    )
-    .select(
-      "id, user_id, entry_on, mood, reflection, win, grateful_for, created_at, updated_at",
-    )
-    .single();
+  const allowedFields = {
+    mood: parsed.data.mood,
+    reflection: parsed.data.reflection,
+    win: parsed.data.win,
+    grateful_for: parsed.data.grateful_for,
+  };
 
-  if (upsertError || !savedRow) {
+  const { data: existing, error: lookupError } = await supabase
+    .from("journal_entries")
+    .select(JOURNAL_ENTRY_COLUMNS)
+    .eq("user_id", user.id)
+    .eq("entry_on", entryOn)
+    .maybeSingle();
+
+  if (lookupError) {
     return {
       success: false,
       error: "database",
-      message: "Unable to save your journal entry. Please try again.",
+      message: DATABASE_SAVE_MESSAGE,
     };
+  }
+
+  let savedRow: unknown = null;
+
+  if (existing) {
+    const { data: updated, error: updateError } = await supabase
+      .from("journal_entries")
+      .update(allowedFields)
+      .eq("id", String((existing as { id: string }).id))
+      .eq("user_id", user.id)
+      .select(JOURNAL_ENTRY_COLUMNS)
+      .single();
+
+    if (updateError || !updated) {
+      return {
+        success: false,
+        error: "database",
+        message: DATABASE_SAVE_MESSAGE,
+      };
+    }
+
+    savedRow = updated;
+  } else {
+    const { data: inserted, error: insertError } = await supabase
+      .from("journal_entries")
+      .insert({
+        user_id: user.id,
+        entry_on: entryOn,
+        ...allowedFields,
+      })
+      .select(JOURNAL_ENTRY_COLUMNS)
+      .single();
+
+    if (insertError?.code === "23505") {
+      const { data: raced, error: raceLookupError } = await supabase
+        .from("journal_entries")
+        .select(JOURNAL_ENTRY_COLUMNS)
+        .eq("user_id", user.id)
+        .eq("entry_on", entryOn)
+        .maybeSingle();
+
+      if (raceLookupError || !raced) {
+        return {
+          success: false,
+          error: "database",
+          message: DATABASE_SAVE_MESSAGE,
+        };
+      }
+
+      const { data: racedUpdate, error: raceUpdateError } = await supabase
+        .from("journal_entries")
+        .update(allowedFields)
+        .eq("id", String((raced as { id: string }).id))
+        .eq("user_id", user.id)
+        .select(JOURNAL_ENTRY_COLUMNS)
+        .single();
+
+      if (raceUpdateError || !racedUpdate) {
+        return {
+          success: false,
+          error: "database",
+          message: DATABASE_SAVE_MESSAGE,
+        };
+      }
+
+      savedRow = racedUpdate;
+    } else if (insertError || !inserted) {
+      return {
+        success: false,
+        error: "database",
+        message: DATABASE_SAVE_MESSAGE,
+      };
+    } else {
+      savedRow = inserted;
+    }
   }
 
   const entryId = String((savedRow as { id: string }).id);
@@ -115,7 +191,7 @@ export async function saveJournalEntry(
     return {
       success: false,
       error: "database",
-      message: "Unable to save your journal entry. Please try again.",
+      message: DATABASE_SAVE_MESSAGE,
     };
   }
 
@@ -134,7 +210,7 @@ export async function saveJournalEntry(
       return {
         success: false,
         error: "database",
-        message: "Unable to save your journal entry. Please try again.",
+        message: DATABASE_SAVE_MESSAGE,
       };
     }
   }
@@ -150,7 +226,7 @@ export async function saveJournalEntry(
     return {
       success: false,
       error: "database",
-      message: "Unable to save your journal entry. Please try again.",
+      message: DATABASE_SAVE_MESSAGE,
     };
   }
 
@@ -236,9 +312,9 @@ export async function getWeekRecap(input: {
     };
   }
 
-  const parsedToday = todaySchema.safeParse(input.today);
-  if (!parsedToday.success) {
-    const fieldErrors = formatJournalValidationErrors(parsedToday.error);
+  const parsed = getWeekRecapSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors = formatJournalValidationErrors(parsed.error);
     return {
       success: false,
       error: "validation",
@@ -247,7 +323,7 @@ export async function getWeekRecap(input: {
     };
   }
 
-  const weekStart = lastCompletedWeekStart(parsedToday.data);
+  const weekStart = lastCompletedWeekStart(parsed.data.today);
   const weekEnd = addUtcCalendarDays(weekStart, 6);
 
   const { data, error } = await supabase

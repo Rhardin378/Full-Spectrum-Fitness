@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  cappedEditableUntil,
   currentIntentionWeekStart,
   editableUntil,
   isCheckInDue,
@@ -45,5 +46,12 @@ describe("week math", () => {
   it("marks check-in due only when the last completed week has no row", () => {
     expect(isCheckInDue("2026-11-03", false)).toBe(true);
     expect(isCheckInDue("2026-11-03", true)).toBe(false);
+  });
+
+  it("caps editable_until at the intention week's Sunday", () => {
+    const weekStart = "2026-11-02";
+    expect(cappedEditableUntil("2026-11-02", weekStart)).toBe("2026-11-05"); // Mon → +3
+    expect(cappedEditableUntil("2026-11-06", weekStart)).toBe("2026-11-08"); // Fri → Sun
+    expect(cappedEditableUntil("2026-11-08", weekStart)).toBe("2026-11-08"); // Sun → same day
   });
 });

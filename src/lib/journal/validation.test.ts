@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   formatJournalValidationErrors,
+  getWeekRecapSchema,
   saveJournalEntrySchema,
 } from "@/lib/journal/validation";
 
@@ -87,5 +88,25 @@ describe("saveJournalEntrySchema", () => {
       win: "w".repeat(201),
     });
     expect(parsed.success).toBe(false);
+  });
+});
+
+describe("getWeekRecapSchema", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("rejects null or non-object input via .strict()", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-03T15:00:00.000Z"));
+
+    expect(getWeekRecapSchema.safeParse(null).success).toBe(false);
+    expect(getWeekRecapSchema.safeParse(undefined).success).toBe(false);
+    expect(
+      getWeekRecapSchema.safeParse({ today: "2026-11-03", extra: true }).success,
+    ).toBe(false);
+    expect(getWeekRecapSchema.safeParse({ today: "2026-11-03" }).success).toBe(
+      true,
+    );
   });
 });

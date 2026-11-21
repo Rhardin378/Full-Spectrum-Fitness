@@ -40,6 +40,19 @@ export function editableUntil(createdOn: string): string {
   return addUtcCalendarDays(createdOn, 3);
 }
 
+/**
+ * `editable_until` written on create: created + 3 days, capped at the
+ * intention week's Sunday (`weekStart` + 6).
+ */
+export function cappedEditableUntil(
+  createdOn: string,
+  weekStart: string,
+): string {
+  const raw = editableUntil(createdOn);
+  const weekEnd = addUtcCalendarDays(weekStart, 6);
+  return raw <= weekEnd ? raw : weekEnd;
+}
+
 /** Due when there is no check-in row for last completed week. */
 export function isCheckInDue(
   _today: string,

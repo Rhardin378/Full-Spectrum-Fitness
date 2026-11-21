@@ -97,6 +97,12 @@ export const listJournalEntriesSchema = z
     }
   });
 
+export const getWeekRecapSchema = z
+  .object({
+    today: todaySchema,
+  })
+  .strict();
+
 export function formatJournalValidationErrors(
   error: z.ZodError,
 ): Record<string, string> {
