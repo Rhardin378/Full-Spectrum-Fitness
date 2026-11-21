@@ -2,7 +2,7 @@
 
 **Track your mind. Train your body.**
 
-Full Spectrum Fitness is a fitness and wellbeing tracker that connects training, body metrics, and mood over time.
+Full Spectrum Fitness is a longitudinal performance and wellbeing app that connects training, body metrics, mood, and life context over time.
 
 [Live demo](https://full-spectrum-fitness-liard.vercel.app) · [Docs](docs/README.md)
 
@@ -10,6 +10,20 @@ Full Spectrum Fitness is a fitness and wellbeing tracker that connects training,
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
+
+## The vision
+
+Most apps track your workouts *or* your mood. FSF is built to answer one question: **how do the way I train, how I feel, and how I live affect each other?**
+
+When complete, it works as a weekly loop:
+
+1. **Capture, lightly.** Log workouts, weight and waist, a quick daily journal (mood and a reflection), and a weekly check-in that scores stress, energy, and your life domains.
+2. **Calculate.** Deterministic analytics turn that history into trends and patterns, like training volume compared with mood, or stress compared with sleep and consistency.
+3. **Interpret.** A weekly coach report turns the numbers into a few observations, evidence-informed suggestions, and one reflection question. **Analytics calculate; AI interprets.** The model never computes your metrics.
+
+The longer you use it, the more useful it gets, without piles of daily forms. It's not a chatbot, not a therapy app, and not just another workout logger.
+
+**Status:** auth, profile, and measurements are live. Journaling and the weekly check-in are being built now (see below).
 
 ![Measurements tab for Alex Rivera: recent history and a 90-day weight trend](docs/screenshots/dashboard-measurements.png)
 
@@ -185,4 +199,4 @@ Repo ruleset hardening (CI, required checks) is tracked in [`docs/vertical_slice
 
 ## About
 
-Built by [Ryan Hardin](https://github.com/Rhardin378) (NASM-certified trainer turned software engineer). License: MIT.
+Built by [Ryan Hardin](https://github.com/Rhardin378), a NASM-certified personal trainer, online trainer, and software engineer. License: MIT.

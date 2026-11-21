@@ -52,6 +52,7 @@ Handoff pack: [README.md](./README.md).
 ### AI Notes
 
 - Cursor Grok. Docs only. Screenshot files were copied in unchanged from the supplied `readme-shots` set.
+- Restored the vision section after Ryan's review.
 
 ---
 
