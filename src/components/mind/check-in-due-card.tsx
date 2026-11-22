@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 import { getCheckInDueStatus } from "@/lib/weekly/actions";
+import { isSunday } from "@/lib/weekly/week-math";
 
 function subscribeToNothing() {
   return () => {};
@@ -79,7 +80,9 @@ function CheckInDueCardBody({
         id="mind-check-in-due"
         className="text-lg font-semibold text-text-primary"
       >
-        Last week’s check-in is ready
+        {isSunday(today)
+          ? "This week’s check-in is ready"
+          : "Last week’s check-in is ready"}
       </h2>
       <p className="mt-2 text-sm text-text-muted">
         Take a few minutes to score the week and set one intention. Nothing is

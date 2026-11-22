@@ -41,7 +41,7 @@ describe("week math", () => {
   });
 
   it("treats a late Sunday in America/Chicago as that calendar Sunday", () => {
-    // 2026-11-02 04:30 UTC = 2026-11-01 22:30 CDT (UTC−5; DST ends 02:00 local that night).
+    // 2026-11-02 04:30 UTC = 2026-11-01 22:30 CST (UTC−6; DST ended 02:00 local that morning).
     const chicagoSunday = calendarDateInTimeZone(
       new Date("2026-11-02T04:30:00.000Z"),
       "America/Chicago",

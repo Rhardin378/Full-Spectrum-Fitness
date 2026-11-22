@@ -36,6 +36,7 @@ import {
   currentIntentionWeekStart,
   isCheckInDue,
   lastCompletedWeekStart,
+  mondayOnOrBefore,
 } from "@/lib/weekly/week-math";
 
 const CHECK_IN_COLUMNS =
@@ -464,9 +465,10 @@ export async function getCurrentIntention(
     };
   }
 
-  return loadIntentionForWeekStart(
-    currentIntentionWeekStart(parsed.data.today),
-  );
+  // Display follows the Monday–Sunday calendar week (Ryan, Nov 22 2026
+  // follow-up). Submit still uses currentIntentionWeekStart so a Sunday
+  // check-in creates next week's intention.
+  return loadIntentionForWeekStart(mondayOnOrBefore(parsed.data.today));
 }
 
 /**

@@ -29,6 +29,15 @@ describe("CheckInDueCard", () => {
     ).toHaveAttribute("href", "/fitness/measurements");
   });
 
+  it("on Sunday says this week’s check-in is ready", () => {
+    vi.setSystemTime(new Date("2026-11-01T18:00:00.000Z"));
+    render(<CheckInDueCard initialDue />);
+
+    expect(
+      screen.getByRole("heading", { name: "This week’s check-in is ready" }),
+    ).toBeInTheDocument();
+  });
+
   it("renders nothing when not due", () => {
     const { container } = render(<CheckInDueCard initialDue={false} />);
     expect(container).toBeEmptyDOMElement();

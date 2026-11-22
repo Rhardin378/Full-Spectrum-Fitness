@@ -181,7 +181,7 @@ Every action:
 **Intention**
 
 - `updateIntentionText({ id, today, body })` updates `body` only when `today <= editable_until`. After that, return a clear validation error. Schema has no `domain` field; unknown keys fail `.strict()`.
-- `getCurrentIntention({ today })` returns the row for `currentIntentionWeekStart(today)` or null.
+- `getCurrentIntention({ today })` returns the row for `mondayOnOrBefore(today)` or null (display through Sunday). Submit still uses `currentIntentionWeekStart(today)`.
 - Outcome is not updated here.
 
 **Due card**
