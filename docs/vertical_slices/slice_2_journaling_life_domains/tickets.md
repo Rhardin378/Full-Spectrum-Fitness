@@ -49,7 +49,7 @@ Migration under `supabase/migrations/`. Match the style of `20260612003147_creat
 - `domain text not null` check against the eight slugs in the slice README
 - primary key `(journal_entry_id, domain)`
 - foreign key `(journal_entry_id, user_id)` → `journal_entries (id, user_id)` on delete cascade
-- Trigger rejects a third tag on the same entry
+- Trigger rejects a fourth tag on the same entry (the cap was two in the 2.1 migration; `20261122022543_journal_entry_domains_limit_three.sql` raised it to three on 2026-11-21)
 - Grants: `select`, `insert`, `delete` to `authenticated` (replace-tags on save). No `truncate`.
 
 **`weekly_check_ins`**
@@ -105,7 +105,7 @@ Do not add `entry_at` / `measured_at` companions. Do not seed a `life_domains` l
 
 - Migration applies on a local reset.
 - A user can insert and read only their own rows under RLS.
-- A second journal row for the same user and `entry_on` fails. A third tag fails. A second check-in or intention for the same user and `week_start` fails.
+- A second journal row for the same user and `entry_on` fails. A fourth tag fails. A second check-in or intention for the same user and `week_start` fails.
 - `authenticated` cannot update `weekly_intentions.domain`.
 - `anon` has no grants.
 - Check constraints reject mood, scores, and text outside the ranges above.
@@ -152,7 +152,7 @@ Every action:
 
 **Journal**
 
-- `saveJournalEntry({ today, mood, reflection, domains, win, grateful_for })` inserts or updates the unique user+day row and replaces its tags. Empty or whitespace reflection fails. `domains` length 0–2, distinct, known slugs. There is no journal RPC in ticket 2.1. If the tag write fails after the entry write, return an error; a retry must end with this payload’s tags and not a mix. Prefer one transaction if it stays a `security invoker` function with `auth.uid()`, but do not add a `security definer` bypass.
+- `saveJournalEntry({ today, mood, reflection, domains, win, grateful_for })` inserts or updates the unique user+day row and replaces its tags. Empty or whitespace reflection fails. `domains` length 0–3, distinct, known slugs. There is no journal RPC in ticket 2.1. If the tag write fails after the entry write, return an error; a retry must end with this payload’s tags and not a mix. Prefer one transaction if it stays a `security invoker` function with `auth.uid()`, but do not add a `security definer` bypass.
 - `win` and `grateful_for` are optional. Omitted, null, and whitespace-only all become null. Otherwise trim and require `char_length` 1–200. 201 characters is a field error. Neither field makes an otherwise valid save fail. The Zod schema stays `.strict()`. The form always submits the current input. A second save that omits a line, or sends it blank, clears a previously stored value.
 - They follow the reflection’s day rule, not the intention’s 3-day window. `entry_on` is the validated `today`. A second save updates these columns on that row. The action does not edit a past `entry_on`. There is no separate trigger for these columns.
 - `listJournalEntries({ start_date?, end_date?, limit? })` returns only the caller’s rows, newest `entry_on` first, including `win` and `grateful_for`. Default limit 25, max 100. Used by history, the Mind trend, and the check-in recap. The recap still ignores these two columns.
@@ -201,7 +201,7 @@ The two-tag trigger on `journal_entry_domains` can race on truly concurrent inse
 
 - Valid save, list, submit, and text edit succeed for the signed-in user. Submit with `notes` omitted, null, or blank succeeds and stores null. Submit with 1000 characters of notes succeeds.
 - Save with `win` and `grateful_for` omitted, null, or blank succeeds and stores null. Save with 200 characters in either line succeeds. A valid mood and reflection still save when both lines are absent.
-- Mood outside 1–10, reflection outside 1–2000, a win or gratitude line longer than 200 characters, more than two tags, habits-only “required” omission, a too-long intention, and notes longer than 1000 characters fail with field errors.
+- Mood outside 1–10, reflection outside 1–2000, a win or gratitude line longer than 200 characters, more than three tags, habits-only “required” omission, a too-long intention, and notes longer than 1000 characters fail with field errors.
 - A signed-out caller cannot submit a check-in or read check-in notes, and cannot save or read journal `win` or `grateful_for`. A client-supplied `user_id` does not change the row owner or which rows `listWeeklyCheckIns` or `listJournalEntries` returns.
 - `today` of `utcToday - 2` is rejected.
 - Second check-in for the same week fails cleanly.
@@ -240,9 +240,9 @@ Build `/mind/journal` to match [`journal-desktop.png`](../../mockups/slice_2_jou
 - Two optional single-line inputs, after the reflection and before the domain chips. Labels, exact: “One win today” and “Grateful for”. Each has a visible label. A placeholder does not replace that label. Empty is allowed. Save stays available when both are empty, as long as mood and reflection are valid.
 - The two inputs are full width and stacked in one column, including a phone-width layout. Do not place them side by side.
 - Max 200 characters each. The server still normalizes blank and whitespace-only to null. The client does not block submit for an empty line.
-- Domain chips in canonical order. Habits chip shows “optional”. Zero, one, or two selected. A third click does not add a tag.
+- Domain chips in canonical order. Habits chip shows “optional”. Zero to three selected. A fourth click does not add a tag. Helper copy: “What was today mostly about? Pick up to three.”
 - Primary button “Save entry”. Saving an existing today-row updates it. Button shows a pending state.
-- Field errors and a generic save error. Success is visible on this page. After a successful save, stay on `/mind/journal`. Do not redirect.
+- Field errors and a generic save error. Until ticket 2.6 ships `/mind`, success is visible on this page and the save stays on `/mind/journal`. Ticket 2.6 switches a successful save to a redirect to `/mind` (Ryan, 2026-11-21).
 - If today’s row exists, the form loads it (mood, reflection, tags, and the two lines). A null line loads as an empty input.
 - Leave a place directly under the date for the intention line (ticket 2.5). Do not invent stress or energy controls. Do not add a wins page, a gratitude page, or a link to one. `journal-desktop.png` does not show these two inputs. This ticket adds them.
 - Keyboard: each mood button and chip is a real button, the textarea and each one-line field have a label, submit works from the keyboard.
@@ -250,9 +250,9 @@ Build `/mind/journal` to match [`journal-desktop.png`](../../mockups/slice_2_jou
 
 ### Acceptance Criteria
 
-- A signed-in user can save today’s mood, reflection, and up to two tags, with both lines empty or filled, stay on `/mind/journal`, refresh, and see the same values.
+- A signed-in user can save today’s mood, reflection, and up to three tags, with both lines empty or filled, refresh `/mind/journal`, and see the same values.
 - Saving again updates that day; the history count for today stays one. Clearing a line on that second save stores null.
-- Three tags cannot be selected.
+- Four tags cannot be selected.
 - Empty reflection does not submit. Empty or whitespace-only win and gratitude lines do not block submit and come back empty.
 - The screen has no stress or energy field, no wins list, and no “Example data” badge.
 - On a phone-width viewport the two inputs are stacked, labeled, and usable.
@@ -381,7 +381,7 @@ Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend,
 - `src/components/app-header.tsx` and `src/components/mobile-nav-menu.tsx`: Mind href `/mind`, active on `/mind`. Do not activate it together with Fitness. Leave Insights and Community muted.
 - Page chrome uses the existing charcoal header and warm page. A short welcome line is enough (“Reflect across your life domains” from `docs/navigation-ia.md`) plus one primary action, **+ New journal entry**, to `/mind/journal`. **Mind is one page.** Do not build a tab bar: not Overview / Journal / Domains / Prompts, and not the Option B tabs on [`E-mind-layout-compare.png`](../../mockups/nov_2026_tickets/E-mind-layout-compare.png) (Overview / Journal / Check-ins). Option A on that PNG is this page. Ryan confirmed the single page on 2026-11-16. `docs/navigation-ia.md` now says the same. Ticket 2.9 must not put the tab bar back.
 - Page order, top to bottom:
-  1. Welcome line and **+ New journal entry**.
+  1. Welcome line and the primary action to `/mind/journal`. Label **+ New journal entry** when today has no row, **Edit today’s entry** when it does (same local-today rule as the journal screen).
   2. Stat row. **Activity streak** is the first stat ([ADR-014](../../ARCHITECTURE_DECISIONS.md), ticket 2.5.1). It replaces “days journaled, N of 7” in this row. Do not show “N of 7” here, and do not label the card “Journal streak” (the D mockup still uses that sample label). If ticket 2.5.1 has not merged, omit the streak card. Do not fill the slot with a days-journaled fraction. The other three stats still ship:
      - average mood for the seven days ending today (same rounding as the recap; em dash when there are no entries)
      - domains touched: the count of distinct tags in that window, plus their labels (Family may use the short chip label)
@@ -392,10 +392,13 @@ Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend,
   6. History: newest first, fetch limit 25, then the PR #52 window (5 visible, +10 per Show more, Show less back to 5, “Showing N of M”, hide a control that would not change the list). Do not add cursor pagination in this ticket. The measurements log already accepts the 25-row cap. Each entry is read-only. It shows the date, mood, tags, and the reflection clamped to about 2–3 lines, as on [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). That PNG does not specify the clamp. When `win` is non-null, show the label “One win today” and the text under the reflection and before the domain chips. When `grateful_for` is non-null, show “Grateful for” and the text in that same spot, after the win line. A null value does not render an empty line. Do not add a Wins list, a `/mind/wins` route, a filter, or a second page for these lines. They are not stats and they are not part of the mood trend.
 - Layout reference: [`D-mind-home.png`](../../mockups/nov_2026_tickets/D-mind-home.png). Sample numbers and the “rules are not decided yet” line are not product copy. The streak rules are ADR-014.
 - Empty history: supportive copy and the new-entry action. No sample numbers.
+- Journal save redirect (Ryan, 2026-11-21): change the ticket 2.3 screen so a successful save navigates to `/mind` instead of staying. `/mind` then shows a short, calm “Entry saved” confirmation near the top, and the new or updated entry is first in history. The confirmation is not a stored flag; it clears on the next load. A failed save still stays on `/mind/journal` with its errors.
 
 ### Acceptance Criteria
 
 - Signed-out visitors to `/mind` and `/mind/journal` land on `/auth`.
+- A successful journal save lands on `/mind` with “Entry saved” and that day’s entry first in history. Reloading `/mind` does not show the confirmation again.
+- The primary action reads **Edit today’s entry** when today has a row and **+ New journal entry** when it does not. Both go to `/mind/journal`.
 - Mind in the navbar is a real link and shows the coral active state on `/mind` (desktop and the mobile menu).
 - Stats and the trend match journal rows in the rolling seven days and ignore older rows. The stat row does not show “N of 7” or a “Journal streak” number. Before ticket 2.5.1 merges, the streak card is omitted. When ticket 2.5.1 has merged, Activity streak is the first stat and its number comes from that server result.
 - History Show more / Show less behaves like Recent history on the Measurements tab.
@@ -467,7 +470,7 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 
 - Unit: week fixtures, inclusive `editable_until`, recap rounding and empty input, tag ranking, lowest domain, due predicate, and the `src/lib/life-domains/` list (the same eight slugs and labels, canonical order, with no second copy in `src/lib/types/profile.ts`, journal, or weekly). Extend the ticket 2.2 tests rather than forking a second copy.
 - Action tests: unauthorized journal save, check-in submit, and intention update; invalid mood, tags, and body; `today` outside the slack window; intention update rejected after the window; `.strict()` rejects `domain` on text update; check-in unique violation mapped to the friendly error. Notes: omitted, null, and whitespace-only store null; 1000 characters pass; 1001 fail. A signed-out caller cannot submit notes or read them back. `listWeeklyCheckIns` returns only the session user’s rows. Journal `win` and `grateful_for`: omitted, null, and whitespace-only store null; 200 characters pass; 201 fail. A save with both absent still succeeds when mood and reflection are valid. A signed-out caller cannot save or read those columns. `listJournalEntries` returns them only for the session user.
-- Component: journal blocks a third tag and requires reflection; the journal still submits when both optional lines are empty; a filled line reloads after save; a successful journal save stays on `/mind/journal`; check-in hides the last-intention block entirely when there is no prior intention (no heading, quote, or outcome control) and shows the empty recap without zeros; the intention label is “Intention for the week of {Mon}–{Sun}”; a successful check-in does not save a draft and redirects to `/mind`; empty notes still submit; check-in history shows notes text and hides the block when notes are null; Mind history is read-only and shows the date, mood, tags, and the reflection clamped to about 2–3 lines; Mind history shows “One win today” and “Grateful for” when the values are non-null and hides each line when it is null; before ticket 2.5.1 merges, the Mind stat row omits the streak card; history Show more reveals the next 10 and Show less returns to 5; intention text saves from the journal line and from the Mind card inside the edit window; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/fitness/measurements`. The journal and Mind pages do not link to a wins route.
+- Component: journal blocks a fourth tag and requires reflection; the journal still submits when both optional lines are empty; a filled line reloads after save; a successful journal save redirects to `/mind`, which shows “Entry saved”, and a failed save stays on `/mind/journal`; the Mind primary action reads “Edit today’s entry” when today has a row; check-in hides the last-intention block entirely when there is no prior intention (no heading, quote, or outcome control) and shows the empty recap without zeros; the intention label is “Intention for the week of {Mon}–{Sun}”; a successful check-in does not save a draft and redirects to `/mind`; empty notes still submit; check-in history shows notes text and hides the block when notes are null; Mind history is read-only and shows the date, mood, tags, and the reflection clamped to about 2–3 lines; Mind history shows “One win today” and “Grateful for” when the values are non-null and hides each line when it is null; before ticket 2.5.1 merges, the Mind stat row omits the streak card; history Show more reveals the next 10 and Show less returns to 5; intention text saves from the journal line and from the Mind card inside the edit window; due card renders from the predicate and not from a hard-coded flag, and its “Log this week’s weight” link points at `/fitness/measurements`. The journal and Mind pages do not link to a wins route.
 - Run under `TZ=America/Chicago` and `TZ=UTC` the way measurement calendar tests do, with `vi.setSystemTime` where the clock matters.
 - Do not add Playwright in this ticket.
 
@@ -476,7 +479,7 @@ Lock the date rules, the edit lock, the recap, the screens, and the auth checks.
 - `npm test` passes, including the new cases.
 - Existing measurement and profile tests still pass.
 - A reviewer can point at the SQL policy and the grant list for each new table, and at an action test that rejects a signed-out caller. `weekly_check_ins` owner RLS covers `notes`. `journal_entries` owner RLS covers `win` and `grateful_for`, and the update grant lists those columns with `mood` and `reflection`. Tests do not need a live database. Empty notes, the 1000-character limit, empty win and gratitude lines, the 200-character limit, and that ownership rejection are all in the action tests.
-- Component tests cover the intention label “Intention for the week of {Mon}–{Sun}”, the hidden last-intention block on a first check-in, the check-in redirect to `/mind` with no draft, and a journal save that stays on `/mind/journal`.
+- Component tests cover the intention label “Intention for the week of {Mon}–{Sun}”, the hidden last-intention block on a first check-in, the check-in redirect to `/mind` with no draft, and a journal save that redirects to `/mind` with “Entry saved”.
 
 ### Dependencies
 
@@ -564,7 +567,7 @@ Walk the Mind loop on a real account after the feature tickets merge. Capture ga
 
 ### Scope
 
-- Sign in, open Mind from the navbar (desktop and a phone-width menu), save today’s journal, refresh, confirm one row. After the successful save the address is still `/mind/journal`.
+- Sign in, open Mind from the navbar (desktop and a phone-width menu), save today’s journal, confirm it lands on `/mind` with “Entry saved” and the entry first in history, reload and confirm the message is gone, then use **Edit today’s entry** and confirm the form loads the same row.
 - Save today’s journal once with “One win today” and “Grateful for” left blank, and confirm the row still saves. Save again with both lines filled, refresh, and confirm both show on the form and on the Mind history entry. The history entry is read-only and shows the date, mood, tags, and the reflection clamped to about 2–3 lines. On a phone-width journal screen the two inputs are stacked and labeled. Clear one line, save, and confirm that history entry no longer shows an empty line for it. Confirm there is no wins list page.
 - Save the same day again and confirm the row updated.
 - Confirm a Chicago-timezone evening still stores the local calendar day the screen showed (same class of bug as measurements before `measured_on`).
@@ -579,7 +582,7 @@ Walk the Mind loop on a real account after the feature tickets merge. Capture ga
 ### Acceptance Criteria
 
 - Done criteria in the slice README are checked off or have a follow-up issue.
-- The walk confirms the intention label “Intention for the week of {Mon}–{Sun}”, a first check-in with the last-intention block hidden, a successful check-in on `/mind`, and a successful journal save still on `/mind/journal`.
+- The walk confirms the intention label “Intention for the week of {Mon}–{Sun}”, a first check-in with the last-intention block hidden, a successful check-in on `/mind`, and a successful journal save on `/mind`.
 - No wellness-wheel labels on the new screens.
 - Slice 2 is ready to call done only after this list and ticket 2.8 are green.
 

@@ -58,7 +58,7 @@ export const saveJournalEntrySchema = z
           message: "Choose a valid life domain.",
         }),
       )
-      .max(2, "Pick at most two domains.")
+      .max(3, "Pick at most three domains.")
       .default([]),
     win: optionalLineSchema,
     grateful_for: optionalLineSchema,

@@ -52,15 +52,23 @@ describe("saveJournalEntrySchema", () => {
     expect(reflection.success).toBe(false);
   });
 
-  it("rejects more than two domains and today outside the slack window", () => {
+  it("accepts three domains, rejects four, and rejects today outside the slack window", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-03T15:00:00.000Z"));
+
+    const threeDomains = saveJournalEntrySchema.safeParse({
+      today: "2026-11-03",
+      mood: 5,
+      reflection: "ok",
+      domains: ["career", "learning", "leisure"],
+    });
+    expect(threeDomains.success).toBe(true);
 
     const domains = saveJournalEntrySchema.safeParse({
       today: "2026-11-03",
       mood: 5,
       reflection: "ok",
-      domains: ["career", "learning", "leisure"],
+      domains: ["career", "learning", "leisure", "social"],
     });
     expect(domains.success).toBe(false);
 

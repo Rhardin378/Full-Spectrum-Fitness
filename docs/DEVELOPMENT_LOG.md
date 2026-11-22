@@ -29,6 +29,33 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-21 — Daily journal screen (ticket 2.3) and three domain tags
+
+### Completed
+
+- Built `/mind/journal` (ticket 2.3): mood 1–10, required reflection, optional “One win today” and “Grateful for”, domain chips, “Save entry”. The server loads the caller’s rows for UTC today ±1 day; the browser picks local today’s row. Saving stays on the page and shows “Entry saved.” A slot under the date is left for the intention line (ticket 2.5).
+- `/mind` is now a protected prefix in the middleware.
+- Raised the journal tag cap from two to three: migration `20261122022543_journal_entry_domains_limit_three.sql` replaces the trigger, Zod allows three, the form allows three. Copy is “What was today mostly about? Pick up to three.”
+
+### Decisions
+
+- Ryan, 2026-11-21. Up to three domain tags per journal entry. A real day often spans three areas; a cap still keeps tags meaning “mostly about.” The check-in recap still shows the top two tagged domains. ADR-013 notes the change.
+- Ryan, 2026-11-21. A successful journal save goes to `/mind`, which shows “Entry saved” and the entry first in history. This replaces the 2026-11-17 “journal save stays on `/mind/journal`” decision. Ticket 2.6 ships it; until then the journal stays on its page. The Mind primary action reads “Edit today’s entry” once today has a row.
+
+### Issues
+
+- Journal save is still separate writes for the entry and its tags (ticket 2.2), not one database function.
+
+### Next
+
+- Ticket 2.4 (check-in) or 2.6 (Mind page, which adds the navbar link to the journal).
+
+### AI Notes
+
+- Cursor Claude. Journal screen and the tag-cap change, after Ryan tested the screen.
+
+---
+
 ## 2026-11-21 — Hero copy, MIT license, sticky navbar
 
 ### Completed

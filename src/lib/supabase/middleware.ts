@@ -9,7 +9,7 @@ import {
   type AuthReason,
 } from "@/lib/auth/redirect";
 
-const PROTECTED_PATHS = ["/dashboard", "/profile"];
+const PROTECTED_PATHS = ["/dashboard", "/profile", "/mind"];
 
 // Matches sb-<ref>-auth-token and its chunked form sb-<ref>-auth-token.0
 const AUTH_COOKIE_PATTERN = /^sb-.+-auth-token(\.\d+)?$/;
