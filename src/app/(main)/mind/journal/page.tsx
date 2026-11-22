@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { JournalEntryScreen } from "@/components/journal/journal-entry-form";
+import { WeeklyIntentionLine } from "@/components/weekly/weekly-intention";
 import { listJournalEntries } from "@/lib/journal/actions";
 import {
   addUtcCalendarDays,
@@ -44,7 +45,10 @@ export default async function MindJournalPage() {
   return (
     <main className="min-h-screen bg-surface-page p-6 sm:p-10">
       <div className="mx-auto max-w-2xl">
-        <JournalEntryScreen recentEntries={entriesResult.entries} />
+        <JournalEntryScreen
+          recentEntries={entriesResult.entries}
+          intentionSlot={<WeeklyIntentionLine />}
+        />
       </div>
     </main>
   );

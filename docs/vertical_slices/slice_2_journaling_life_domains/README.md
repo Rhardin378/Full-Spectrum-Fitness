@@ -69,6 +69,8 @@ Locked fixture (`today = 2026-11-03`, a Tuesday):
 
 Sunday 2026-11-01 still belongs to the in-progress week, so the check-in due that day is the previous one (`week_start` 2026-10-19). Monday 2026-11-02 makes 2026-10-26 due. Missed weeks are not backfilled: when the next Monday arrives, only the new last-completed week is due.
 
+Decision (Ryan, Nov 22 2026): a check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday's week; Monday–Saturday check-ins keep closing the last completed week. Implemented in ticket 2.7 together with the due-card logic; requires updating the check-in week helper, the intention week passed to `submit_weekly_check_in`, `cappedEditableUntil` inputs, and tests (Sunday, Monday, Saturday, `TZ=America/Chicago` late Sunday). Until 2.7 lands, the helpers above still use the pre-decision Sunday behavior.
+
 There is no `current_date` check in SQL. Measurements already avoided that because it is not a safe timezone boundary. The action enforces the slack window. A database trigger is the backstop for intention text after the window (ticket 2.1).
 
 ## What the user can do

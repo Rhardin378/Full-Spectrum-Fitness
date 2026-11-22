@@ -29,6 +29,39 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Sunday check-in week decision (ticket 2.7, docs only)
+
+### Decisions
+
+- Ryan, 2026-11-22. A check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday’s week. Monday–Saturday check-ins keep closing the last completed week. Recorded under ticket 2.7 and the slice README; implement with the due-card work (helper, `submit_weekly_check_in` week args, `cappedEditableUntil`, tests including `TZ=America/Chicago` late Sunday). Not coded yet.
+
+### Next
+
+- Ticket 2.7 implements the due card and this Sunday week-math change together.
+
+### AI Notes
+
+- Cursor agent. Docs-only note on the 2.5 PR at Ryan’s request.
+
+---
+
+## 2026-11-22 — Weekly intention line and Mind card (ticket 2.5)
+
+### Completed
+
+- Journal shows “This week’s intention” above the form (coral bar); Mind shows a card under the mood trend with domain label and read-only outcome when set.
+- Body edits call `updateIntentionText` while `today <= editable_until`; after that both surfaces show text only. No intention → render nothing. Domain is never a control.
+
+### Next
+
+- Ticket 2.7 (check-in due card). Ticket 2.5.1 (activity streak) still open for the Mind stat row.
+
+### AI Notes
+
+- Cursor agent. Circled back to 2.5 after 2.6 merged.
+
+---
+
 ## 2026-11-22 — Mind page (ticket 2.6)
 
 ### Completed
