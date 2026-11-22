@@ -1,6 +1,6 @@
 import { z } from "zod";
+import { DOMAIN_FOCUS_AREAS } from "@/lib/life-domains";
 import {
-  DOMAIN_FOCUS_AREAS,
   EXPERIENCE_LEVELS,
   SHARING_PREFERENCES,
   type ProfileUpdate,

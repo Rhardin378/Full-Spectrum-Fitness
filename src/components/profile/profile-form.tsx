@@ -6,6 +6,8 @@ import { updateProfile } from "@/lib/profile/actions";
 import {
   DOMAIN_FOCUS_AREAS,
   DOMAIN_FOCUS_LABELS,
+} from "@/lib/life-domains";
+import {
   EXPERIENCE_LEVELS,
   SHARING_PREFERENCES,
   mapStoredDomainPriorities,

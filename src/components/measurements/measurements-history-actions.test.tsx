@@ -220,7 +220,9 @@ describe("measurement history row actions", () => {
     expect(onHistoryRefresh).not.toHaveBeenCalled();
 
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    });
   });
 
   it("resets edit after a thrown action and shows a generic error", async () => {

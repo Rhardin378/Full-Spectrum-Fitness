@@ -34,6 +34,11 @@ export function DeleteMeasurementDialog({
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const submittingRef = useRef(false);
+
+  useEffect(() => {
+    submittingRef.current = submitting;
+  }, [submitting]);
 
   useEffect(() => {
     if (!open) {
@@ -44,7 +49,7 @@ export function DeleteMeasurementDialog({
     document.body.style.overflow = "hidden";
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && !submitting) {
+      if (event.key === "Escape" && !submittingRef.current) {
         onClose();
       }
     }
@@ -55,7 +60,7 @@ export function DeleteMeasurementDialog({
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [open, onClose, submitting]);
+  }, [open, onClose]);
 
   async function handleConfirm() {
     if (!measurement || submitting) {

@@ -188,6 +188,8 @@ Every action:
 
 Ship unit tests in this ticket for week boundaries (the README fixture, plus Sunday 2026-11-01 and Monday 2026-11-02), `editable_until` inclusive through 2026-11-06 and rejected on 2026-11-07, recap rounding, empty recap, top-domain ties, and lowest-score ties. Action tests can finish in ticket 2.8 if the pure tests land here.
 
+`editable_until` = created + 3 days, capped at the intention week's Sunday (`week_start` + 6).
+
 **Hardening from 2.1 review**
 
 - Intentions must only be created through `submit_weekly_check_in`. Server code must never insert into `weekly_intentions` directly. Because `authenticated` has an insert grant (needed by the invoker RPC), add a database check in the 2.2 migration constraining `editable_until` to the intention’s own week (`editable_until between week_start and week_start + 6`), so a direct insert can’t make the text editable indefinitely.

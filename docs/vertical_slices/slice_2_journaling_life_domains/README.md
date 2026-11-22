@@ -55,6 +55,7 @@ Pure functions (unit-tested, no database):
 - `lastCompletedWeekStart(today)` — `mondayOnOrBefore(today)` minus 7 days. This is the check-in being submitted.
 - `currentIntentionWeekStart(today)` — `mondayOnOrBefore(today)`. This is the intention shown on the journal and Mind page, and the intention created as “next week” when submitting the check-in.
 - `editableUntil(createdOn)` — `createdOn` plus 3 calendar days (`addUtcCalendarDays`). Text edits are allowed while validated local today is **on or before** `editable_until`.
+- `editable_until` = created + 3 days, capped at the intention week's Sunday (`week_start` + 6).
 
 Locked fixture (`today = 2026-11-03`, a Tuesday):
 
@@ -109,7 +110,7 @@ Screen order matches [`checkin-desktop.png`](../../mockups/slice_2_journal_check
 
 The check-in does not save a draft. Nothing is written until submit succeeds. A successful submit redirects to `/mind`.
 
-The new intention’s `week_start` is `currentIntentionWeekStart(today)`. `created_from_checkin_id` points at the check-in that created it. `outcome` starts null. `editable_until` is the validated create date plus 3 days.
+The new intention’s `week_start` is `currentIntentionWeekStart(today)`. `created_from_checkin_id` points at the check-in that created it. `outcome` starts null. `editable_until` = created + 3 days, capped at the intention week's Sunday (`week_start` + 6).
 
 Check-in, outcome update, and intention insert commit together (one SQL function). A failed intention insert must not leave a check-in behind. `notes` is part of that check-in insert.
 
