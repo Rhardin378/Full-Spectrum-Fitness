@@ -17,6 +17,11 @@ vi.mock("@/lib/weekly/actions", () => ({
     success: true,
     streak: { days: 0, graceLeft: null, countsWorkouts: false },
   })),
+  getCheckInDueStatus: vi.fn(async () => ({
+    success: true,
+    due: false,
+    weekStart: "2026-10-26",
+  })),
 }));
 
 const TODAY = "2026-11-22";

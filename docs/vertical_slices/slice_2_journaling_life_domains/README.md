@@ -52,8 +52,8 @@ The client sends the user’s local today from `todayLocalISODate()`. The server
 Pure functions (unit-tested, no database):
 
 - `mondayOnOrBefore(isoDate)` — Monday of the week that contains that date, UTC calendar math.
-- `lastCompletedWeekStart(today)` — `mondayOnOrBefore(today)` minus 7 days. This is the check-in being submitted.
-- `currentIntentionWeekStart(today)` — `mondayOnOrBefore(today)`. This is the intention shown on the journal and Mind page, and the intention created as “next week” when submitting the check-in.
+- `lastCompletedWeekStart(today)` — check-in week being submitted (and the due-card week). Monday–Saturday: `mondayOnOrBefore(today)` minus 7 days. Sunday: `mondayOnOrBefore(today)` (the week ending that day).
+- `currentIntentionWeekStart(today)` — intention shown on journal/Mind and created on submit. Monday–Saturday: `mondayOnOrBefore(today)`. Sunday: that Monday plus 7 (the following week).
 - `editableUntil(createdOn)` — `createdOn` plus 3 calendar days (`addUtcCalendarDays`). Text edits are allowed while validated local today is **on or before** `editable_until`.
 - `editable_until` = created + 3 days, capped at the intention week's Sunday (`week_start` + 6).
 
@@ -67,9 +67,9 @@ Locked fixture (`today = 2026-11-03`, a Tuesday):
 | Intention created for | 2026-11-02 |
 | `editable_until` if created that day | 2026-11-06 |
 
-Sunday 2026-11-01 still belongs to the in-progress week, so the check-in due that day is the previous one (`week_start` 2026-10-19). Monday 2026-11-02 makes 2026-10-26 due. Missed weeks are not backfilled: when the next Monday arrives, only the new last-completed week is due.
+Decision (Ryan, Nov 22 2026): a check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday's week; Monday–Saturday check-ins keep closing the last completed week.
 
-Decision (Ryan, Nov 22 2026): a check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday's week; Monday–Saturday check-ins keep closing the last completed week. Implemented in ticket 2.7 together with the due-card logic; requires updating the check-in week helper, the intention week passed to `submit_weekly_check_in`, `cappedEditableUntil` inputs, and tests (Sunday, Monday, Saturday, `TZ=America/Chicago` late Sunday). Until 2.7 lands, the helpers above still use the pre-decision Sunday behavior.
+Sunday 2026-11-01 check-in / due week is `2026-10-26` (ending that day); intention created for `2026-11-02`. Monday 2026-11-02 still makes `2026-10-26` due if Sunday was skipped. Saturday 2026-10-31 still closes `2026-10-19`. Missed weeks are not backfilled: when the next Monday arrives, only the new last-completed week is due.
 
 There is no `current_date` check in SQL. Measurements already avoided that because it is not a safe timezone boundary. The action enforces the slack window. A database trigger is the backstop for intention text after the window (ticket 2.1).
 

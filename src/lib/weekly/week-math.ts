@@ -25,14 +25,38 @@ export function isMonday(isoDate: string): boolean {
   return new Date(`${isoDate}T00:00:00.000Z`).getUTCDay() === 1;
 }
 
-/** Check-in week being submitted: Monday of last completed week. */
-export function lastCompletedWeekStart(today: string): string {
-  return addUtcCalendarDays(mondayOnOrBefore(today), -7);
+/** True when `isoDate` is a Sunday (ISO dow 0). */
+export function isSunday(isoDate: string): boolean {
+  if (!isValidCalendarDate(isoDate)) return false;
+  return new Date(`${isoDate}T00:00:00.000Z`).getUTCDay() === 0;
 }
 
-/** Intention week for journal/Mind and the next intention on submit. */
+/**
+ * Check-in week being submitted (and the week the due card watches).
+ *
+ * Ryan, Nov 22 2026: a Sunday closes the Monday–Sunday week ending that day.
+ * Monday–Saturday still close the previous completed week.
+ */
+export function lastCompletedWeekStart(today: string): string {
+  const weekStart = mondayOnOrBefore(today);
+  if (isSunday(today)) {
+    return weekStart;
+  }
+  return addUtcCalendarDays(weekStart, -7);
+}
+
+/**
+ * Intention week for journal/Mind and the next intention on submit.
+ *
+ * On Sunday the new intention is for the following Monday’s week; otherwise
+ * it is the Monday of the week that contains `today`.
+ */
 export function currentIntentionWeekStart(today: string): string {
-  return mondayOnOrBefore(today);
+  const weekStart = mondayOnOrBefore(today);
+  if (isSunday(today)) {
+    return addUtcCalendarDays(weekStart, 7);
+  }
+  return weekStart;
 }
 
 /** Inclusive last day the intention body may change (`createdOn` + 3). */

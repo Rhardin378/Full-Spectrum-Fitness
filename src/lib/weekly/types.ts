@@ -71,6 +71,10 @@ export type GetActivityStreakInput = {
   today: string;
 };
 
+export type GetCheckInDueStatusInput = {
+  today: string;
+};
+
 export type ActivityStreakView = {
   days: number;
   /** `null` when days is 0 — UI hides the grace line. */
