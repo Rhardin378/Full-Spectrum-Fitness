@@ -51,6 +51,19 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-21 — Mind history card design (ticket 2.6)
+
+### Completed
+
+- Added [`H-mind-history-entry-cards.png`](./mockups/nov_2026_tickets/H-mind-history-entry-cards.png): Recent entries on `/mind`, desktop and phone, five entries and Show more.
+- Ticket 2.6 scope and acceptance criteria, ticket 2.8 tests, the 2.10 QA walk, the slice README, and the mockups README now describe the card.
+
+### Decisions
+
+- Ryan, 2026-11-21. Recent entries are one soft card per day with rating pills on the date line: Mood always (coral), Stress and Energy only when rated. A skipped rating renders nothing. Compared against a columns layout, a timeline, mini meters, and cards with meters; picked pills because the card is the same on desktop and phone and a mood-only day stays clean. Supersedes the history rows on `D-mind-home.png`.
+
+---
+
 ## 2026-11-21 — Optional daily stress and energy on the journal
 
 ### Completed
