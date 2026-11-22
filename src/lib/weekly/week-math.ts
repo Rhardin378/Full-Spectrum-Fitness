@@ -46,10 +46,12 @@ export function lastCompletedWeekStart(today: string): string {
 }
 
 /**
- * Intention week for journal/Mind and the next intention on submit.
+ * Intention week created on check-in submit (not the Mind/Journal display).
  *
  * On Sunday the new intention is for the following Monday’s week; otherwise
- * it is the Monday of the week that contains `today`.
+ * it is the Monday of the week that contains `today`. Display uses
+ * `mondayOnOrBefore(today)` via `getCurrentIntention` so the current week’s
+ * intention stays visible through Sunday.
  */
 export function currentIntentionWeekStart(today: string): string {
   const weekStart = mondayOnOrBefore(today);

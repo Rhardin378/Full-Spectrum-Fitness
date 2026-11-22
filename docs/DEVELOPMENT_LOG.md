@@ -29,6 +29,27 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Intention display through Sunday (2.7 follow-up)
+
+### Completed
+
+- `getCurrentIntention` loads `mondayOnOrBefore(today)` so Mind/Journal keep this week’s intention through Sunday; submit still uses `currentIntentionWeekStart`.
+- Due-card heading on Sunday: “This week’s check-in is ready”; Monday–Saturday stay “Last week’s…”.
+
+### Decisions
+
+- Display follows Monday–Sunday; the new intention shows from Monday (Ryan).
+
+### Next
+
+- Merge after #98 Weight now polish if still open; then 2.8 / 2.10 closeout.
+
+### AI Notes
+
+- Cursor agent. No migration.
+
+---
+
 ## 2026-11-22 — Check-in due card + Sunday week-math (ticket 2.7)
 
 ### Completed

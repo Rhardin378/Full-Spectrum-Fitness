@@ -53,7 +53,7 @@ Pure functions (unit-tested, no database):
 
 - `mondayOnOrBefore(isoDate)` — Monday of the week that contains that date, UTC calendar math.
 - `lastCompletedWeekStart(today)` — check-in week being submitted (and the due-card week). Monday–Saturday: `mondayOnOrBefore(today)` minus 7 days. Sunday: `mondayOnOrBefore(today)` (the week ending that day).
-- `currentIntentionWeekStart(today)` — intention shown on journal/Mind and created on submit. Monday–Saturday: `mondayOnOrBefore(today)`. Sunday: that Monday plus 7 (the following week).
+- `currentIntentionWeekStart(today)` — intention **created on submit**. Monday–Saturday: `mondayOnOrBefore(today)`. Sunday: that Monday plus 7 (the following week). Not used for Mind/Journal display.
 - `editableUntil(createdOn)` — `createdOn` plus 3 calendar days (`addUtcCalendarDays`). Text edits are allowed while validated local today is **on or before** `editable_until`.
 - `editable_until` = created + 3 days, capped at the intention week's Sunday (`week_start` + 6).
 
@@ -68,6 +68,8 @@ Locked fixture (`today = 2026-11-03`, a Tuesday):
 | `editable_until` if created that day | 2026-11-06 |
 
 Decision (Ryan, Nov 22 2026): a check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday's week; Monday–Saturday check-ins keep closing the last completed week.
+
+Display decision (Ryan, Nov 22 2026 follow-up): Mind and Journal “This week’s intention” follow the Monday–Sunday calendar week. `getCurrentIntention` loads `mondayOnOrBefore(today)`, so the current week’s intention stays visible through Sunday and the newly created intention appears from Monday. Submit still uses `currentIntentionWeekStart`. On Sunday the due-card heading is “This week’s check-in is ready”; Monday–Saturday keep “Last week’s check-in is ready”.
 
 Sunday 2026-11-01 check-in / due week is `2026-10-26` (ending that day); intention created for `2026-11-02`. Monday 2026-11-02 still makes `2026-10-26` due if Sunday was skipped. Saturday 2026-10-31 still closes `2026-10-19`. Missed weeks are not backfilled: when the next Monday arrives, only the new last-completed week is due.
 
@@ -121,7 +123,7 @@ Check-in history lists the owner’s past check-ins and shows `notes` when prese
 
 ### Intention after it exists
 
-Shown as the coral line above the journal form, and as a card on the Mind page. The row is the one whose `week_start` is `currentIntentionWeekStart(today)`.
+Shown as the coral line above the journal form, and as a card on the Mind page. The row is the one whose `week_start` is `mondayOnOrBefore(today)` (display follows Mon–Sun; see Sunday display decision above). Submit still writes `currentIntentionWeekStart(today)`.
 
 - Domain is immutable after insert (not granted to `authenticated`, and a trigger rejects a change).
 - Body text is editable from the journal line and from the Mind card only through `editable_until`, enforced in the server action and by a trigger backstop (ticket 2.1). After that date, both show the text, not a field.
