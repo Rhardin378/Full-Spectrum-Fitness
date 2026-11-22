@@ -11,6 +11,7 @@ import type { JournalEntry } from "@/lib/journal/types";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 import { getActivityStreak } from "@/lib/weekly/actions";
 import type { ActivityStreakView } from "@/lib/weekly/types";
+import { CheckInDueCard } from "@/components/mind/check-in-due-card";
 import { MindHistoryCard } from "@/components/mind/mind-history-card";
 import { MoodSparkline } from "@/components/weekly/mood-sparkline";
 import { WeeklyIntentionCard } from "@/components/weekly/weekly-intention";
@@ -193,7 +194,7 @@ function MindHomeContent({
         />
       </section>
 
-      {/* Ticket 2.7: check-in due card sits under stats and above the mood strip. */}
+      <CheckInDueCard />
 
       <section aria-labelledby="mind-mood-trend">
         <h2

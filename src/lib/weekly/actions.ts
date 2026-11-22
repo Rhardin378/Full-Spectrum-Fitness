@@ -13,6 +13,7 @@ import {
 import type {
   ActivityStreakView,
   GetActivityStreakInput,
+  GetCheckInDueStatusInput,
   GetCurrentIntentionInput,
   ListWeeklyCheckInsInput,
   SubmitWeeklyCheckInInput,
@@ -23,6 +24,7 @@ import type {
 import {
   formatWeeklyValidationErrors,
   getActivityStreakSchema,
+  getCheckInDueStatusSchema,
   getCurrentIntentionSchema,
   listWeeklyCheckInsSchema,
   submitWeekStartsSchema,
@@ -32,6 +34,7 @@ import {
 import {
   cappedEditableUntil,
   currentIntentionWeekStart,
+  isCheckInDue,
   lastCompletedWeekStart,
 } from "@/lib/weekly/week-math";
 
@@ -83,6 +86,19 @@ export type GetCurrentIntentionResult =
 
 export type GetActivityStreakResult =
   | { success: true; streak: ActivityStreakView }
+  | {
+      success: false;
+      error: "unauthorized" | "validation" | "database";
+      message: string;
+      fieldErrors?: Record<string, string>;
+    };
+
+export type GetCheckInDueStatusResult =
+  | {
+      success: true;
+      due: boolean;
+      weekStart: string;
+    }
   | {
       success: false;
       error: "unauthorized" | "validation" | "database";
@@ -451,6 +467,63 @@ export async function getCurrentIntention(
   return loadIntentionForWeekStart(
     currentIntentionWeekStart(parsed.data.today),
   );
+}
+
+/**
+ * Whether the Mind due card should show (ticket 2.7).
+ * Pure predicate over whether a check-in row exists for the check-in week.
+ * Does not insert a row.
+ */
+export async function getCheckInDueStatus(
+  input: GetCheckInDueStatusInput,
+): Promise<GetCheckInDueStatusResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      error: "unauthorized",
+      message: "You must be signed in to view check-in status.",
+    };
+  }
+
+  const parsed = getCheckInDueStatusSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors = formatWeeklyValidationErrors(parsed.error);
+    return {
+      success: false,
+      error: "validation",
+      message: fieldErrors._form ?? "Please provide a valid today date.",
+      fieldErrors,
+    };
+  }
+
+  const weekStart = lastCompletedWeekStart(parsed.data.today);
+
+  const { data, error } = await supabase
+    .from("weekly_check_ins")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("week_start", weekStart)
+    .maybeSingle();
+
+  if (error) {
+    return {
+      success: false,
+      error: "database",
+      message: "Unable to load check-in status. Please try again.",
+    };
+  }
+
+  return {
+    success: true,
+    due: isCheckInDue(parsed.data.today, data != null),
+    weekStart,
+  };
 }
 
 /**

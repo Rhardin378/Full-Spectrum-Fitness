@@ -109,6 +109,8 @@ export const getCurrentIntentionSchema = z
 
 export const getActivityStreakSchema = getCurrentIntentionSchema;
 
+export const getCheckInDueStatusSchema = getCurrentIntentionSchema;
+
 export function formatWeeklyValidationErrors(
   error: z.ZodError,
 ): Record<string, string> {

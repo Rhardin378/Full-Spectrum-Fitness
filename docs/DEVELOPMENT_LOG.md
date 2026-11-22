@@ -29,6 +29,24 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Check-in due card + Sunday week-math (ticket 2.7)
+
+### Completed
+
+- Sunday check-ins close the week ending that day; intention opens the following Monday (`lastCompletedWeekStart` / `currentIntentionWeekStart`).
+- `/mind` shows a due card under the stats when that week has no check-in row: primary → `/mind/check-in`, secondary “Log this week’s weight” → `/fitness/measurements`.
+- `getCheckInDueStatus` recomputes from the session user’s rows; rendering does not insert a check-in.
+
+### Next
+
+- Merge NAV.1 (#95) before or with this PR. Then 2.8 / 2.10 closeout, or 2.5.2 Weight now.
+
+### AI Notes
+
+- Cursor agent. Stacked on NAV.1 so the weight link can target `/fitness/measurements`.
+
+---
+
 ## 2026-11-22 — Fitness shell at `/fitness` (NAV.1)
 
 ### Completed
