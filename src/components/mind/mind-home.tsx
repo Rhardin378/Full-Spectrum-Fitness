@@ -11,6 +11,7 @@ import type { JournalEntry } from "@/lib/journal/types";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 import { MindHistoryCard } from "@/components/mind/mind-history-card";
 import { MoodSparkline } from "@/components/weekly/mood-sparkline";
+import { WeeklyIntentionCard } from "@/components/weekly/weekly-intention";
 
 const HISTORY_INITIAL_VISIBLE = 5;
 const HISTORY_VISIBLE_STEP = 10;
@@ -151,7 +152,6 @@ function MindHomeContent({
       </section>
 
       {/* Ticket 2.7: check-in due card sits under stats and above the mood strip. */}
-      {/* Ticket 2.5: intention card sits under the mood strip. */}
 
       <section aria-labelledby="mind-mood-trend">
         <h2
@@ -170,6 +170,8 @@ function MindHomeContent({
           />
         </div>
       </section>
+
+      <WeeklyIntentionCard />
 
       <section aria-labelledby="mind-recent-entries">
         <div className="mb-3">

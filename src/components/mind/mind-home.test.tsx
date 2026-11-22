@@ -7,6 +7,14 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace: vi.fn(), push: vi.fn(), refresh: vi.fn() }),
 }));
 
+vi.mock("@/lib/weekly/actions", () => ({
+  getCurrentIntention: vi.fn(async () => ({
+    success: true,
+    intention: null,
+  })),
+  updateIntentionText: vi.fn(),
+}));
+
 const TODAY = "2026-11-22";
 
 function makeEntry(overrides: Partial<JournalEntry> = {}): JournalEntry {

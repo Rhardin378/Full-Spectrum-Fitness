@@ -29,6 +29,23 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Weekly intention line and Mind card (ticket 2.5)
+
+### Completed
+
+- Journal shows “This week’s intention” above the form (coral bar); Mind shows a card under the mood trend with domain label and read-only outcome when set.
+- Body edits call `updateIntentionText` while `today <= editable_until`; after that both surfaces show text only. No intention → render nothing. Domain is never a control.
+
+### Next
+
+- Ticket 2.7 (check-in due card). Ticket 2.5.1 (activity streak) still open for the Mind stat row.
+
+### AI Notes
+
+- Cursor agent. Circled back to 2.5 after 2.6 merged.
+
+---
+
 ## 2026-11-22 — Mind page (ticket 2.6)
 
 ### Completed
