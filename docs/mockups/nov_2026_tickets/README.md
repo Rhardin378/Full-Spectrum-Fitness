@@ -14,6 +14,7 @@ Chrome (charcoal bar, coral welcome band, warm page, coral primary buttons) matc
 | `D-mind-home.png` | Layout reference for the single-page Mind home. The PNG label “Journal streak” is **superseded** by Activity streak ([ADR-014](../../ARCHITECTURE_DECISIONS.md)). |
 | `E-mind-layout-compare.png` | **Decision record.** Option A (single page) is chosen. Do not build Option B (tabs). The compact Mind row at the bottom is a later idea, not part of the Fitness Overview ticket. |
 | `F-fitness-overview.png` | **Approved Fitness Overview** for desktop and mobile. The tab stays off until the workouts slice. The card marked LATER (compact Mind row) is not part of that ticket. |
+| `H-mind-history-entry-cards.png` | **Approved Recent entries cards** on `/mind` (ticket 2.6), desktop and phone, chosen 2026-11-21. One soft card per day; Mood pill always, Stress and Energy pills only when rated. Supersedes the history rows drawn on D. Sample data; do not ship the “Mockup — proposed” pill. |
 | `G-checkin-goals-reminder.png` | Filled **Your goals** bar on the weekly check-in, desktop and mobile. Read-only free-text fitness and wellness goals, “Edit in profile”, directly above the life-domain scores. Sample data. The empty state and the three-line clamp are not drawn here; ticket 2.4 governs those. |
 
 ## How to read A
@@ -53,7 +54,7 @@ E Option A is the Mind home: one page, no tab bar. D is that page at full size. 
 
 The first stat is the **activity streak** (one streak: journal or workout, one grace day per week). D still says “Journal streak” and “rules are not decided yet.” Those words are sample notes from before ADR-014.
 
-Recent entries on D do not draw the optional “One win today” and “Grateful for” lines. Ticket 2.6 shows each line on that entry, under the reflection, when the value is non-null. Do not leave them out because this PNG omits them.
+Recent entries on D are superseded by [`H-mind-history-entry-cards.png`](./H-mind-history-entry-cards.png): per-day cards with rating pills. D does not draw the optional “One win today” and “Grateful for” lines. Ticket 2.6 shows each line on that entry, under the reflection, when the value is non-null. Do not leave them out because this PNG omits them.
 
 E Option B (Overview / Journal / Check-ins tabs) is not built. The bottom of E, “Optional later: compact Mind card on Fitness Overview,” waits. It is not part of F’s first Overview.
 
