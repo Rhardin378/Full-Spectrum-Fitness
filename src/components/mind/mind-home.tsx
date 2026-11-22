@@ -319,7 +319,7 @@ function ActivityStreakStat({
     return (
       <StatCard
         label="Activity streak"
-        value={streakDayLabel(0)}
+        value="—"
         hints={[
           streak.countsWorkouts
             ? "Log a journal entry or a workout to start a streak."

@@ -19,7 +19,6 @@ type ChainResult = {
 
 function makeChain(result: ChainResult) {
   const chain: Record<string, unknown> = {};
-  const terminal = vi.fn().mockResolvedValue(result);
 
   for (const method of [
     "select",
@@ -38,14 +37,13 @@ function makeChain(result: ChainResult) {
     onRejected?: (reason: unknown) => unknown,
   ) => Promise.resolve(result).then(onFulfilled, onRejected);
 
-  return { chain, terminal };
+  return chain as Record<string, ReturnType<typeof vi.fn>> & {
+    then: typeof chain.then;
+  };
 }
 
-function makeClient(
-  user: { id: string } | null,
-  result: ChainResult,
-) {
-  const { chain } = makeChain(result);
+function makeClient(user: { id: string } | null, result: ChainResult) {
+  const chain = makeChain(result);
   return {
     auth: {
       getUser: vi.fn().mockResolvedValue({
@@ -54,6 +52,7 @@ function makeClient(
       }),
     },
     from: vi.fn(() => chain),
+    chain,
   };
 }
 
@@ -69,7 +68,9 @@ describe("getActivityStreak", () => {
   });
 
   it("rejects signed-out callers", async () => {
-    createClientMock.mockResolvedValue(makeClient(null, { data: [], error: null }));
+    createClientMock.mockResolvedValue(
+      makeClient(null, { data: [], error: null }),
+    );
     const result = await getActivityStreak({ today: "2026-11-12" });
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -98,6 +99,19 @@ describe("getActivityStreak", () => {
       streak: { days: 4, graceLeft: 1, countsWorkouts: false },
     });
     expect(client.from).toHaveBeenCalledWith("journal_entries");
+  });
+
+  it("orders newest first and bounds the query to today minus 400 days", async () => {
+    const client = makeClient({ id: USER_ID }, { data: [], error: null });
+    createClientMock.mockResolvedValue(client);
+
+    await getActivityStreak({ today: "2026-11-12" });
+
+    expect(client.chain.gte).toHaveBeenCalledWith("entry_on", "2025-10-08");
+    expect(client.chain.lte).toHaveBeenCalledWith("entry_on", "2026-11-12");
+    expect(client.chain.order).toHaveBeenCalledWith("entry_on", {
+      ascending: false,
+    });
   });
 
   it("returns a zero streak with hidden grace when there are no hits", async () => {

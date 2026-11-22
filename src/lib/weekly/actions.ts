@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { addUtcCalendarDays } from "@/lib/measurements/calendar-date";
 import {
   computeActivityStreak,
   unionActivityHitDates,
@@ -485,11 +486,16 @@ export async function getActivityStreak(
     };
   }
 
+  // Newest first, bounded so the default 1000-row cap cannot drop recent days.
+  const earliestEntryOn = addUtcCalendarDays(parsed.data.today, -400);
+
   const { data, error } = await supabase
     .from("journal_entries")
     .select("entry_on")
     .eq("user_id", user.id)
-    .lte("entry_on", parsed.data.today);
+    .gte("entry_on", earliestEntryOn)
+    .lte("entry_on", parsed.data.today)
+    .order("entry_on", { ascending: false });
 
   if (error) {
     return {

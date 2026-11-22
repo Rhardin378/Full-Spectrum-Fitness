@@ -115,7 +115,8 @@ describe("MindHome", () => {
 
   it("shows empty streak copy when the count is 0", () => {
     render(<MindHome entries={[makeEntry()]} initialStreak={ZERO_STREAK} />);
-    expect(screen.getByText("0 days")).toBeInTheDocument();
+    expect(screen.getByText("Activity streak")).toBeInTheDocument();
+    expect(screen.queryByText("0 days")).not.toBeInTheDocument();
     expect(
       screen.getByText("Log a journal entry to start a streak."),
     ).toBeInTheDocument();
