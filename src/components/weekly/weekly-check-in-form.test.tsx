@@ -150,7 +150,7 @@ describe("WeeklyCheckInForm", () => {
     );
 
     expect(
-      screen.getByText(/No journal entries this week yet/),
+      screen.getByText(/No journal entries last week/),
     ).toBeInTheDocument();
     expect(screen.queryByText("0 of 7")).not.toBeInTheDocument();
     expect(screen.getByText("Lift")).toBeInTheDocument();
@@ -180,6 +180,9 @@ describe("WeeklyCheckInForm", () => {
     expect(screen.getByText("Daily avg 5.5")).toBeInTheDocument();
     expect(screen.getByText("Daily avg 7")).toBeInTheDocument();
     expect(screen.getByText("Remembered notes")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Mood, week of Oct 26, 2026 – Nov 1, 2026/),
+    ).toBeInTheDocument();
 
     await fillRequiredScores();
     fireEvent.click(screen.getByRole("button", { name: "Partly" }));
@@ -213,6 +216,101 @@ describe("WeeklyCheckInForm", () => {
     });
 
     expect(push).toHaveBeenCalledWith("/mind");
+    expect(
+      screen.getByRole("button", { name: "Submitting…" }),
+    ).toBeDisabled();
+  });
+
+  it("requires an outcome when a prior intention exists", async () => {
+    render(
+      <WeeklyCheckInForm
+        today={TODAY}
+        recap={emptyRecap}
+        priorIntention={makeIntention()}
+        existingCheckIn={null}
+        pastCheckIns={[]}
+        fitnessGoal={null}
+        wellnessGoal={null}
+      />,
+    );
+
+    await fillRequiredScores();
+    fireEvent.change(screen.getByLabelText("Intention"), {
+      target: { value: "Call Mom on Sunday" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit check-in" }));
+
+    expect(submitWeeklyCheckIn).not.toHaveBeenCalled();
+    expect(
+      screen.getByText("Outcome is required for last week’s intention."),
+    ).toBeInTheDocument();
+  });
+
+  it("blocks submit when a required domain is missing", async () => {
+    render(
+      <WeeklyCheckInForm
+        today={TODAY}
+        recap={emptyRecap}
+        priorIntention={null}
+        existingCheckIn={null}
+        pastCheckIns={[]}
+        fitnessGoal={null}
+        wellnessGoal={null}
+      />,
+    );
+
+    fireEvent.click(ratingButton("Stress", 6));
+    fireEvent.click(ratingButton("Energy", 7));
+    fireEvent.click(ratingButton("Physical health", 8));
+    fireEvent.click(ratingButton("Mental health", 6));
+    fireEvent.click(ratingButton("Family & relationships", 7));
+    fireEvent.click(ratingButton("Social", 5));
+    fireEvent.click(ratingButton("Career", 4));
+    fireEvent.click(ratingButton("Learning", 6));
+    // Leisure left blank
+    fireEvent.change(screen.getByLabelText("Intention"), {
+      target: { value: "Protect Saturday morning" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit check-in" }));
+
+    expect(submitWeeklyCheckIn).not.toHaveBeenCalled();
+    expect(screen.getByText("Leisure is required.")).toBeInTheDocument();
+  });
+
+  it("sends unanswered Habits and empty notes as null", async () => {
+    submitWeeklyCheckIn.mockResolvedValue({
+      success: true,
+      checkIn: makeCheckIn({ week_start: "2026-10-26" }),
+      intention: makeIntention({ week_start: "2026-11-02" }),
+    });
+
+    render(
+      <WeeklyCheckInForm
+        today={TODAY}
+        recap={emptyRecap}
+        priorIntention={null}
+        existingCheckIn={null}
+        pastCheckIns={[]}
+        fitnessGoal={null}
+        wellnessGoal={null}
+      />,
+    );
+
+    await fillRequiredScores();
+    fireEvent.change(screen.getByLabelText("Intention"), {
+      target: { value: "Walk after dinner twice" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Submit check-in" }));
+
+    await waitFor(() => {
+      expect(submitWeeklyCheckIn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          habits: null,
+          notes: null,
+          intention_outcome: null,
+        }),
+      );
+    });
   });
 
   it("shows the already-submitted message and does not submit again", async () => {

@@ -87,7 +87,7 @@ One row per user per `entry_on`. The screen is for **local today** only (the val
 
 Field order: mood, reflection, “One win today”, “Grateful for”, then domain tags. The 200-character cap is the same cap as the weekly intention body. Both are one line, not a second reflection.
 
-The two lines use the same day rule as the reflection. The screen edits local today only. A second save the same day updates them on that row. Past days are history, not an editor. There is no extra edit window and no database trigger for these columns. The 3-day window is only for intention text (ticket 2.1). After a successful save, go to `/mind`, which shows a short “Entry saved” confirmation and the new entry at the top of history (Ryan, 2026-11-21). Until ticket 2.6 ships `/mind`, the save stays on `/mind/journal` with “Entry saved.” on that page.
+The two lines use the same day rule as the reflection. The screen edits local today only. A second save the same day updates them on that row. Past days are history, not an editor. There is no extra edit window and no database trigger for these columns. The 3-day window is only for intention text (ticket 2.1). After a successful save, go to `/mind`, which shows a short “Entry saved” confirmation and the new entry at the top of history (Ryan, 2026-11-21). Until ticket 2.6 builds out `/mind`, the save stays on `/mind/journal` with “Entry saved.” on that page.
 
 [`journal-desktop.png`](../../mockups/slice_2_journal_checkin/journal-desktop.png) does not show these two inputs. This list is the approved form. Do not leave the fields out because the PNG is older.
 

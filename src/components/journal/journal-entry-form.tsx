@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, useSyncExternalStore, type ReactNode } from "react";
+import { RatingScale } from "@/components/rating-scale";
 import { saveJournalEntry } from "@/lib/journal/actions";
 import { formatJournalDay } from "@/lib/journal/display";
 import type { JournalEntry } from "@/lib/journal/types";
@@ -11,7 +12,6 @@ import {
 } from "@/lib/life-domains";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 
-const RATING_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 const MAX_TAGS = 3;
 const UNEXPECTED_SAVE_MESSAGE =
   "Unable to save your journal entry. Please try again.";
@@ -61,74 +61,6 @@ export function JournalEntryScreen({
       initialEntry={todaysEntry}
       intentionSlot={intentionSlot}
     />
-  );
-}
-
-type RatingScaleProps = {
-  id: string;
-  label: ReactNode;
-  legend: string;
-  value: number | null;
-  /** Optional scales clear when the selected value is pressed again. */
-  optional?: boolean;
-  error?: string;
-  onChange: (value: number | null) => void;
-};
-
-function RatingScale({
-  id,
-  label,
-  legend,
-  value,
-  optional = false,
-  error,
-  onChange,
-}: RatingScaleProps) {
-  const labelId = `${id}-label`;
-
-  return (
-    <div>
-      <span
-        id={labelId}
-        className="block text-base font-semibold text-text-primary"
-      >
-        {label}
-        {optional ? (
-          <span className="font-normal text-text-muted"> (optional)</span>
-        ) : null}
-      </span>
-      <p className="mt-1 text-xs text-text-muted">
-        {legend}
-        {optional ? " · Tap again to clear." : null}
-      </p>
-      <div
-        role="group"
-        aria-labelledby={labelId}
-        className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-10"
-      >
-        {RATING_VALUES.map((rating) => {
-          const selected = value === rating;
-          return (
-            <button
-              key={rating}
-              type="button"
-              aria-pressed={selected}
-              onClick={() => onChange(optional && selected ? null : rating)}
-              className={`rounded-lg py-2.5 text-[15px] font-medium transition ${
-                selected
-                  ? "bg-brand-coral-deep text-white shadow-[0_2px_8px_rgba(209,74,64,0.25)]"
-                  : "bg-surface-page text-text-muted hover:text-text-primary"
-              }`}
-            >
-              {rating}
-            </button>
-          );
-        })}
-      </div>
-      {error ? (
-        <p className="mt-1.5 text-sm text-brand-coral-deep">{error}</p>
-      ) : null}
-    </div>
   );
 }
 

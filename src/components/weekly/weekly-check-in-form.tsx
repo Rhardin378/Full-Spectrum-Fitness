@@ -1,13 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  useEffect,
-  useId,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react";
+import { useEffect, useId, useState, useSyncExternalStore } from "react";
 import { getWeekRecap } from "@/lib/journal/actions";
 import type { WeekRecap } from "@/lib/journal/recap";
 import {
@@ -39,10 +33,10 @@ import {
   currentIntentionWeekStart,
   lastCompletedWeekStart,
 } from "@/lib/weekly/week-math";
+import { RatingScale } from "@/components/rating-scale";
 import { CheckInGoalsReminder } from "@/components/weekly/check-in-goals-reminder";
 import { MoodSparkline } from "@/components/weekly/mood-sparkline";
 
-const RATING_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 const UNEXPECTED_SUBMIT_MESSAGE =
   "Unable to submit your check-in. Please try again.";
 
@@ -198,82 +192,6 @@ function WeeklyCheckInLoader({
   );
 }
 
-type RatingScaleProps = {
-  id: string;
-  label: ReactNode;
-  legend?: string;
-  value: number | null;
-  optional?: boolean;
-  disabled?: boolean;
-  compact?: boolean;
-  reference?: string | null;
-  error?: string;
-  onChange: (value: number | null) => void;
-};
-
-function RatingScale({
-  id,
-  label,
-  legend,
-  value,
-  optional = false,
-  disabled = false,
-  compact = false,
-  reference,
-  error,
-  onChange,
-}: RatingScaleProps) {
-  const labelId = `${id}-label`;
-
-  return (
-    <div>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <span
-          id={labelId}
-          className={`block font-semibold text-text-primary ${compact ? "text-sm" : "text-base"}`}
-        >
-          {label}
-          {optional ? (
-            <span className="font-normal text-text-muted"> (optional)</span>
-          ) : null}
-        </span>
-        {reference ? (
-          <span className="text-xs text-text-muted">{reference}</span>
-        ) : null}
-      </div>
-      {legend ? <p className="mt-1 text-xs text-text-muted">{legend}</p> : null}
-      <div
-        role="group"
-        aria-labelledby={labelId}
-        className="mt-2 grid grid-cols-5 gap-1.5 sm:grid-cols-10"
-      >
-        {RATING_VALUES.map((rating) => {
-          const selected = value === rating;
-          return (
-            <button
-              key={rating}
-              type="button"
-              disabled={disabled}
-              aria-pressed={selected}
-              onClick={() => onChange(optional && selected ? null : rating)}
-              className={`rounded-lg py-2 text-[14px] font-medium transition sm:py-2.5 sm:text-[15px] ${
-                selected
-                  ? "bg-brand-coral-deep text-white shadow-[0_2px_8px_rgba(209,74,64,0.25)]"
-                  : "bg-surface-page text-text-muted hover:text-text-primary"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
-            >
-              {rating}
-            </button>
-          );
-        })}
-      </div>
-      {error ? (
-        <p className="mt-1.5 text-sm text-brand-coral-deep">{error}</p>
-      ) : null}
-    </div>
-  );
-}
-
 type WeeklyCheckInFormProps = {
   today: string;
   recap: WeekRecap;
@@ -409,14 +327,15 @@ function WeeklyCheckInForm({
         if (result.fieldErrors) {
           setFieldErrors(result.fieldErrors);
         }
+        setSubmitting(false);
         return;
       }
 
       router.push("/mind");
       router.refresh();
+      // Keep submitting true so the button stays disabled after success.
     } catch {
       setFormError(UNEXPECTED_SUBMIT_MESSAGE);
-    } finally {
       setSubmitting(false);
     }
   }
@@ -466,8 +385,7 @@ function WeeklyCheckInForm({
           </h2>
           {recap.daysJournaled === 0 ? (
             <p className="mt-3 text-sm text-text-muted">
-              No journal entries this week yet. You can still complete the
-              check-in.
+              No journal entries last week. You can still complete the check-in.
             </p>
           ) : (
             <div className="mt-4 space-y-4">
@@ -495,7 +413,11 @@ function WeeklyCheckInForm({
                   <p className="text-xs text-text-muted">Most tagged</p>
                 </div>
               </div>
-              <MoodSparkline values={recap.sparkline} />
+              <MoodSparkline
+                values={recap.sparkline}
+                weekStart={recap.weekStart}
+                weekEnd={recap.weekEnd}
+              />
             </div>
           )}
         </section>
@@ -515,6 +437,11 @@ function WeeklyCheckInForm({
             <div
               role="group"
               aria-labelledby={`${formId}-outcome`}
+              aria-describedby={
+                fieldErrors.intention_outcome
+                  ? `${formId}-outcome-error`
+                  : undefined
+              }
               className="mt-4 flex flex-wrap gap-2"
             >
               {OUTCOME_OPTIONS.map((option) => {
@@ -525,6 +452,9 @@ function WeeklyCheckInForm({
                     type="button"
                     disabled={alreadySubmitted}
                     aria-pressed={selected}
+                    aria-invalid={
+                      fieldErrors.intention_outcome ? true : undefined
+                    }
                     onClick={() => {
                       clearFieldError("intention_outcome");
                       setIntentionOutcome(option.value);
@@ -541,7 +471,10 @@ function WeeklyCheckInForm({
               })}
             </div>
             {fieldErrors.intention_outcome ? (
-              <p className="mt-1.5 text-sm text-brand-coral-deep">
+              <p
+                id={`${formId}-outcome-error`}
+                className="mt-1.5 text-sm text-brand-coral-deep"
+              >
                 {fieldErrors.intention_outcome}
               </p>
             ) : null}
@@ -677,6 +610,11 @@ function WeeklyCheckInForm({
                 }}
                 className={inputClassName}
                 aria-invalid={Boolean(fieldErrors.intention_domain)}
+                aria-describedby={
+                  fieldErrors.intention_domain
+                    ? `${formId}-intention-domain-error`
+                    : undefined
+                }
               >
                 <option value="" disabled>
                   Choose a domain
@@ -688,7 +626,10 @@ function WeeklyCheckInForm({
                 ))}
               </select>
               {fieldErrors.intention_domain ? (
-                <p className="mt-1.5 text-sm text-brand-coral-deep">
+                <p
+                  id={`${formId}-intention-domain-error`}
+                  className="mt-1.5 text-sm text-brand-coral-deep"
+                >
                   {fieldErrors.intention_domain}
                 </p>
               ) : null}
@@ -712,10 +653,18 @@ function WeeklyCheckInForm({
                 maxLength={200}
                 autoComplete="off"
                 aria-invalid={Boolean(fieldErrors.intention_body)}
+                aria-describedby={
+                  fieldErrors.intention_body
+                    ? `${formId}-intention-body-error`
+                    : undefined
+                }
                 className={inputClassName}
               />
               {fieldErrors.intention_body ? (
-                <p className="mt-1.5 text-sm text-brand-coral-deep">
+                <p
+                  id={`${formId}-intention-body-error`}
+                  className="mt-1.5 text-sm text-brand-coral-deep"
+                >
                   {fieldErrors.intention_body}
                 </p>
               ) : null}
@@ -746,10 +695,16 @@ function WeeklyCheckInForm({
             rows={4}
             maxLength={1000}
             aria-invalid={Boolean(fieldErrors.notes)}
+            aria-describedby={
+              fieldErrors.notes ? `${formId}-notes-error` : undefined
+            }
             className={`${inputClassName} mt-3 resize-y bg-surface-page/60`}
           />
           {fieldErrors.notes ? (
-            <p className="mt-1.5 text-sm text-brand-coral-deep">
+            <p
+              id={`${formId}-notes-error`}
+              className="mt-1.5 text-sm text-brand-coral-deep"
+            >
               {fieldErrors.notes}
             </p>
           ) : null}

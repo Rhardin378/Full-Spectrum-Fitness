@@ -1,12 +1,21 @@
+import { formatWeekOfRange } from "@/lib/weekly/display";
+
 type MoodSparklineProps = {
   values: Array<number | null>;
+  weekStart: string;
+  weekEnd: string;
   className?: string;
 };
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"] as const;
 
 /** Line chart for weekly mood; hollow points when the day has no entry. */
-export function MoodSparkline({ values, className }: MoodSparklineProps) {
+export function MoodSparkline({
+  values,
+  weekStart,
+  weekEnd,
+  className,
+}: MoodSparklineProps) {
   const width = 280;
   const height = 72;
   const padX = 12;
@@ -15,6 +24,10 @@ export function MoodSparkline({ values, className }: MoodSparklineProps) {
   const chartH = height - padY * 2 - 14;
   const min = 1;
   const max = 10;
+  const weekCaption = formatWeekOfRange(weekStart, weekEnd).replace(
+    /^Week of/,
+    "week of",
+  );
 
   const points = values.map((value, index) => {
     const x =
@@ -38,7 +51,7 @@ export function MoodSparkline({ values, className }: MoodSparklineProps) {
       <svg
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label="Mood sparkline for the check-in week"
+        aria-label={`Mood sparkline for ${weekCaption}`}
         className="h-20 w-full max-w-sm"
       >
         {linePath ? (
@@ -97,7 +110,7 @@ export function MoodSparkline({ values, className }: MoodSparklineProps) {
         })}
       </svg>
       <p className="mt-1 text-xs text-text-muted">
-        Mood, last 7 days (hollow = no entry)
+        Mood, {weekCaption} (hollow = no entry)
       </p>
     </div>
   );
