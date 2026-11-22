@@ -7,7 +7,7 @@ const { getUser } = vi.hoisted(() => ({
 }));
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/dashboard",
+  usePathname: () => "/fitness",
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
 
@@ -78,6 +78,21 @@ describe("AppHeader", () => {
     expect(header.className).toContain("top-0");
     expect(header.className).toContain("z-50");
     expect(header.className).toContain("bg-surface-header");
+  });
+
+  it("points Fitness at /fitness and keeps Insights off /dashboard", async () => {
+    render(<Header userId="user-1" initialProfile={profile} />);
+
+    expect(
+      await screen.findByRole("link", { name: "Fitness" }),
+    ).toHaveAttribute("href", "/fitness");
+    expect(screen.getByRole("link", { name: "Insights" })).toHaveAttribute(
+      "href",
+      "#",
+    );
+    expect(
+      screen.queryByRole("link", { name: "Fitness", hidden: true }),
+    ).not.toHaveAttribute("href", "/dashboard");
   });
 
   it("shows the signed-in menu even before a profile row exists", async () => {

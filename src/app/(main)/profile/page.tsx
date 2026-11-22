@@ -48,10 +48,10 @@ export default async function ProfilePage() {
             </p>
           </div>
           <Link
-            href="/dashboard"
+            href="/fitness"
             className="inline-flex items-center justify-center rounded-xl border border-black/10 px-4 py-2 text-sm font-medium text-text-muted transition hover:bg-surface-page"
           >
-            Back to dashboard
+            Back to Fitness
           </Link>
         </div>
 

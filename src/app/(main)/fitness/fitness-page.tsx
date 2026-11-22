@@ -3,7 +3,7 @@ import FitnessDashboardShell from "@/components/dashboard/fitness-dashboard-shel
 import { getOrCreateProfile } from "@/lib/profile/actions";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function DashboardPage() {
+export default async function FitnessPage() {
   const supabase = await createClient();
   const {
     data: { user },

@@ -1,9 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { DashboardWelcomeBand } from "@/components/dashboard/dashboard-welcome-band";
-import { FITNESS_TABS, type FitnessTabId } from "@/components/dashboard/fitness-tabs";
+import {
+  FITNESS_TABS,
+  fitnessTabFromPathname,
+  pathForFitnessTab,
+  type FitnessTabId,
+} from "@/components/dashboard/fitness-tabs";
 import { LogMeasurementModal } from "@/components/measurements/log-measurement-modal";
 import { MeasurementsTabPanel } from "@/components/measurements/measurements-tab-panel";
 
@@ -67,7 +73,15 @@ export default function FitnessDashboardShell({
   displayName,
   needsProfileSetup = false,
 }: FitnessDashboardShellProps) {
-  const [activeTab, setActiveTab] = useState<FitnessTabId>("measurements");
+  const pathname = usePathname() ?? "/fitness";
+  const router = useRouter();
+  const pathTab = fitnessTabFromPathname(pathname);
+  // Overview has no dedicated URL until OV.1; keep a local selection only
+  // for the current pathname (clears automatically when the path changes).
+  const [overviewPath, setOverviewPath] = useState<string | null>(null);
+  const activeTab: FitnessTabId =
+    overviewPath === pathname ? "overview" : pathTab;
+
   const [logModalOpen, setLogModalOpen] = useState(false);
   const [logModalKey, setLogModalKey] = useState(0);
   const [historyRefreshToken, setHistoryRefreshToken] = useState(0);
@@ -86,6 +100,21 @@ export default function FitnessDashboardShell({
     setShowSaveSuccess(true);
     window.setTimeout(() => setShowSaveSuccess(false), 5000);
   }, [refreshHistory]);
+
+  const selectTab = useCallback(
+    (tab: FitnessTabId) => {
+      if (tab === "overview") {
+        setOverviewPath(pathname);
+        return;
+      }
+      setOverviewPath(null);
+      const nextPath = pathForFitnessTab(tab);
+      if (nextPath !== pathname) {
+        router.push(nextPath);
+      }
+    },
+    [pathname, router],
+  );
 
   const activeTabMeta = FITNESS_TABS.find((tab) => tab.id === activeTab)!;
 
@@ -134,7 +163,7 @@ export default function FitnessDashboardShell({
                 label={tab.label}
                 active={activeTab === tab.id}
                 comingSoon={tab.comingSoon}
-                onSelect={() => setActiveTab(tab.id)}
+                onSelect={() => selectTab(tab.id)}
               />
             ))}
           </div>

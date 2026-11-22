@@ -36,11 +36,15 @@ type MockRequest = {
   };
 };
 
-function makeRequest(pathname: string, cookies: Cookie[] = []): MockRequest {
+function makeRequest(
+  pathname: string,
+  cookies: Cookie[] = [],
+  search = "",
+): MockRequest {
   return {
     nextUrl: {
       pathname,
-      clone: () => ({ pathname, search: "" }),
+      clone: () => ({ pathname, search }),
     },
     cookies: {
       getAll: vi.fn(() => cookies),
@@ -99,9 +103,10 @@ describe("updateSession", () => {
     });
 
     nextResponseRedirectMock.mockImplementation(
-      (url: { pathname: string; search: string }) => ({
+      (url: { pathname: string; search: string }, status?: number) => ({
         kind: "redirect",
         url,
+        status,
         cookies: {
           set: vi.fn(),
         },
@@ -109,14 +114,36 @@ describe("updateSession", () => {
     );
   });
 
-  it("redirects unauthenticated users from protected routes", async () => {
-    const request = makeRequest("/dashboard/settings");
+  it("redirects unauthenticated users from protected Fitness routes", async () => {
+    const request = makeRequest("/fitness/measurements");
     createServerClientMock.mockReturnValue(makeAuthResult(null));
 
     const response = await updateSession(request as never);
 
     expect(redirectUrl()).toEqual({ pathname: "/auth", search: "" });
     expect(response).toEqual(expect.objectContaining({ kind: "redirect" }));
+  });
+
+  it("redirects unauthenticated users from legacy /dashboard to auth", async () => {
+    const request = makeRequest("/dashboard");
+    createServerClientMock.mockReturnValue(makeAuthResult(null));
+
+    await updateSession(request as never);
+
+    expect(redirectUrl()).toEqual({ pathname: "/auth", search: "" });
+  });
+
+  it("308-redirects signed-in /dashboard?foo=1 to /fitness?foo=1", async () => {
+    const request = makeRequest("/dashboard", [], "?foo=1");
+    createServerClientMock.mockReturnValue(makeAuthResult({ id: "user-1" }));
+
+    const response = (await updateSession(request as never)) as unknown as {
+      kind: string;
+      status?: number;
+    };
+
+    expect(redirectUrl()).toEqual({ pathname: "/fitness", search: "?foo=1" });
+    expect(response.status).toBe(308);
   });
 
   it("redirects unauthenticated users from Mind routes", async () => {
@@ -149,7 +176,7 @@ describe("updateSession", () => {
   });
 
   it("treats chunked auth cookies as a session cookie", async () => {
-    const request = makeRequest("/dashboard", [
+    const request = makeRequest("/fitness", [
       { name: "sb-abc123-auth-token.0", value: "stale" },
     ]);
     createServerClientMock.mockReturnValue(makeAuthResult(null));
@@ -160,7 +187,7 @@ describe("updateSession", () => {
   });
 
   it("ignores unrelated cookies when deciding the reason", async () => {
-    const request = makeRequest("/dashboard", [
+    const request = makeRequest("/fitness", [
       { name: "theme", value: "dark" },
     ]);
     createServerClientMock.mockReturnValue(makeAuthResult(null));
@@ -171,7 +198,7 @@ describe("updateSession", () => {
   });
 
   it("copies refreshed cookies onto redirect responses", async () => {
-    const request = makeRequest("/dashboard", [
+    const request = makeRequest("/fitness", [
       { name: "sb-abc123-auth-token", value: "stale" },
     ]);
     setCookiesThenReturn(null, [
@@ -195,7 +222,7 @@ describe("updateSession", () => {
 
     const response = await updateSession(request as never);
 
-    expect(redirectUrl()).toEqual({ pathname: "/dashboard", search: "" });
+    expect(redirectUrl()).toEqual({ pathname: "/fitness", search: "" });
     expect(response).toEqual(expect.objectContaining({ kind: "redirect" }));
   });
 

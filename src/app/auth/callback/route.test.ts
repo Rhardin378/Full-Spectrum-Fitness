@@ -39,12 +39,12 @@ describe("GET /auth/callback", () => {
     expect(response.headers.get("location")).toBe("/auth/update-password");
   });
 
-  it("defaults to the dashboard when next is missing", async () => {
+  it("defaults to Fitness when next is missing", async () => {
     exchangeCodeForSession.mockResolvedValue({ error: null });
 
     const response = await callback("?code=abc");
 
-    expect(response.headers.get("location")).toBe("/dashboard");
+    expect(response.headers.get("location")).toBe("/fitness");
   });
 
   it("ignores an off-site next", async () => {
@@ -52,7 +52,7 @@ describe("GET /auth/callback", () => {
 
     const response = await callback("?code=abc&next=%2F%2Fevil.example");
 
-    expect(response.headers.get("location")).toBe("/dashboard");
+    expect(response.headers.get("location")).toBe("/fitness");
   });
 
   it("verifies a recovery token_hash and defaults to update-password", async () => {
