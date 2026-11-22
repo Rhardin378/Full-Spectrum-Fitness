@@ -4,16 +4,22 @@ type MoodSparklineProps = {
   values: Array<number | null>;
   weekStart: string;
   weekEnd: string;
+  /** Defaults to Mon–Sun letters for the check-in week. */
+  dayLabels?: readonly string[];
+  /** Overrides the default “Mood, week of …” caption. */
+  caption?: string;
   className?: string;
 };
 
-const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"] as const;
+const DEFAULT_DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"] as const;
 
 /** Line chart for weekly mood; hollow points when the day has no entry. */
 export function MoodSparkline({
   values,
   weekStart,
   weekEnd,
+  dayLabels = DEFAULT_DAY_LABELS,
+  caption,
   className,
 }: MoodSparklineProps) {
   const width = 280;
@@ -24,10 +30,9 @@ export function MoodSparkline({
   const chartH = height - padY * 2 - 14;
   const min = 1;
   const max = 10;
-  const weekCaption = formatWeekOfRange(weekStart, weekEnd).replace(
-    /^Week of/,
-    "week of",
-  );
+  const weekCaption =
+    caption ??
+    formatWeekOfRange(weekStart, weekEnd).replace(/^Week of/, "week of");
 
   const points = values.map((value, index) => {
     const x =
@@ -91,11 +96,11 @@ export function MoodSparkline({
             />
           );
         })}
-        {DAY_LABELS.map((label, index) => {
+        {dayLabels.map((label, index) => {
           const x =
             values.length <= 1
               ? padX + chartW / 2
-              : padX + (index / (DAY_LABELS.length - 1)) * chartW;
+              : padX + (index / (Math.max(dayLabels.length - 1, 1))) * chartW;
           return (
             <text
               key={`${label}-${index}`}
@@ -110,7 +115,9 @@ export function MoodSparkline({
         })}
       </svg>
       <p className="mt-1 text-xs text-text-muted">
-        Mood, {weekCaption} (hollow = no entry)
+        {caption
+          ? `${caption} (hollow = no entry)`
+          : `Mood, ${weekCaption} (hollow = no entry)`}
       </p>
     </div>
   );

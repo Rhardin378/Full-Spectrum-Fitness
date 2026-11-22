@@ -29,6 +29,24 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Mind page (ticket 2.6)
+
+### Completed
+
+- Expanded `/mind` beyond the #91 stub: welcome + journal CTA (New / Edit today’s entry), rolling 7-day stats (avg mood, domains touched, last entry; no streak until 2.5.1), mood trend sparkline, and Recent entries history cards with Mood / optional Stress & Energy pills, Show more / Show less.
+- Successful journal save redirects to `/mind?saved=1` with a one-shot “Entry saved.” banner (query stripped in-memory; gone on reload).
+- Intention card (2.5) and check-in due card (2.7) left as mount points for later tickets.
+
+### Next
+
+- Ticket 2.5 (intention line + Mind card) and 2.7 (due card).
+
+### AI Notes
+
+- Cursor agent. Built on the #91 Mind stub after Ryan chose 2.6 before circling back to 2.5.
+
+---
+
 ## 2026-11-22 — Weekly check-in screen (ticket 2.4) and Mind stub
 
 ### Completed

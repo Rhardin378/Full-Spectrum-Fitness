@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useId, useState, useSyncExternalStore, type ReactNode } from "react";
 import { RatingScale } from "@/components/rating-scale";
 import { saveJournalEntry } from "@/lib/journal/actions";
@@ -75,6 +76,7 @@ export function JournalEntryForm({
   initialEntry,
   intentionSlot,
 }: JournalEntryFormProps) {
+  const router = useRouter();
   const formId = useId();
   const [hasSavedEntry, setHasSavedEntry] = useState(initialEntry !== null);
   const [mood, setMood] = useState<number | null>(initialEntry?.mood ?? null);
@@ -95,10 +97,8 @@ export function JournalEntryForm({
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [saved, setSaved] = useState(false);
 
   function clearFieldError(field: string) {
-    setSaved(false);
     setFieldErrors((previous) => {
       if (!previous[field]) return previous;
       const next = { ...previous };
@@ -130,7 +130,6 @@ export function JournalEntryForm({
     }
 
     setFormError(null);
-    setSaved(false);
 
     const clientErrors: Record<string, string> = {};
     if (mood === null) {
@@ -164,6 +163,7 @@ export function JournalEntryForm({
           setFieldErrors(result.fieldErrors);
         }
         setFormError(result.message);
+        setSubmitting(false);
         return;
       }
 
@@ -176,10 +176,11 @@ export function JournalEntryForm({
       setGratefulFor(entry.grateful_for ?? "");
       setDomains(entry.domains);
       setHasSavedEntry(true);
-      setSaved(true);
+      router.push("/mind?saved=1");
+      router.refresh();
+      // Keep submitting true so the button stays disabled after success.
     } catch {
       setFormError(UNEXPECTED_SAVE_MESSAGE);
-    } finally {
       setSubmitting(false);
     }
   }
@@ -389,11 +390,6 @@ export function JournalEntryForm({
         </div>
 
         <div className="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-          {saved ? (
-            <p role="status" className="text-sm font-medium text-text-primary">
-              Entry saved.
-            </p>
-          ) : null}
           <button
             type="submit"
             disabled={submitting}
