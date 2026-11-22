@@ -64,7 +64,7 @@ function DomainNav({
         <NavLink href="/dashboard" active={isFitness && !isMind}>
           Fitness
         </NavLink>
-        <NavLink href="/dashboard" muted>
+        <NavLink href="/mind" active={isMind}>
           Mind
         </NavLink>
         <NavLink href="/dashboard" muted>

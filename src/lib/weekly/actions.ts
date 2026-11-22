@@ -378,8 +378,8 @@ export async function updateIntentionText(
   };
 }
 
-export async function getCurrentIntention(
-  input: GetCurrentIntentionInput,
+async function loadIntentionForWeekStart(
+  weekStart: string,
 ): Promise<GetCurrentIntentionResult> {
   const supabase = await createClient();
   const {
@@ -394,20 +394,6 @@ export async function getCurrentIntention(
       message: "You must be signed in to view the intention.",
     };
   }
-
-  const parsed = getCurrentIntentionSchema.safeParse(input);
-
-  if (!parsed.success) {
-    const fieldErrors = formatWeeklyValidationErrors(parsed.error);
-    return {
-      success: false,
-      error: "validation",
-      message: fieldErrors._form ?? "Please provide a valid today date.",
-      fieldErrors,
-    };
-  }
-
-  const weekStart = currentIntentionWeekStart(parsed.data.today);
 
   const { data, error } = await supabase
     .from("weekly_intentions")
@@ -428,4 +414,43 @@ export async function getCurrentIntention(
     success: true,
     intention: data ? normalizeWeeklyIntention(data) : null,
   };
+}
+
+export async function getCurrentIntention(
+  input: GetCurrentIntentionInput,
+): Promise<GetCurrentIntentionResult> {
+  const parsed = getCurrentIntentionSchema.safeParse(input);
+
+  if (!parsed.success) {
+    const fieldErrors = formatWeeklyValidationErrors(parsed.error);
+    return {
+      success: false,
+      error: "validation",
+      message: fieldErrors._form ?? "Please provide a valid today date.",
+      fieldErrors,
+    };
+  }
+
+  return loadIntentionForWeekStart(
+    currentIntentionWeekStart(parsed.data.today),
+  );
+}
+
+/** Intention for the check-in week (`lastCompletedWeekStart`), if any. */
+export async function getCheckInWeekIntention(
+  input: GetCurrentIntentionInput,
+): Promise<GetCurrentIntentionResult> {
+  const parsed = getCurrentIntentionSchema.safeParse(input);
+
+  if (!parsed.success) {
+    const fieldErrors = formatWeeklyValidationErrors(parsed.error);
+    return {
+      success: false,
+      error: "validation",
+      message: fieldErrors._form ?? "Please provide a valid today date.",
+      fieldErrors,
+    };
+  }
+
+  return loadIntentionForWeekStart(lastCompletedWeekStart(parsed.data.today));
 }

@@ -139,8 +139,8 @@ export default function MobileNavMenu({
                 Fitness
               </MobileNavItem>
               <MobileNavItem
-                href="/dashboard"
-                muted
+                href="/mind"
+                active={isMind}
                 onNavigate={closeMenu}
               >
                 Mind

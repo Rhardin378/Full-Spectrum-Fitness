@@ -29,6 +29,28 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Weekly check-in screen (ticket 2.4) and Mind stub
+
+### Completed
+
+- Built `/mind/check-in` (ticket 2.4): week recap, last-intention outcome (hidden on first check-in), required stress/energy with daily averages as reference, Your goals reminder, canonical domain scores, next-week intention (defaults to lowest score), optional notes, history, redirect to `/mind` on success.
+- Landed a minimal `/mind` stub (`MindHome`) and wired the Mind navbar link (desktop + mobile) so the check-in redirect has a destination. Ticket 2.6 builds on that stub.
+- Follow-up cleanup on #91: shared `RatingScale`, copy/a11y fixes, submit stays disabled after success.
+
+### Decisions
+
+- Ryan accepted the early Mind stub + live navbar link in the 2.4 PR so submit can redirect without waiting on the full Mind home.
+
+### Next
+
+- Ticket 2.6 expands `MindHome` (stats, mood trend, intention card, history, journal-save confirmation and redirect).
+
+### AI Notes
+
+- Cursor agent. Ticket 2.4 UI plus the Mind stub, then Ryan’s cleanup pass on the same PR.
+
+---
+
 ## 2026-11-21 — Mind history card design (ticket 2.6)
 
 ### Completed

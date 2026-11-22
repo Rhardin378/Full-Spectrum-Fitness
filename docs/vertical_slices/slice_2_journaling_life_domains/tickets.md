@@ -244,7 +244,7 @@ Build `/mind/journal` to match [`journal-desktop.png`](../../mockups/slice_2_jou
 - Max 200 characters each. The server still normalizes blank and whitespace-only to null. The client does not block submit for an empty line.
 - Domain chips in canonical order. Habits chip shows “optional”. Zero to three selected. A fourth click does not add a tag. Helper copy: “What was today mostly about? Pick up to three.”
 - Primary button “Save entry”. Saving an existing today-row updates it. Button shows a pending state.
-- Field errors and a generic save error. Until ticket 2.6 ships `/mind`, success is visible on this page and the save stays on `/mind/journal`. Ticket 2.6 switches a successful save to a redirect to `/mind` (Ryan, 2026-11-21).
+- Field errors and a generic save error. Until ticket 2.6 builds out `/mind`, success is visible on this page and the save stays on `/mind/journal`. Ticket 2.6 switches a successful save to a redirect to `/mind` (Ryan, 2026-11-21).
 - If today’s row exists, the form loads it (mood, reflection, tags, and the two lines). A null line loads as an empty input.
 - Leave a place directly under the date for the intention line (ticket 2.5). Stress and energy are optional 1–10 rows after mood (added 2026-11-21); pressing the selected value again clears it. Do not add a wins page, a gratitude page, or a link to one. `journal-desktop.png` does not show these two inputs. This ticket adds them.
 - Keyboard: each mood button and chip is a real button, the textarea and each one-line field have a label, submit works from the keyboard.
@@ -376,6 +376,8 @@ Show the current week’s single intention above the journal form and as a card 
 ### Description
 
 Replace the muted Mind link with a real `/mind` home: stats, a 7-day mood trend, and journal history.
+
+The minimal `/mind` stub page and live Mind navbar link (desktop + mobile) landed early in #91 (ticket 2.4) so the check-in redirect has a destination; 2.6 builds on that stub.
 
 ### Scope
 
