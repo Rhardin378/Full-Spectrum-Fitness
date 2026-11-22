@@ -106,6 +106,7 @@ function WeeklyIntentionBody({
   const [intention, setIntention] = useState<WeeklyIntention | null | undefined>(
     initialIntention !== undefined ? initialIntention : undefined,
   );
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [body, setBody] = useState(initialIntention?.body ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -125,12 +126,13 @@ function WeeklyIntentionBody({
 
       if (!result.success) {
         setIntention(null);
-        setFormError(result.message);
+        setLoadError("Couldn’t load this week’s intention.");
         return;
       }
 
       setIntention(result.intention);
       setBody(result.intention?.body ?? "");
+      setLoadError(null);
       setFormError(null);
     }
 
@@ -142,9 +144,13 @@ function WeeklyIntentionBody({
   }, [today, initialIntention]);
 
   if (intention === undefined) {
+    return null;
+  }
+
+  if (loadError) {
     return (
       <p className="text-sm text-text-muted" role="status">
-        Loading this week’s intention…
+        {loadError}
       </p>
     );
   }

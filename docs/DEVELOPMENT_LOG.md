@@ -29,6 +29,22 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Sunday check-in week decision (ticket 2.7, docs only)
+
+### Decisions
+
+- Ryan, 2026-11-22. A check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday’s week. Monday–Saturday check-ins keep closing the last completed week. Recorded under ticket 2.7 and the slice README; implement with the due-card work (helper, `submit_weekly_check_in` week args, `cappedEditableUntil`, tests including `TZ=America/Chicago` late Sunday). Not coded yet.
+
+### Next
+
+- Ticket 2.7 implements the due card and this Sunday week-math change together.
+
+### AI Notes
+
+- Cursor agent. Docs-only note on the 2.5 PR at Ryan’s request.
+
+---
+
 ## 2026-11-22 — Weekly intention line and Mind card (ticket 2.5)
 
 ### Completed

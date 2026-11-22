@@ -431,6 +431,8 @@ The minimal `/mind` stub page and live Mind navbar link (desktop + mobile) lande
 
 On `/mind`, show a card when last week’s check-in is missing. Compute it when the page loads. Do not store a due flag and do not notify anyone.
 
+Decision (Ryan, Nov 22 2026): a check-in submitted on Sunday closes the Monday–Sunday week ending that day (recap covers that week) and creates the intention for the following Monday's week; Monday–Saturday check-ins keep closing the last completed week. Implemented in 2.7 together with the due-card logic; requires updating the check-in week helper, the intention week passed to `submit_weekly_check_in`, `cappedEditableUntil` inputs, and tests (Sunday, Monday, Saturday, `TZ=America/Chicago` late Sunday).
+
 ### Scope
 
 - Server component (or the Mind page loader) calls the due predicate from ticket 2.2.

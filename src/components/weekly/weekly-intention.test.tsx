@@ -12,12 +12,13 @@ import {
   WeeklyIntentionLine,
 } from "@/components/weekly/weekly-intention";
 
-const { updateIntentionText } = vi.hoisted(() => ({
+const { getCurrentIntention, updateIntentionText } = vi.hoisted(() => ({
+  getCurrentIntention: vi.fn(),
   updateIntentionText: vi.fn(),
 }));
 
 vi.mock("@/lib/weekly/actions", () => ({
-  getCurrentIntention: vi.fn(),
+  getCurrentIntention,
   updateIntentionText,
 }));
 
@@ -59,6 +60,30 @@ describe("WeeklyIntentionLine", () => {
       <WeeklyIntentionLine initialIntention={null} />,
     );
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("renders nothing while loading", () => {
+    getCurrentIntention.mockReturnValue(new Promise(() => {}));
+    const { container } = render(<WeeklyIntentionLine />);
+    expect(container).toBeEmptyDOMElement();
+    expect(
+      screen.queryByText(/Loading this week’s intention/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows a muted error when the intention fails to load", async () => {
+    getCurrentIntention.mockResolvedValue({
+      success: false,
+      error: "database",
+      message: "Unable to load the intention. Please try again.",
+    });
+
+    render(<WeeklyIntentionLine />);
+
+    expect(
+      await screen.findByText("Couldn’t load this week’s intention."),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
   it("shows a locked line after the edit window", () => {
