@@ -80,4 +80,14 @@ describe("MindHome", () => {
     expect(screen.queryByText(/Journal streak/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/of 7/)).not.toBeInTheDocument();
   });
+
+  it("labels the mood sparkline as last 7 days", () => {
+    render(<MindHome entries={[makeEntry()]} />);
+    expect(
+      screen.getByText("Mood, last 7 days (hollow = no entry)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Past days are history, not an editor/),
+    ).not.toBeInTheDocument();
+  });
 });

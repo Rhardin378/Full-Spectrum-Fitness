@@ -6,6 +6,8 @@ type MoodSparklineProps = {
   weekEnd: string;
   /** Defaults to Mon–Sun letters for the check-in week. */
   dayLabels?: readonly string[];
+  /** Overrides the default “Mood, week of …” caption. */
+  caption?: string;
   className?: string;
 };
 
@@ -17,6 +19,7 @@ export function MoodSparkline({
   weekStart,
   weekEnd,
   dayLabels = DEFAULT_DAY_LABELS,
+  caption,
   className,
 }: MoodSparklineProps) {
   const width = 280;
@@ -27,10 +30,9 @@ export function MoodSparkline({
   const chartH = height - padY * 2 - 14;
   const min = 1;
   const max = 10;
-  const weekCaption = formatWeekOfRange(weekStart, weekEnd).replace(
-    /^Week of/,
-    "week of",
-  );
+  const weekCaption =
+    caption ??
+    formatWeekOfRange(weekStart, weekEnd).replace(/^Week of/, "week of");
 
   const points = values.map((value, index) => {
     const x =
@@ -113,7 +115,9 @@ export function MoodSparkline({
         })}
       </svg>
       <p className="mt-1 text-xs text-text-muted">
-        Mood, {weekCaption} (hollow = no entry)
+        {caption
+          ? `${caption} (hollow = no entry)`
+          : `Mood, ${weekCaption} (hollow = no entry)`}
       </p>
     </div>
   );

@@ -8,10 +8,7 @@ import {
   weekdayLettersForWindow,
 } from "@/lib/journal/mind-window";
 import type { JournalEntry } from "@/lib/journal/types";
-import {
-  formatCalendarDate,
-  todayLocalISODate,
-} from "@/lib/measurements/calendar-date";
+import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 import { MindHistoryCard } from "@/components/mind/mind-history-card";
 import { MoodSparkline } from "@/components/weekly/mood-sparkline";
 
@@ -147,11 +144,8 @@ function MindHomeContent({
           label="Last entry"
           value={
             stats.lastEntryOn
-              ? formatCalendarDate(stats.lastEntryOn)
+              ? formatJournalDay(stats.lastEntryOn)
               : "No entries yet"
-          }
-          hint={
-            stats.lastEntryOn ? formatJournalDay(stats.lastEntryOn) : undefined
           }
         />
       </section>
@@ -172,6 +166,7 @@ function MindHomeContent({
             weekStart={stats.windowStart}
             weekEnd={stats.windowEnd}
             dayLabels={weekdayLettersForWindow(stats.windowStart)}
+            caption="Mood, last 7 days"
           />
         </div>
       </section>
@@ -184,9 +179,6 @@ function MindHomeContent({
           >
             Recent entries
           </h2>
-          <p className="mt-1 text-sm text-text-muted">
-            Past days are history, not an editor.
-          </p>
         </div>
 
         {entries.length === 0 ? (
