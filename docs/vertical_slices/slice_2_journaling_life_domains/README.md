@@ -2,7 +2,7 @@
 
 ## Feature Brief
 
-Authenticated users can keep one short journal entry per calendar day, tag it with up to two life domains, and once a week score how life went, close last week’s intention, and set exactly one intention for the new week. The entry may also include two optional one-line fields, “One win today” and “Grateful for”. Both can be skipped. Neither is required to save.
+Authenticated users can keep one short journal entry per calendar day, tag it with up to three life domains, and once a week score how life went, close last week’s intention, and set exactly one intention for the new week. The entry may also include two optional one-line fields, “One win today” and “Grateful for”. Both can be skipped. Neither is required to save.
 
 **This is the current slice.** Slice 1.5 closed on 2026-11-16 and `docs/LAUNCH_PLAN.md` points here. Ticket 2.9 aligned the handoff pack with ADR-013 and landed in [PR #68](https://github.com/Rhardin378/Full-Spectrum-Fitness/pull/68). Slice 2 implementation starts with ticket 2.1. [NAV.1](../nov_16_2026_decisions/tickets.md) ([issue #80](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/80)) must merge before ticket 2.7. The screens are not built yet.
 
@@ -81,12 +81,12 @@ One row per user per `entry_on`. The screen is for **local today** only (the val
 - Reflection: required, trimmed, 1–2000 characters.
 - **One win today:** optional single-line input. Label, exact: “One win today”. Column `win`. Nullable text. Omitted, null, and whitespace-only store null, not `''`. Otherwise trim and keep 1–200 characters. Skipping it does not block save.
 - **Grateful for:** optional single-line input. Label, exact: “Grateful for”. Column `grateful_for`. Same null rule and the same 200-character cap. Skipping it does not block save.
-- Tags: optional, at most two, from the eight domains. Copy: “What was today mostly about? Pick one or two.”
+- Tags: optional, at most three, from the eight domains. Copy: “What was today mostly about? Pick up to three.” Raised from two on 2026-11-21 (Ryan): real days often span three areas. The weekly recap still shows the top two tagged domains.
 - No stress, energy, sleep, or domain scores on the entry.
 
 Field order: mood, reflection, “One win today”, “Grateful for”, then domain tags. The 200-character cap is the same cap as the weekly intention body. Both are one line, not a second reflection.
 
-The two lines use the same day rule as the reflection. The screen edits local today only. A second save the same day updates them on that row. Past days are history, not an editor. There is no extra edit window and no database trigger for these columns. The 3-day window is only for intention text (ticket 2.1). After a successful save, stay on `/mind/journal`. Success is visible on that page.
+The two lines use the same day rule as the reflection. The screen edits local today only. A second save the same day updates them on that row. Past days are history, not an editor. There is no extra edit window and no database trigger for these columns. The 3-day window is only for intention text (ticket 2.1). After a successful save, go to `/mind`, which shows a short “Entry saved” confirmation and the new entry at the top of history (Ryan, 2026-11-21). Until ticket 2.6 ships `/mind`, the save stays on `/mind/journal` with “Entry saved.” on that page.
 
 [`journal-desktop.png`](../../mockups/slice_2_journal_checkin/journal-desktop.png) does not show these two inputs. This list is the approved form. Do not leave the fields out because the PNG is older.
 
@@ -149,7 +149,7 @@ Do not build `/mind/domains`, Prompts, the domain-comparison screen, or a wins l
 | Table | Role |
 |-------|------|
 | `journal_entries` | One mood + reflection per user per calendar day, plus optional `win` and `grateful_for` (each null, or 1–200 characters) |
-| `journal_entry_domains` | Zero to two domain tags |
+| `journal_entry_domains` | Zero to three domain tags |
 | `weekly_check_ins` | One score row per user per Monday `week_start`, plus optional `notes` (nullable, 1–1000 characters) |
 | `weekly_intentions` | One intention per user per Monday `week_start` |
 
@@ -178,7 +178,7 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 
 ## Done criteria
 
-- A signed-in user can save today’s journal (mood, reflection, up to two tags) and see it after refresh. A second save the same day updates the same row. A successful save stays on `/mind/journal`.
+- A signed-in user can save today’s journal (mood, reflection, up to three tags) and see it after refresh. A second save the same day updates the same row. A successful save lands on `/mind` with an “Entry saved” confirmation.
 - “One win today” and “Grateful for” are optional. Leaving both blank still saves the entry and stores null. Mind history shows a line only when its value is non-null. There is no wins page.
 - Stress and energy are not on the journal.
 - A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice. There is no draft. A successful submit redirects to `/mind`. The first check-in hides the last-intention block. The intention label is “Intention for the week of {Mon}–{Sun}”.

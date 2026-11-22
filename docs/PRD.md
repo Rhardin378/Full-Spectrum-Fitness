@@ -104,7 +104,7 @@ Change these here if they change; do not contradict them in a slice README.
 Ongoing capture (when it happens)
   • Log workout
   • Log weight / waist
-  • Optional journal entry (mood, reflection, optional one-line win and gratitude, up to two domain tags)
+  • Optional journal entry (mood, reflection, optional one-line win and gratitude, up to three domain tags)
         ↓
 Weekly check-in (Slice 2, ~2–5 minutes) — [ADR-013](./ARCHITECTURE_DECISIONS.md)
   • Stress, energy, life-domain scores
@@ -137,7 +137,7 @@ Do not treat later rows as current work. Sequencing: [LAUNCH_PLAN.md](./LAUNCH_P
 
 - Authentication and profile (Slice 1 — **done**)
 - Measurements: weight, waist (Slice 1.5 — **done**)
-- Journal (mood, reflection, optional one-line win and gratitude, up to two domain tags) and the weekly check-in (Slice 2 — **current**; screens not built yet). [ADR-013](./ARCHITECTURE_DECISIONS.md)
+- Journal (mood, reflection, optional one-line win and gratitude, up to three domain tags) and the weekly check-in (Slice 2 — **current**; screens not built yet). [ADR-013](./ARCHITECTURE_DECISIONS.md)
 - Manual workout logging, history, and basic performance/volume (Slice 3)
 - Deterministic Insights (Slice 4)
 - Weekly coach report (Slice 5) — reads the Slice 2 check-in. [ADR-013](./ARCHITECTURE_DECISIONS.md)
@@ -253,7 +253,7 @@ Profile focus areas use these same slugs. Saved wellness-wheel priorities are ma
 
 - Optional daily entry; **not required every day**. One row per calendar day.
 - Mood (1–10) and a written reflection
-- Up to two domain tags from the list above
+- Up to three domain tags from the list above
 - Optional one-line “One win today” and “Grateful for”. Both are skippable. Empty, omitted, or whitespace-only stores null. Neither blocks saving the entry. Each is at most 200 characters.
 - No stress, energy, sleep, or domain scores on the entry
 
@@ -505,7 +505,7 @@ User-history retrieval (“find my old entries about work stress”) is a **late
 
 | Piece | Role | When |
 |-------|------|------|
-| Journal | Mood, reflection, optional one-line win and gratitude, up to two domain tags | Slice 2 |
+| Journal | Mood, reflection, optional one-line win and gratitude, up to three domain tags | Slice 2 |
 | Life domains | Option B tags on the journal; scores on the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 2 |
 | Weekly check-in | Recurring subjective ritual | Slice 2 |
 | Mind trends | Charts for mood, stress, energy, and domains | Slice 2–4 |
@@ -547,7 +547,7 @@ Auth users live in Supabase Auth (`auth.users`). Application tables use `user_id
 
 **journal_entries** — one mood and reflection per user per calendar day, plus optional nullable `win` and `grateful_for` (one line each, at most 200 characters; empty stores null). No stress, energy, or domain-score columns. Slice 2. [ADR-013](./ARCHITECTURE_DECISIONS.md).
 
-**journal_entry_domains** — zero to two domain tags on an entry. Not a scores table.
+**journal_entry_domains** — zero to three domain tags on an entry. Not a scores table.
 
 There is no `life_domains` lookup table and no `journal_domain_scores` table. Physical columns are in the [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md) and land in ticket 2.1. They are not migrated yet.
 

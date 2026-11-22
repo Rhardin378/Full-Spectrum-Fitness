@@ -227,7 +227,7 @@ Hard `DELETE` is not granted. Column-level `UPDATE` covers measurement fields an
 
 Frontend form  
 → server action  
-→ `journal_entries` (mood, reflection, optional `win` and `grateful_for`) and up to two rows in `journal_entry_domains`  
+→ `journal_entries` (mood, reflection, optional `win` and `grateful_for`) and up to three rows in `journal_entry_domains`  
 → stored in Postgres  
 No AI required to save.
 

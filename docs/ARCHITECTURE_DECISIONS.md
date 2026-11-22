@@ -171,6 +171,8 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 
   On 2026-11-17 Ryan added two optional one-line columns on `journal_entries`: `win` (“One win today”) and `grateful_for` (“Grateful for”). Both are nullable. Empty stores null. Neither is required, and neither blocks saving the entry. They are not a `wins` table. Structured wins and life events remain Slice 7. The Slice 2 README specifies the fields. The Why sentence above, that the daily journal “stays mood plus a written reflection, with up to two domain tags,” still describes what moved off the journal (stress, energy, and domain scores). It does not forbid these two columns.
 
+  On 2026-11-21 Ryan raised the journal tag cap from two to three (“Pick up to three”). The database trigger, Zod, and the form all enforce three. Tags still mean what the day was mostly about, so the cap stays. The check-in recap still shows the top two tagged domains. Where this ADR says “up to two domain tags,” read three.
+
 ---
 
 ## ADR-014 — One activity streak, one grace day per week

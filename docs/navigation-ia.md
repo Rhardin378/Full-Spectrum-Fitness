@@ -152,7 +152,7 @@ Same shell layout as dashboard mockups; **greeting + subtitle change by domain**
 Mind has no tabs, so the band does not follow a tab. Decided 2026-11-16.
 
 - Subtitle: “Reflect across your life domains”
-- Primary CTA: **+ New journal entry** → `/mind/journal`
+- Primary CTA: **+ New journal entry** → `/mind/journal` (reads **Edit today’s entry** once today has a row). A successful journal save returns to `/mind` with an “Entry saved” confirmation.
 - Stat row on the page (not a second band): **Activity streak** ([ADR-014](./ARCHITECTURE_DECISIONS.md)), Avg mood (7d), Domains touched, Last entry. Not a separate journal streak, and not “N of 7” in this row. The check-in recap still has its own “N of 7”.
 - **Owner:** the band, the journal button, and the three non-streak stats are **ticket 2.6**. The streak number is **ticket 2.5.1**. The intention card is **ticket 2.5**. The due card is **ticket 2.7**.
 
@@ -179,7 +179,7 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 
 Decided 2026-11-16. [Option A](./mockups/nov_2026_tickets/E-mind-layout-compare.png) is the page. Do not build Option B (Overview / Journal / Check-ins tabs), and do not build the older Overview / Journal / Domains / Prompts bar.
 
-Life domains here are the Option B set in [ADR-013](./ARCHITECTURE_DECISIONS.md): Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, and optional Habits. The journal is mood and a reflection, with up to two of those domains as tags, plus optional one-line “One win today” and “Grateful for” fields. Stress and energy are check-in fields, not journal fields. The weekly check-in is Slice 2. The Slice 5 coach report reads it later.
+Life domains here are the Option B set in [ADR-013](./ARCHITECTURE_DECISIONS.md): Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, and optional Habits. The journal is mood and a reflection, with up to three of those domains as tags, plus optional one-line “One win today” and “Grateful for” fields. Stress and energy are check-in fields, not journal fields. The weekly check-in is Slice 2. The Slice 5 coach report reads it later.
 
 | Surface | Route | Owner | Notes |
 |---------|-------|-------|-------|

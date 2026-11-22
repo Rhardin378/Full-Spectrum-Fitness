@@ -119,6 +119,24 @@ describe("updateSession", () => {
     expect(response).toEqual(expect.objectContaining({ kind: "redirect" }));
   });
 
+  it("redirects unauthenticated users from Mind routes", async () => {
+    const request = makeRequest("/mind/journal");
+    createServerClientMock.mockReturnValue(makeAuthResult(null));
+
+    await updateSession(request as never);
+
+    expect(redirectUrl()).toEqual({ pathname: "/auth", search: "" });
+  });
+
+  it("does not treat /mindful as protected", async () => {
+    const request = makeRequest("/mindful");
+    createServerClientMock.mockReturnValue(makeAuthResult(null));
+
+    await updateSession(request as never);
+
+    expect(nextResponseRedirectMock).not.toHaveBeenCalled();
+  });
+
   it("adds reason=session when an auth cookie exists but the user does not", async () => {
     const request = makeRequest("/profile", [
       { name: "sb-abc123-auth-token", value: "stale" },
