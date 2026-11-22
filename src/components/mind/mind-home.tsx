@@ -9,6 +9,8 @@ import {
 } from "@/lib/journal/mind-window";
 import type { JournalEntry } from "@/lib/journal/types";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
+import { getActivityStreak } from "@/lib/weekly/actions";
+import type { ActivityStreakView } from "@/lib/weekly/types";
 import { MindHistoryCard } from "@/components/mind/mind-history-card";
 import { MoodSparkline } from "@/components/weekly/mood-sparkline";
 import { WeeklyIntentionCard } from "@/components/weekly/weekly-intention";
@@ -30,11 +32,14 @@ function getServerToday(): string | null {
 type MindHomeProps = {
   entries: JournalEntry[];
   showSavedConfirmation?: boolean;
+  /** Test seam: skip the network load and render this streak. */
+  initialStreak?: ActivityStreakView;
 };
 
 export function MindHome({
   entries,
   showSavedConfirmation = false,
+  initialStreak,
 }: MindHomeProps) {
   const today = useSyncExternalStore(
     subscribeToNothing,
@@ -56,6 +61,7 @@ export function MindHome({
       today={today}
       entries={entries}
       showSavedConfirmation={showSavedConfirmation}
+      initialStreak={initialStreak}
     />
   );
 }
@@ -64,16 +70,23 @@ type MindHomeContentProps = {
   today: string;
   entries: JournalEntry[];
   showSavedConfirmation: boolean;
+  initialStreak?: ActivityStreakView;
 };
 
 function MindHomeContent({
   today,
   entries,
   showSavedConfirmation,
+  initialStreak,
 }: MindHomeContentProps) {
   const [visibleLimit, setVisibleLimit] = useState(HISTORY_INITIAL_VISIBLE);
   // Capture once so stripping ?saved=1 does not clear the in-memory banner.
   const [showSaved] = useState(showSavedConfirmation);
+  const [streak, setStreak] = useState<ActivityStreakView | null>(
+    initialStreak ?? null,
+  );
+  const [streakError, setStreakError] = useState(false);
+  const skipStreakFetch = initialStreak !== undefined;
 
   useEffect(() => {
     if (!showSavedConfirmation || typeof window === "undefined") {
@@ -86,6 +99,30 @@ function MindHomeContent({
       window.history.replaceState(window.history.state, "", next);
     }
   }, [showSavedConfirmation]);
+
+  useEffect(() => {
+    if (skipStreakFetch) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      const result = await getActivityStreak({ today });
+      if (cancelled) return;
+      if (!result.success) {
+        setStreak(null);
+        setStreakError(true);
+        return;
+      }
+      setStreak(result.streak);
+      setStreakError(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [today, skipStreakFetch]);
 
   const hasTodaysEntry = entries.some((entry) => entry.entry_on === today);
   const stats = buildMindWindowStats(entries, today);
@@ -121,8 +158,13 @@ function MindHomeContent({
 
       <section
         aria-label="Mind stats"
-        className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
       >
+        <ActivityStreakStat
+          streak={streak}
+          loading={!skipStreakFetch && streak === null && !streakError}
+          error={streakError}
+        />
         <StatCard
           label="Avg mood"
           value={stats.averageMood != null ? String(stats.averageMood) : "—"}
@@ -246,22 +288,88 @@ function MindHomeContent({
   );
 }
 
+function streakDayLabel(days: number): string {
+  return days === 1 ? "1 day" : `${days} days`;
+}
+
+function ActivityStreakStat({
+  streak,
+  loading,
+  error,
+}: {
+  streak: ActivityStreakView | null;
+  loading: boolean;
+  error: boolean;
+}) {
+  if (error) {
+    return (
+      <StatCard
+        label="Activity streak"
+        value="—"
+        hints={["Couldn't load streak."]}
+      />
+    );
+  }
+
+  if (loading || !streak) {
+    return <StatCard label="Activity streak" value="—" />;
+  }
+
+  if (streak.days === 0) {
+    return (
+      <StatCard
+        label="Activity streak"
+        value={streakDayLabel(0)}
+        hints={[
+          streak.countsWorkouts
+            ? "Log a journal entry or a workout to start a streak."
+            : "Log a journal entry to start a streak.",
+        ]}
+      />
+    );
+  }
+
+  const graceLine =
+    streak.graceLeft === 0
+      ? "No grace day left this week"
+      : "1 grace day left this week";
+  const countsLine = streak.countsWorkouts
+    ? "Journal or workout counts"
+    : "Journal counts";
+
+  return (
+    <StatCard
+      label="Activity streak"
+      value={streakDayLabel(streak.days)}
+      hints={[graceLine, countsLine]}
+    />
+  );
+}
+
 function StatCard({
   label,
   value,
   hint,
+  hints,
 }: {
   label: string;
   value: string;
   hint?: string;
+  hints?: string[];
 }) {
+  const lines = hints ?? (hint ? [hint] : []);
+
   return (
     <div className="rounded-2xl border border-black/5 bg-surface-card px-4 py-4 shadow-sm">
       <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
         {label}
       </p>
       <p className="mt-2 text-2xl font-semibold text-text-primary">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-text-muted">{hint}</p> : null}
+      {lines.map((line) => (
+        <p key={line} className="mt-1 text-xs text-text-muted">
+          {line}
+        </p>
+      ))}
     </div>
   );
 }

@@ -67,4 +67,16 @@ export type GetCurrentIntentionInput = {
   today: string;
 };
 
+export type GetActivityStreakInput = {
+  today: string;
+};
+
+export type ActivityStreakView = {
+  days: number;
+  /** `null` when days is 0 — UI hides the grace line. */
+  graceLeft: 0 | 1 | null;
+  /** False until the workouts slice supplies calendar days. */
+  countsWorkouts: boolean;
+};
+
 export type RequiredScoreKey = RequiredCheckInDomain;

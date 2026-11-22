@@ -180,7 +180,7 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 ## ADR-014 — One activity streak, one grace day per week
 
 - **Date:** 2026-11-16
-- **Status:** Proposed
+- **Status:** Accepted (ticket 2.5.1)
 - **Does not amend:** ADR-013. The weekly intention stays the lowest check-in score. A 2026-11-16 proposal to preselect the top-ranked profile focus area was rejected and is not part of this ADR.
 - **Decision:** The product has one activity streak. A calendar day counts when the user logged a journal entry that day or, once a workout has a calendar day, a workout that day. The same day from both sources counts once. One missed day in a Monday–Sunday week does not break the streak. A second missed day in that same week does. The streak is recomputed on the server from those dates. It is not stored, and a model does not calculate it (ADR-004).
 - **Why:** Mind and Fitness were about to grow separate streaks (“journal streak”, “workout streak”, “N of 7” on the Mind home). One rule is the number both surfaces show. A single grace day per week keeps a missed day from wiping a long run, and a second miss in that week still ends it, so the number stays meaningful. Calendar dates match journal `entry_on` and measurement `measured_on`, which already exist so a timezone cannot move the day.
@@ -197,5 +197,5 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
   - Forgiving one miss anywhere in the streak, with no week boundary. Rejected. The grace day would be ambiguous across months. The week already has a `week_start`.
   - Treating every empty day before the user started as a miss. Rejected. Those days are before `earliest` and are outside the streak.
   - Computing the streak in the browser from a fetched history. Rejected. The page can format the server result. It does not decide the count.
-- **Consequence:** This ADR is Proposed until ticket 2.5.1 lands the function, the tests, and the Mind card. The fixture table for those tests is in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](./vertical_slices/nov_16_2026_decisions/tickets.md) (ticket 2.5.1). Overview must not grow a second implementation. Copy stays plain (“N days”, grace left). It does not turn the streak into a badge or a shame state (ADR-007, ADR-011).
+- **Consequence:** Ticket 2.5.1 landed the pure function, the server loader, the tests, and the Mind card. The fixture table is in [`docs/vertical_slices/nov_16_2026_decisions/tickets.md`](./vertical_slices/nov_16_2026_decisions/tickets.md) (ticket 2.5.1). Overview must not grow a second implementation (**OV.1** reuses the same function). Copy stays plain (“N days”, grace left). It does not turn the streak into a badge or a shame state (ADR-007, ADR-011).
 

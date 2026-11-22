@@ -107,6 +107,8 @@ export const getCurrentIntentionSchema = z
   })
   .strict();
 
+export const getActivityStreakSchema = getCurrentIntentionSchema;
+
 export function formatWeeklyValidationErrors(
   error: z.ZodError,
 ): Record<string, string> {

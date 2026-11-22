@@ -45,7 +45,7 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | `/mind/check-in` | **Ticket 2.4** | No page |
 | Mind welcome band (subtitle, **+ New journal entry**) | **Ticket 2.6** | Not built |
 | Mind stat row except the streak | **Ticket 2.6** | Not built |
-| Activity streak stat | **Ticket 2.5.1** | Not built |
+| Activity streak stat | **Ticket 2.5.1** | Built — first Mind stat (ADR-014) |
 | Intention card on Mind | **Ticket 2.5** | Not built |
 | Check-in due card | **Ticket 2.7** | Not built |
 | Fitness welcome band: greeting, subtitle, **+ Log measurement** only on Measurements | **Done** — 1.5.4 | `src/components/dashboard/dashboard-welcome-band.tsx` |
