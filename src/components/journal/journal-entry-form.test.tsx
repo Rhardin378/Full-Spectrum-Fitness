@@ -8,12 +8,18 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { JournalEntry } from "@/lib/journal/types";
 
-const { saveJournalEntry } = vi.hoisted(() => ({
+const { saveJournalEntry, push, refresh } = vi.hoisted(() => ({
   saveJournalEntry: vi.fn(),
+  push: vi.fn(),
+  refresh: vi.fn(),
 }));
 
 vi.mock("@/lib/journal/actions", () => ({
   saveJournalEntry,
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push, refresh }),
 }));
 
 import {
@@ -179,7 +185,7 @@ describe("JournalEntryForm", () => {
     expect(saveJournalEntry).not.toHaveBeenCalled();
   });
 
-  it("saves with both optional lines empty and stays on the form", async () => {
+  it("saves with both optional lines empty and redirects to Mind", async () => {
     saveJournalEntry.mockResolvedValue({
       success: true,
       entry: makeEntry({ mood: 8, reflection: "Good run", domains: ["leisure"] }),
@@ -193,21 +199,20 @@ describe("JournalEntryForm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Leisure" }));
     fireEvent.click(screen.getByRole("button", { name: "Save entry" }));
 
-    expect(await screen.findByText("Entry saved.")).toBeInTheDocument();
-    expect(saveJournalEntry).toHaveBeenCalledWith({
-      today: TODAY,
-      mood: 8,
-      stress: null,
-      energy: null,
-      reflection: "Good run",
-      domains: ["leisure"],
-      win: "",
-      grateful_for: "",
+    await waitFor(() => {
+      expect(saveJournalEntry).toHaveBeenCalledWith({
+        today: TODAY,
+        mood: 8,
+        stress: null,
+        energy: null,
+        reflection: "Good run",
+        domains: ["leisure"],
+        win: "",
+        grateful_for: "",
+      });
     });
-    expect(
-      screen.getByRole("heading", { name: "Today’s journal entry" }),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Reflection")).toHaveValue("Good run");
+    expect(push).toHaveBeenCalledWith("/mind?saved=1");
+    expect(screen.getByRole("button", { name: "Saving…" })).toBeDisabled();
   });
 
   it("sends a cleared line so the server stores null", async () => {
@@ -335,7 +340,7 @@ describe("JournalEntryForm", () => {
       stress: 8,
       energy: null,
     });
-    expect(await screen.findByText("Entry saved.")).toBeInTheDocument();
+    expect(push).toHaveBeenCalledWith("/mind?saved=1");
     expect(ratingPressed("stress", 8)).toBe("true");
   });
 });
