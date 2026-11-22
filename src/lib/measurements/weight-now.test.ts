@@ -52,6 +52,8 @@ describe("roundHalfAwayFromZeroOneDecimal", () => {
     expect(roundHalfAwayFromZeroOneDecimal(1.25)).toBe(1.3);
     expect(roundHalfAwayFromZeroOneDecimal(-1.25)).toBe(-1.3);
     expect(roundHalfAwayFromZeroOneDecimal(1.24)).toBe(1.2);
+    expect(roundHalfAwayFromZeroOneDecimal(1.15)).toBe(1.2);
+    expect(roundHalfAwayFromZeroOneDecimal(-1.15)).toBe(-1.2);
   });
 });
 

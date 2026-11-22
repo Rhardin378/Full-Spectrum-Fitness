@@ -1,7 +1,6 @@
 import {
   addUtcCalendarDays,
   calendarDateTimestamp,
-  formatCalendarDate,
   isValidCalendarDate,
 } from "@/lib/measurements/calendar-date";
 import type { Measurement, MeasurementUnit } from "@/lib/types/measurement";
@@ -69,10 +68,12 @@ export function formatLoggedRelative(
   return ahead === 1 ? "Logged 1 day from now" : `Logged ${ahead} days from now`;
 }
 
-/** Half away from zero to one decimal (1.25 → 1.3, −1.25 → −1.3). */
+/** Half away from zero to one decimal (1.25 → 1.3, −1.25 → −1.3, 1.15 → 1.2). */
 export function roundHalfAwayFromZeroOneDecimal(value: number): number {
   const sign = value < 0 ? -1 : 1;
-  return (sign * Math.round(Math.abs(value) * 10)) / 10;
+  // EPSILON bump so binary fractions like 1.15 * 10 still round half away.
+  const scaled = Math.abs(value) * 10 + Number.EPSILON * 10;
+  return (sign * Math.round(scaled)) / 10;
 }
 
 function formatOneDecimal(value: number): string {
@@ -220,6 +221,3 @@ export function buildWeightNowSummary(
     toGoalLine: formatToGoalLine(latest.value, latest.unit, goal),
   };
 }
-
-/** Keeps formatCalendarDate available for callers that want the full date. */
-export { formatCalendarDate };

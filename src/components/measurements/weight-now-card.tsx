@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { listMeasurements } from "@/lib/measurements/actions";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 import { formatMeasurementValue } from "@/lib/measurements/display";
+import { fetchWeightRowsForWeightNow } from "@/lib/measurements/weight-now-fetch";
 import {
   buildWeightNowSummary,
   type WeightNowSummary,
 } from "@/lib/measurements/weight-now";
-import type { Measurement } from "@/lib/types/measurement";
 
 type WeightNowCardProps = {
   refreshToken: number;
@@ -17,44 +16,6 @@ type WeightNowCardProps = {
   /** Test seam. */
   initialSummary?: WeightNowSummary;
 };
-
-const PAGE_SIZE = 100;
-const MAX_PAGES = 50;
-
-async function fetchWeightRows(): Promise<
-  | { ok: true; measurements: Measurement[] }
-  | { ok: false; message: string }
-> {
-  const measurements: Measurement[] = [];
-  let cursor: string | undefined;
-  const seen = new Set<string>();
-
-  for (let page = 0; page < MAX_PAGES; page += 1) {
-    const result = await listMeasurements({
-      measurement_type: "weight",
-      page_size: PAGE_SIZE,
-      sort_order: "newest",
-      ...(cursor ? { cursor } : {}),
-    });
-
-    if (!result.success) {
-      return { ok: false, message: result.message };
-    }
-
-    measurements.push(...result.measurements);
-
-    if (!result.has_more || result.next_cursor === null) {
-      return { ok: true, measurements };
-    }
-    if (seen.has(result.next_cursor)) {
-      return { ok: true, measurements };
-    }
-    seen.add(result.next_cursor);
-    cursor = result.next_cursor;
-  }
-
-  return { ok: true, measurements };
-}
 
 export function WeightNowCard({
   refreshToken,
@@ -79,7 +40,7 @@ export function WeightNowCard({
     void (async () => {
       setLoading(true);
       setError(null);
-      const loaded = await fetchWeightRows();
+      const loaded = await fetchWeightRowsForWeightNow();
       if (cancelled) return;
       if (!loaded.ok) {
         setSummary(null);
@@ -134,7 +95,7 @@ export function WeightNowCard({
           <button
             type="button"
             onClick={onLogMeasurementClick}
-            className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-coral px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-coral-deep"
+            className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-coral px-4 py-2 text-sm font-semibold text-text-on-dark shadow-sm transition hover:bg-brand-coral-deep"
           >
             Log measurement
           </button>
