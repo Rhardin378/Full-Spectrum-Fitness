@@ -50,12 +50,12 @@ describe("UpdatePasswordForm", () => {
     expect(updateUser).not.toHaveBeenCalled();
   });
 
-  it("updates the password and goes to the dashboard", async () => {
+  it("updates the password and goes to Fitness", async () => {
     updateUser.mockResolvedValue({ error: null });
     render(<UpdatePasswordForm />);
     submit("12345678", "12345678");
 
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/fitness"));
     expect(updateUser).toHaveBeenCalledWith({ password: "12345678" });
   });
 

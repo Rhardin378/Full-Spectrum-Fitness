@@ -45,7 +45,7 @@ describe("AuthForm", () => {
     fill("Password", "123456");
     fireEvent.click(screen.getByRole("button", { name: "Sign In" }));
 
-    await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/fitness"));
     expect(auth.signInWithPassword).toHaveBeenCalledWith({
       email: "a@example.com",
       password: "123456",

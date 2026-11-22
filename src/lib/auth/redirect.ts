@@ -1,7 +1,18 @@
 export const AUTH_PATH = "/auth";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
 export const UPDATE_PASSWORD_PATH = "/auth/update-password";
-export const DEFAULT_SIGNED_IN_PATH = "/dashboard";
+export const DEFAULT_SIGNED_IN_PATH = "/fitness";
+
+/** Rewrite a legacy `/dashboard` path to the canonical `/fitness` tree. */
+export function dashboardPathToFitness(pathname: string): string | null {
+  if (pathname === "/dashboard") {
+    return "/fitness";
+  }
+  if (pathname.startsWith("/dashboard/")) {
+    return `/fitness/${pathname.slice("/dashboard/".length)}`;
+  }
+  return null;
+}
 
 export const AUTH_REASONS = ["session", "link_invalid", "reset_expired"] as const;
 

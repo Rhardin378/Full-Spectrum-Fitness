@@ -17,6 +17,11 @@ vi.mock("@/lib/measurements/actions", () => ({
   softDeleteMeasurement,
 }));
 
+const { pushMock, usePathnameMock } = vi.hoisted(() => ({
+  pushMock: vi.fn(),
+  usePathnameMock: vi.fn(() => "/fitness"),
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     children,
@@ -25,6 +30,11 @@ vi.mock("next/link", () => ({
     children: React.ReactNode;
     href: string;
   }) => <a href={href}>{children}</a>,
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => usePathnameMock(),
+  useRouter: () => ({ push: pushMock, refresh: vi.fn(), replace: vi.fn() }),
 }));
 
 import FitnessDashboardShell from "@/components/dashboard/fitness-dashboard-shell";
@@ -63,6 +73,7 @@ const createdEntry: Measurement = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  usePathnameMock.mockReturnValue("/fitness");
   vi.setSystemTime(new Date("2026-10-04T18:00:00.000Z"));
   listMeasurements.mockResolvedValue(emptyListResult());
 });
@@ -101,6 +112,28 @@ describe("FitnessDashboardShell", () => {
       screen.getByText(/Measurements is your home for baseline tracking/i),
     ).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Recent history" })).not.toBeInTheDocument();
+  });
+
+  it("navigates to /fitness/workouts when Workouts is selected", async () => {
+    render(<FitnessDashboardShell displayName="Alex" />);
+    await screen.findByRole("heading", { name: "Recent history" });
+
+    fireEvent.click(screen.getByRole("tab", { name: /^Workouts/ }));
+
+    expect(pushMock).toHaveBeenCalledWith("/fitness/workouts");
+  });
+
+  it("selects Measurements from the /fitness/measurements path", async () => {
+    usePathnameMock.mockReturnValue("/fitness/measurements");
+    render(<FitnessDashboardShell displayName="Alex" />);
+
+    expect(screen.getByRole("tab", { name: "Measurements" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(
+      await screen.findByRole("heading", { name: "Recent history" }),
+    ).toBeInTheDocument();
   });
 
   it("shows empty history when listMeasurements returns no rows", async () => {

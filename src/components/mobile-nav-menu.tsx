@@ -132,7 +132,7 @@ export default function MobileNavMenu({
             </p>
             <div className="flex flex-col gap-2">
               <MobileNavItem
-                href="/dashboard"
+                href="/fitness"
                 active={isFitness && !isMind}
                 onNavigate={closeMenu}
               >
@@ -145,15 +145,11 @@ export default function MobileNavMenu({
               >
                 Mind
               </MobileNavItem>
-              <MobileNavItem
-                href="/dashboard"
-                muted
-                onNavigate={closeMenu}
-              >
+              <MobileNavItem href="#" muted onNavigate={closeMenu}>
                 Insights
               </MobileNavItem>
               <MobileNavItem
-                href="/dashboard"
+                href="#"
                 muted
                 badge="Soon"
                 onNavigate={closeMenu}

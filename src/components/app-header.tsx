@@ -61,16 +61,16 @@ function DomainNav({
       className="hidden min-w-0 flex-1 justify-center md:flex"
     >
       <div className="flex items-center gap-5 md:gap-6 lg:gap-7">
-        <NavLink href="/dashboard" active={isFitness && !isMind}>
+        <NavLink href="/fitness" active={isFitness && !isMind}>
           Fitness
         </NavLink>
         <NavLink href="/mind" active={isMind}>
           Mind
         </NavLink>
-        <NavLink href="/dashboard" muted>
+        <NavLink href="#" muted>
           Insights
         </NavLink>
-        <NavLink href="/dashboard" muted badge="Soon">
+        <NavLink href="#" muted badge="Soon">
           Community
         </NavLink>
       </div>
@@ -82,8 +82,7 @@ export default function AppHeader() {
   const pathname = usePathname();
   const { isAuthenticated } = useProfile();
 
-  const isFitness =
-    pathname.startsWith("/dashboard") || pathname.startsWith("/fitness");
+  const isFitness = pathname.startsWith("/fitness");
   const isMind = pathname.startsWith("/mind");
 
   return (

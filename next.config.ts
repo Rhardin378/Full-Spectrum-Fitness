@@ -2,6 +2,20 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/fitness",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/:path*",
+        destination: "/fitness/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

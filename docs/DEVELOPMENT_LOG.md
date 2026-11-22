@@ -29,6 +29,24 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Fitness shell at `/fitness` (NAV.1)
+
+### Completed
+
+- Canonical Fitness URLs: `/fitness`, `/fitness/measurements`, `/fitness/workouts`, `/fitness/library`. Until OV.1, `/fitness` selects Measurements.
+- `/dashboard` (and under it) permanently redirects to `/fitness` with the query string kept (middleware 308 + next.config).
+- Sign-in landing, navbar Fitness link, profile back link, and auth redirects use `/fitness`. Protected path is `/fitness`.
+
+### Next
+
+- Slice 2 ticket 2.7 (check-in due card can link to `/fitness/measurements`).
+
+### AI Notes
+
+- Cursor agent. Required before ticket 2.7.
+
+---
+
 ## 2026-11-22 — Activity streak on Mind (ticket 2.5.1)
 
 ### Completed

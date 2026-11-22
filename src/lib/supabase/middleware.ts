@@ -5,11 +5,12 @@ import {
   AUTH_PATH,
   DEFAULT_SIGNED_IN_PATH,
   UPDATE_PASSWORD_PATH,
+  dashboardPathToFitness,
   matchesPath,
   type AuthReason,
 } from "@/lib/auth/redirect";
 
-const PROTECTED_PATHS = ["/dashboard", "/profile", "/mind"];
+const PROTECTED_PATHS = ["/fitness", "/profile", "/mind"];
 
 // Matches sb-<ref>-auth-token and its chunked form sb-<ref>-auth-token.0
 const AUTH_COOKIE_PATTERN = /^sb-.+-auth-token(\.\d+)?$/;
@@ -67,14 +68,35 @@ export async function updateSession(request: NextRequest) {
     return redirectResponse;
   }
 
+  function redirectDashboardToFitness() {
+    const fitnessPath = dashboardPathToFitness(path);
+    if (!fitnessPath) {
+      return null;
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = fitnessPath;
+    // Keep the existing query string (clone already has it).
+    const redirectResponse = NextResponse.redirect(url, 308);
+    response.cookies
+      .getAll()
+      .forEach((cookie) => redirectResponse.cookies.set(cookie));
+    return redirectResponse;
+  }
+
   if (matchesPath(path, UPDATE_PASSWORD_PATH)) {
     return user ? response : redirectTo(AUTH_PATH, "reset_expired");
   }
 
-  const isProtectedPage = PROTECTED_PATHS.some((base) => matchesPath(path, base));
+  const isDashboardPath = dashboardPathToFitness(path) != null;
+  const isProtectedPage =
+    PROTECTED_PATHS.some((base) => matchesPath(path, base)) || isDashboardPath;
 
   if (!user && isProtectedPage) {
     return redirectTo(AUTH_PATH, hadAuthCookie ? "session" : undefined);
+  }
+
+  if (user && isDashboardPath) {
+    return redirectDashboardToFitness() ?? response;
   }
 
   if (user && matchesPath(path, AUTH_PATH)) {

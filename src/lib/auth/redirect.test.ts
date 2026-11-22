@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   AUTH_REASON_MESSAGES,
   authPathWithReason,
+  dashboardPathToFitness,
   getAuthReasonMessage,
   getPasswordResetRedirectUrl,
   getSafeNextPath,
@@ -28,7 +29,15 @@ describe("getSafeNextPath", () => {
     "/foo\nbar",
     "/foo\u007f",
   ])("falls back for %j", (value) => {
-    expect(getSafeNextPath(value)).toBe("/dashboard");
+    expect(getSafeNextPath(value)).toBe("/fitness");
+  });
+
+  it("rewrites legacy dashboard paths to fitness", () => {
+    expect(dashboardPathToFitness("/dashboard")).toBe("/fitness");
+    expect(dashboardPathToFitness("/dashboard/settings")).toBe(
+      "/fitness/settings",
+    );
+    expect(dashboardPathToFitness("/fitness")).toBeNull();
   });
 
   it("uses a custom fallback", () => {
