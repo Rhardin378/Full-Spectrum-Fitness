@@ -9,6 +9,7 @@ import {
 } from "@/lib/measurements/display";
 import { DeleteMeasurementDialog } from "@/components/measurements/delete-measurement-dialog";
 import { LogMeasurementModal } from "@/components/measurements/log-measurement-modal";
+import { WeightNowCard } from "@/components/measurements/weight-now-card";
 import { WeightTrendCard } from "@/components/measurements/weight-trend-card";
 import type { Measurement, MeasurementType } from "@/lib/types/measurement";
 
@@ -356,7 +357,12 @@ export function MeasurementsTabPanel({
         onNotFound={handleMeasurementMissing}
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <WeightNowCard
+        refreshToken={refreshToken}
+        onLogMeasurementClick={onLogMeasurementClick}
+      />
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <section
           className="order-2 rounded-2xl border border-black/5 bg-surface-card p-6 shadow-sm lg:order-1"
           aria-labelledby="recent-history-heading"
