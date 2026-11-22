@@ -19,6 +19,8 @@ type EntryRow = {
   entry_on: string;
   mood: number;
   reflection: string;
+  stress: number | null;
+  energy: number | null;
   win: string | null;
   grateful_for: string | null;
   created_at: string;
@@ -33,6 +35,8 @@ function makeEntryRow(overrides: Partial<EntryRow> = {}): EntryRow {
     entry_on: "2026-11-03",
     mood: 7,
     reflection: "A solid day",
+    stress: null,
+    energy: null,
     win: null,
     grateful_for: null,
     created_at: "2026-11-03T15:00:00.000Z",
@@ -122,6 +126,8 @@ const validInput = {
   today: "2026-11-03",
   mood: 7,
   reflection: "A solid day",
+  stress: 4,
+  energy: 7,
   domains: ["career" as const],
   win: null,
   grateful_for: null,
@@ -185,6 +191,8 @@ describe("saveJournalEntry", () => {
         entry_on: "2026-11-03",
         mood: 7,
         reflection: "A solid day",
+        stress: 4,
+        energy: 7,
         win: null,
         grateful_for: null,
       }),
@@ -192,7 +200,7 @@ describe("saveJournalEntry", () => {
     expect(updatePayload).not.toHaveBeenCalled();
   });
 
-  it("updates only the four allowed columns when a row already exists", async () => {
+  it("updates only the six allowed columns when a row already exists", async () => {
     const insertPayload = vi.fn();
     const updatePayload = vi.fn();
     const existing = makeEntryRow({ mood: 4, reflection: "Earlier" });
@@ -225,6 +233,8 @@ describe("saveJournalEntry", () => {
     expect(updatePayload).toHaveBeenCalledWith({
       mood: 8,
       reflection: "Updated note",
+      stress: null,
+      energy: null,
       win: null,
       grateful_for: null,
     });
@@ -275,6 +285,8 @@ describe("saveJournalEntry", () => {
     expect(updatePayload).toHaveBeenCalledWith({
       mood: 9,
       reflection: "Race winner",
+      stress: null,
+      energy: null,
       win: null,
       grateful_for: null,
     });

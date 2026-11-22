@@ -231,7 +231,7 @@ Frontend form
 → stored in Postgres  
 No AI required to save.
 
-Stress, energy, and domain scores are not on this write. `win` and `grateful_for` are nullable text on the journal row. They are not a `wins` table. [ADR-013](./ARCHITECTURE_DECISIONS.md). The [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md) specifies them.
+Optional `stress` and `energy` (1–10 or null) are on this write. Domain scores are not. `win` and `grateful_for` are nullable text on the journal row. They are not a `wins` table. [ADR-013](./ARCHITECTURE_DECISIONS.md). The [Slice 2 README](./vertical_slices/slice_2_journaling_life_domains/README.md) specifies them.
 
 ## Submitting a weekly check-in (Slice 2 — not built yet)
 

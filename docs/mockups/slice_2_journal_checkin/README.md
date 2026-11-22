@@ -4,7 +4,7 @@ Approved UI references for [`docs/vertical_slices/slice_2_journaling_life_domain
 
 | File | Use |
 |------|-----|
-| `journal-desktop.png` | Daily journal. Mood 1–10, reflection, optional domain tags (the PNG says one or two; the product allows up to three since 2026-11-21), this week’s intention as a line. No stress or energy on this screen. The PNG does not show the optional “One win today” and “Grateful for” inputs added 2026-11-17. Ticket 2.3 adds them. Do not leave them out because they are missing from this file. |
+| `journal-desktop.png` | Daily journal. Mood 1–10, reflection, optional domain tags (the PNG says one or two; the product allows up to three since 2026-11-21), this week’s intention as a line. The PNG has no stress or energy; since 2026-11-21 the journal has optional stress and energy rows after mood. Build them. The PNG does not show the optional “One win today” and “Grateful for” inputs added 2026-11-17. Ticket 2.3 adds them. Do not leave them out because they are missing from this file. |
 | `checkin-desktop.png` | Weekly check-in order: week recap, last intention outcome, stress and energy, life-domain scores, next intention. The next-intention domain still defaults to the lowest score ([ADR-013](../../ARCHITECTURE_DECISIONS.md)). A later composite, [`docs/mockups/nov_2026_tickets/B-checkin-journal.png`](../nov_2026_tickets/B-checkin-journal.png), includes a rejected idea (preselect the top profile focus area). Do not build that callout. |
 | `domains-compare-desktop.png` | Decision record only. **Option B is approved.** Do not build this comparison screen. |
 

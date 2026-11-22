@@ -126,7 +126,7 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 |------------|-------|--------|
 | Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
 | Weight & waist time-series | 1.5 (done) | Deterministic weight trend in-tab; no unit conversion |
-| Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal, plus optional one-line win and gratitude. Stress, energy, and domain scores on the check-in. One intention. No AI prompts. The journal lines are not Slice 7’s structured wins. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
+| Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal, plus optional daily stress and energy and optional one-line win and gratitude. Weekly stress, energy, and domain scores on the check-in. One intention. No AI prompts. The journal lines are not Slice 7’s structured wins. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
 | Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions |
 | Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
 | Weekly coach report | 5 | Reads the Slice 2 check-in. Does not collect the form. Server-built snapshot. Zod-validated report UI. [ADR-013](./ARCHITECTURE_DECISIONS.md). |

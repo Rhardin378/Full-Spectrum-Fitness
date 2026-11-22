@@ -6,6 +6,8 @@ export type JournalEntry = {
   entry_on: string;
   mood: number;
   reflection: string;
+  stress: number | null;
+  energy: number | null;
   win: string | null;
   grateful_for: string | null;
   domains: LifeDomain[];
@@ -17,6 +19,8 @@ export type SaveJournalEntryInput = {
   today: string;
   mood: number;
   reflection: string;
+  stress?: number | null;
+  energy?: number | null;
   domains?: LifeDomain[];
   win?: string | null;
   grateful_for?: string | null;

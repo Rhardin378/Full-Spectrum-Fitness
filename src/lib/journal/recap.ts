@@ -8,6 +8,8 @@ import { addUtcCalendarDays } from "@/lib/measurements/calendar-date";
 export type RecapJournalEntry = {
   entry_on: string;
   mood: number;
+  stress?: number | null;
+  energy?: number | null;
   domains: LifeDomain[];
 };
 
@@ -21,6 +23,10 @@ export type WeekRecap = {
   weekStart: string;
   weekEnd: string;
   averageMood: number | null;
+  /** Mean over entries that rated stress; null when none did. */
+  averageStress: number | null;
+  /** Mean over entries that rated energy; null when none did. */
+  averageEnergy: number | null;
   daysJournaled: number;
   topDomains: WeekRecapTopDomain[];
   sparkline: Array<number | null>;
@@ -29,6 +35,14 @@ export type WeekRecap = {
 /** Half away from zero to one decimal. */
 export function roundMoodAverage(value: number): number {
   return Math.round(value * 10) / 10;
+}
+
+function averageOf(values: Array<number | null | undefined>): number | null {
+  const rated = values.filter((value): value is number => value != null);
+  if (rated.length === 0) return null;
+  return roundMoodAverage(
+    rated.reduce((sum, value) => sum + value, 0) / rated.length,
+  );
 }
 
 export function buildWeekRecap(
@@ -40,11 +54,9 @@ export function buildWeekRecap(
     (entry) => entry.entry_on >= weekStart && entry.entry_on <= weekEnd,
   );
 
-  const moods = inWeek.map((entry) => entry.mood);
-  const averageMood =
-    moods.length === 0
-      ? null
-      : roundMoodAverage(moods.reduce((sum, mood) => sum + mood, 0) / moods.length);
+  const averageMood = averageOf(inWeek.map((entry) => entry.mood));
+  const averageStress = averageOf(inWeek.map((entry) => entry.stress));
+  const averageEnergy = averageOf(inWeek.map((entry) => entry.energy));
 
   const counts = new Map<LifeDomain, number>();
   for (const entry of inWeek) {
@@ -76,6 +88,8 @@ export function buildWeekRecap(
     weekStart,
     weekEnd,
     averageMood,
+    averageStress,
+    averageEnergy,
     daysJournaled: inWeek.length,
     topDomains,
     sparkline,

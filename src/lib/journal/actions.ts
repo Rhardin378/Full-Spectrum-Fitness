@@ -18,7 +18,7 @@ import {
 import { lastCompletedWeekStart } from "@/lib/weekly/week-math";
 
 const JOURNAL_ENTRY_COLUMNS =
-  "id, user_id, entry_on, mood, reflection, win, grateful_for, created_at, updated_at";
+  "id, user_id, entry_on, mood, reflection, stress, energy, win, grateful_for, created_at, updated_at";
 
 const JOURNAL_COLUMNS = `${JOURNAL_ENTRY_COLUMNS}, journal_entry_domains(domain)`;
 
@@ -85,6 +85,8 @@ export async function saveJournalEntry(
   const allowedFields = {
     mood: parsed.data.mood,
     reflection: parsed.data.reflection,
+    stress: parsed.data.stress,
+    energy: parsed.data.energy,
     win: parsed.data.win,
     grateful_for: parsed.data.grateful_for,
   };
@@ -349,6 +351,8 @@ export async function getWeekRecap(input: {
       entries.map((entry) => ({
         entry_on: entry.entry_on,
         mood: entry.mood,
+        stress: entry.stress,
+        energy: entry.energy,
         domains: entry.domains,
       })),
       weekStart,
