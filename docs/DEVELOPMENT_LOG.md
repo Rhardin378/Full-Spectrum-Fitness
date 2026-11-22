@@ -29,6 +29,23 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Weight now card (ticket 2.5.2)
+
+### Completed
+
+- Pure weight-now helpers: relative logged copy, 30-day baseline/delta (half-away-from-zero, Unicode minus), optional toward-goal tone and “to goal” line (G.1 not wired yet).
+- **Weight now** card at the top of the Measurements tab: value + unit, relative line, 30-day change when a baseline exists, empty state with “Log measurement” opening the existing modal.
+
+### Next
+
+- G.1 for goal coloring / “to goal”. OV.1 moves this card to Overview. Slice 2 closeout 2.8 / 2.10.
+
+### AI Notes
+
+- Cursor agent. Ships without an active goal; green pill path is tested via the pure helpers.
+
+---
+
 ## 2026-11-22 — Check-in due card + Sunday week-math (ticket 2.7)
 
 ### Completed
