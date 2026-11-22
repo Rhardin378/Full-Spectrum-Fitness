@@ -29,6 +29,25 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-22 — Activity streak on Mind (ticket 2.5.1)
+
+### Completed
+
+- Pure `computeActivityStreak` / `unionActivityHitDates` (ADR-014): one grace miss per Monday–Sunday week, recomputed from calendar dates.
+- Server `getActivityStreak` loads the session user’s journal `entry_on` dates (no workout hits until that slice stores a calendar day).
+- `/mind` shows **Activity streak** as the first stat (days + grace line + “Journal counts”; empty copy when 0). Not “Journal streak” or “N of 7”.
+- ADR-014 marked Accepted.
+
+### Next
+
+- Ticket 2.7 (check-in due card + Sunday week-math). Ticket 2.5.2 (Weight now). **OV.1** reuses the same streak function.
+
+### AI Notes
+
+- Cursor agent. Fixture row for mid-week start corrected to grace `1` to match ADR’s earliest filter (days before the first hit are outside the streak).
+
+---
+
 ## 2026-11-22 — Sunday check-in week decision (ticket 2.7, docs only)
 
 ### Decisions
@@ -54,7 +73,7 @@ Handoff pack: [README.md](./README.md).
 
 ### Next
 
-- Ticket 2.7 (check-in due card). Ticket 2.5.1 (activity streak) still open for the Mind stat row.
+- Ticket 2.7 (check-in due card). Ticket 2.5.1 (activity streak) shipped separately.
 
 ### AI Notes
 

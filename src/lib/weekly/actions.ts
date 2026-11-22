@@ -1,11 +1,18 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { addUtcCalendarDays } from "@/lib/measurements/calendar-date";
+import {
+  computeActivityStreak,
+  unionActivityHitDates,
+} from "@/lib/weekly/activity-streak";
 import {
   normalizeWeeklyCheckIn,
   normalizeWeeklyIntention,
 } from "@/lib/weekly/normalize";
 import type {
+  ActivityStreakView,
+  GetActivityStreakInput,
   GetCurrentIntentionInput,
   ListWeeklyCheckInsInput,
   SubmitWeeklyCheckInInput,
@@ -15,6 +22,7 @@ import type {
 } from "@/lib/weekly/types";
 import {
   formatWeeklyValidationErrors,
+  getActivityStreakSchema,
   getCurrentIntentionSchema,
   listWeeklyCheckInsSchema,
   submitWeekStartsSchema,
@@ -66,6 +74,15 @@ export type UpdateIntentionTextResult =
 
 export type GetCurrentIntentionResult =
   | { success: true; intention: WeeklyIntention | null }
+  | {
+      success: false;
+      error: "unauthorized" | "validation" | "database";
+      message: string;
+      fieldErrors?: Record<string, string>;
+    };
+
+export type GetActivityStreakResult =
+  | { success: true; streak: ActivityStreakView }
   | {
       success: false;
       error: "unauthorized" | "validation" | "database";
@@ -434,6 +451,78 @@ export async function getCurrentIntention(
   return loadIntentionForWeekStart(
     currentIntentionWeekStart(parsed.data.today),
   );
+}
+
+/**
+ * Activity streak for Mind (ADR-014 / ticket 2.5.1).
+ * Recomputes from journal `entry_on` dates. Workout calendar days are not
+ * queried until that slice stores one — pass an empty list for now.
+ */
+export async function getActivityStreak(
+  input: GetActivityStreakInput,
+): Promise<GetActivityStreakResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return {
+      success: false,
+      error: "unauthorized",
+      message: "You must be signed in to view the activity streak.",
+    };
+  }
+
+  const parsed = getActivityStreakSchema.safeParse(input);
+  if (!parsed.success) {
+    const fieldErrors = formatWeeklyValidationErrors(parsed.error);
+    return {
+      success: false,
+      error: "validation",
+      message: fieldErrors._form ?? "Please provide a valid today date.",
+      fieldErrors,
+    };
+  }
+
+  // Newest first, bounded so the default 1000-row cap cannot drop recent days.
+  const earliestEntryOn = addUtcCalendarDays(parsed.data.today, -400);
+
+  const { data, error } = await supabase
+    .from("journal_entries")
+    .select("entry_on")
+    .eq("user_id", user.id)
+    .gte("entry_on", earliestEntryOn)
+    .lte("entry_on", parsed.data.today)
+    .order("entry_on", { ascending: false });
+
+  if (error) {
+    return {
+      success: false,
+      error: "database",
+      message: "Unable to load the activity streak. Please try again.",
+    };
+  }
+
+  const journalDates = (data ?? []).map(
+    (row: { entry_on: string }) => row.entry_on,
+  );
+  // Workouts slice not shipped — do not invent workout hits.
+  // Flip `countsWorkouts` when that slice stores a calendar day column.
+  const workoutDates: string[] = [];
+  const countsWorkouts = false;
+  const hits = unionActivityHitDates(journalDates, workoutDates);
+  const { days, graceLeft } = computeActivityStreak(parsed.data.today, hits);
+
+  return {
+    success: true,
+    streak: {
+      days,
+      graceLeft,
+      countsWorkouts,
+    },
+  };
 }
 
 /** Intention for the check-in week (`lastCompletedWeekStart`), if any. */
