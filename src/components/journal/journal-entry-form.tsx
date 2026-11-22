@@ -11,7 +11,7 @@ import {
 } from "@/lib/life-domains";
 import { todayLocalISODate } from "@/lib/measurements/calendar-date";
 
-const MOOD_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
+const RATING_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
 const MAX_TAGS = 3;
 const UNEXPECTED_SAVE_MESSAGE =
   "Unable to save your journal entry. Please try again.";
@@ -64,6 +64,74 @@ export function JournalEntryScreen({
   );
 }
 
+type RatingScaleProps = {
+  id: string;
+  label: ReactNode;
+  legend: string;
+  value: number | null;
+  /** Optional scales clear when the selected value is pressed again. */
+  optional?: boolean;
+  error?: string;
+  onChange: (value: number | null) => void;
+};
+
+function RatingScale({
+  id,
+  label,
+  legend,
+  value,
+  optional = false,
+  error,
+  onChange,
+}: RatingScaleProps) {
+  const labelId = `${id}-label`;
+
+  return (
+    <div>
+      <span
+        id={labelId}
+        className="block text-base font-semibold text-text-primary"
+      >
+        {label}
+        {optional ? (
+          <span className="font-normal text-text-muted"> (optional)</span>
+        ) : null}
+      </span>
+      <p className="mt-1 text-xs text-text-muted">
+        {legend}
+        {optional ? " · Tap again to clear." : null}
+      </p>
+      <div
+        role="group"
+        aria-labelledby={labelId}
+        className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-10"
+      >
+        {RATING_VALUES.map((rating) => {
+          const selected = value === rating;
+          return (
+            <button
+              key={rating}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => onChange(optional && selected ? null : rating)}
+              className={`rounded-lg py-2.5 text-[15px] font-medium transition ${
+                selected
+                  ? "bg-brand-coral-deep text-white shadow-[0_2px_8px_rgba(209,74,64,0.25)]"
+                  : "bg-surface-page text-text-muted hover:text-text-primary"
+              }`}
+            >
+              {rating}
+            </button>
+          );
+        })}
+      </div>
+      {error ? (
+        <p className="mt-1.5 text-sm text-brand-coral-deep">{error}</p>
+      ) : null}
+    </div>
+  );
+}
+
 type JournalEntryFormProps = {
   today: string;
   initialEntry: JournalEntry | null;
@@ -78,6 +146,12 @@ export function JournalEntryForm({
   const formId = useId();
   const [hasSavedEntry, setHasSavedEntry] = useState(initialEntry !== null);
   const [mood, setMood] = useState<number | null>(initialEntry?.mood ?? null);
+  const [stress, setStress] = useState<number | null>(
+    initialEntry?.stress ?? null,
+  );
+  const [energy, setEnergy] = useState<number | null>(
+    initialEntry?.energy ?? null,
+  );
   const [reflection, setReflection] = useState(initialEntry?.reflection ?? "");
   const [win, setWin] = useState(initialEntry?.win ?? "");
   const [gratefulFor, setGratefulFor] = useState(
@@ -145,6 +219,8 @@ export function JournalEntryForm({
       const result = await saveJournalEntry({
         today,
         mood: mood!,
+        stress,
+        energy,
         reflection,
         domains,
         win,
@@ -161,6 +237,8 @@ export function JournalEntryForm({
 
       const { entry } = result;
       setMood(entry.mood);
+      setStress(entry.stress);
+      setEnergy(entry.energy);
       setReflection(entry.reflection);
       setWin(entry.win ?? "");
       setGratefulFor(entry.grateful_for ?? "");
@@ -174,7 +252,6 @@ export function JournalEntryForm({
     }
   }
 
-  const moodLabelId = `${formId}-mood-label`;
   const domainsLabelId = `${formId}-domains-label`;
 
   return (
@@ -202,47 +279,43 @@ export function JournalEntryForm({
           </p>
         ) : null}
 
-        <div>
-          <span
-            id={moodLabelId}
-            className="block text-base font-semibold text-text-primary"
-          >
-            How’s your mood today?
-          </span>
-          <p className="mt-1 text-xs text-text-muted">1 = rough, 10 = great</p>
-          <div
-            role="group"
-            aria-labelledby={moodLabelId}
-            className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-10"
-          >
-            {MOOD_VALUES.map((value) => {
-              const selected = mood === value;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => {
-                    clearFieldError("mood");
-                    setMood(value);
-                  }}
-                  className={`rounded-lg py-2.5 text-[15px] font-medium transition ${
-                    selected
-                      ? "bg-brand-coral-deep text-white shadow-[0_2px_8px_rgba(209,74,64,0.25)]"
-                      : "bg-surface-page text-text-muted hover:text-text-primary"
-                  }`}
-                >
-                  {value}
-                </button>
-              );
-            })}
-          </div>
-          {fieldErrors.mood ? (
-            <p className="mt-1.5 text-sm text-brand-coral-deep">
-              {fieldErrors.mood}
-            </p>
-          ) : null}
-        </div>
+        <RatingScale
+          id={`${formId}-mood`}
+          label="How’s your mood today?"
+          legend="1 = rough, 10 = great"
+          value={mood}
+          error={fieldErrors.mood}
+          onChange={(value) => {
+            clearFieldError("mood");
+            setMood(value);
+          }}
+        />
+
+        <RatingScale
+          id={`${formId}-stress`}
+          label="Stress today"
+          legend="1 = low, 10 = high"
+          value={stress}
+          optional
+          error={fieldErrors.stress}
+          onChange={(value) => {
+            clearFieldError("stress");
+            setStress(value);
+          }}
+        />
+
+        <RatingScale
+          id={`${formId}-energy`}
+          label="Energy today"
+          legend="1 = low, 10 = high"
+          value={energy}
+          optional
+          error={fieldErrors.energy}
+          onChange={(value) => {
+            clearFieldError("energy");
+            setEnergy(value);
+          }}
+        />
 
         <div>
           <label

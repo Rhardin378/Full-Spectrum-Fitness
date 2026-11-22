@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { JournalEntry } from "@/lib/journal/types";
 
@@ -24,6 +30,8 @@ function makeEntry(overrides: Partial<JournalEntry> = {}): JournalEntry {
     entry_on: TODAY,
     mood: 7,
     reflection: "A solid day",
+    stress: null,
+    energy: null,
     win: null,
     grateful_for: null,
     domains: [],
@@ -35,6 +43,23 @@ function makeEntry(overrides: Partial<JournalEntry> = {}): JournalEntry {
 
 function pressed(name: string | RegExp) {
   return screen.getByRole("button", { name }).getAttribute("aria-pressed");
+}
+
+const SCALES = {
+  mood: "How’s your mood today?",
+  stress: /^Stress today/,
+  energy: /^Energy today/,
+} as const;
+
+function ratingButton(scale: keyof typeof SCALES, value: number) {
+  return within(screen.getByRole("group", { name: SCALES[scale] })).getByRole(
+    "button",
+    { name: String(value) },
+  );
+}
+
+function ratingPressed(scale: keyof typeof SCALES, value: number) {
+  return ratingButton(scale, value).getAttribute("aria-pressed");
 }
 
 beforeEach(() => {
@@ -58,7 +83,7 @@ describe("JournalEntryScreen", () => {
     );
 
     expect(screen.getByLabelText("Reflection")).toHaveValue("Today text");
-    expect(pressed("4")).toBe("true");
+    expect(ratingPressed("mood", 4)).toBe("true");
     expect(screen.getByText("Tuesday, Nov 3")).toBeInTheDocument();
   });
 
@@ -128,7 +153,7 @@ describe("JournalEntryForm", () => {
   it("does not submit an empty reflection", async () => {
     render(<JournalEntryForm today={TODAY} initialEntry={null} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "6" }));
+    fireEvent.click(ratingButton("mood", 6));
     fireEvent.change(screen.getByLabelText("Reflection"), {
       target: { value: "   " },
     });
@@ -161,7 +186,7 @@ describe("JournalEntryForm", () => {
     });
     render(<JournalEntryForm today={TODAY} initialEntry={null} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "8" }));
+    fireEvent.click(ratingButton("mood", 8));
     fireEvent.change(screen.getByLabelText("Reflection"), {
       target: { value: "Good run" },
     });
@@ -172,6 +197,8 @@ describe("JournalEntryForm", () => {
     expect(saveJournalEntry).toHaveBeenCalledWith({
       today: TODAY,
       mood: 8,
+      stress: null,
+      energy: null,
       reflection: "Good run",
       domains: ["leisure"],
       win: "",
@@ -249,11 +276,66 @@ describe("JournalEntryForm", () => {
     expect(screen.getByText("This week’s intention: Lift 3x")).toBeInTheDocument();
   });
 
-  it("has no stress or energy fields", () => {
+  it("marks stress and energy optional and shows no example data", () => {
     render(<JournalEntryForm today={TODAY} initialEntry={null} />);
 
-    expect(screen.queryByText(/stress/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/energy/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: /^Stress today\s*\(optional\)$/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: /^Energy today\s*\(optional\)$/ }),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/example data/i)).not.toBeInTheDocument();
+  });
+
+  it("loads saved stress and energy", () => {
+    render(
+      <JournalEntryForm
+        today={TODAY}
+        initialEntry={makeEntry({ stress: 6, energy: 3 })}
+      />,
+    );
+
+    expect(ratingPressed("stress", 6)).toBe("true");
+    expect(ratingPressed("energy", 3)).toBe("true");
+    expect(ratingPressed("mood", 6)).toBe("false");
+  });
+
+  it("clears an optional rating when the selected value is pressed again", () => {
+    render(<JournalEntryForm today={TODAY} initialEntry={null} />);
+
+    fireEvent.click(ratingButton("stress", 5));
+    expect(ratingPressed("stress", 5)).toBe("true");
+    fireEvent.click(ratingButton("stress", 5));
+    expect(ratingPressed("stress", 5)).toBe("false");
+
+    fireEvent.click(ratingButton("mood", 5));
+    fireEvent.click(ratingButton("mood", 5));
+    expect(ratingPressed("mood", 5)).toBe("true");
+  });
+
+  it("sends stress and energy with the entry", async () => {
+    saveJournalEntry.mockResolvedValue({
+      success: true,
+      entry: makeEntry({ stress: 8, energy: null }),
+    });
+    render(
+      <JournalEntryForm
+        today={TODAY}
+        initialEntry={makeEntry({ energy: 4 })}
+      />,
+    );
+
+    fireEvent.click(ratingButton("stress", 8));
+    fireEvent.click(ratingButton("energy", 4));
+    fireEvent.click(screen.getByRole("button", { name: "Save entry" }));
+
+    await waitFor(() => expect(saveJournalEntry).toHaveBeenCalled());
+    expect(saveJournalEntry.mock.calls[0][0]).toMatchObject({
+      stress: 8,
+      energy: null,
+    });
+    expect(await screen.findByText("Entry saved.")).toBeInTheDocument();
+    expect(ratingPressed("stress", 8)).toBe("true");
   });
 });

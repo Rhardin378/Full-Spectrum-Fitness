@@ -173,6 +173,8 @@ To change an accepted decision: mark it superseded, add a new ADR, log the chang
 
   On 2026-11-21 Ryan raised the journal tag cap from two to three (“Pick up to three”). The database trigger, Zod, and the form all enforce three. Tags still mean what the day was mostly about, so the cap stays. The check-in recap still shows the top two tagged domains. Where this ADR says “up to two domain tags,” read three.
 
+  Also on 2026-11-21 Ryan added optional daily `stress` and `energy` (1–10, nullable) to `journal_entries`, so Insights can correlate mood, stress, energy, and training day by day. Mood stays the only required journal rating. The weekly check-in keeps its required stress and energy as the overall week rating; its recap shows the week’s daily averages beside them as a reference. This narrows the decision above: stress and energy are no longer only on the check-in, but the check-in still owns the weekly values.
+
 ---
 
 ## ADR-014 — One activity streak, one grace day per week

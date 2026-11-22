@@ -179,7 +179,7 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 
 Decided 2026-11-16. [Option A](./mockups/nov_2026_tickets/E-mind-layout-compare.png) is the page. Do not build Option B (Overview / Journal / Check-ins tabs), and do not build the older Overview / Journal / Domains / Prompts bar.
 
-Life domains here are the Option B set in [ADR-013](./ARCHITECTURE_DECISIONS.md): Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, and optional Habits. The journal is mood and a reflection, with up to three of those domains as tags, plus optional one-line “One win today” and “Grateful for” fields. Stress and energy are check-in fields, not journal fields. The weekly check-in is Slice 2. The Slice 5 coach report reads it later.
+Life domains here are the Option B set in [ADR-013](./ARCHITECTURE_DECISIONS.md): Physical health, Mental health, Family & relationships, Social, Career, Learning, Leisure, and optional Habits. The journal is mood and a reflection, with up to three of those domains as tags, plus optional one-line “One win today” and “Grateful for” fields. Stress and energy are optional daily ratings on the journal and required weekly ratings on the check-in. The weekly check-in is Slice 2. The Slice 5 coach report reads it later.
 
 | Surface | Route | Owner | Notes |
 |---------|-------|-------|-------|

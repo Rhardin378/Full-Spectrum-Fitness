@@ -27,6 +27,31 @@ describe("buildWeekRecap", () => {
     expect(other.averageMood).toBe(1.3);
   });
 
+  it("averages stress and energy over rated entries only", () => {
+    const recap = buildWeekRecap(
+      [
+        { entry_on: "2026-10-26", mood: 5, stress: 8, energy: null, domains: [] },
+        { entry_on: "2026-10-27", mood: 6, stress: 5, energy: 4, domains: [] },
+        { entry_on: "2026-10-28", mood: 7, domains: [] },
+      ],
+      "2026-10-26",
+    );
+
+    expect(recap.averageMood).toBe(6);
+    expect(recap.averageStress).toBe(6.5);
+    expect(recap.averageEnergy).toBe(4);
+  });
+
+  it("returns null stress and energy averages when no entry rated them", () => {
+    const recap = buildWeekRecap(
+      [{ entry_on: "2026-10-26", mood: 5, domains: [] }],
+      "2026-10-26",
+    );
+
+    expect(recap.averageStress).toBeNull();
+    expect(recap.averageEnergy).toBeNull();
+  });
+
   it("returns null average and empty tops for an empty week", () => {
     const recap = buildWeekRecap([], "2026-10-26");
     expect(recap.averageMood).toBeNull();

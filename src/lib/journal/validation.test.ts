@@ -85,6 +85,55 @@ describe("saveJournalEntrySchema", () => {
     }
   });
 
+  it("treats omitted stress and energy as null and accepts 1–10", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-03T15:00:00.000Z"));
+
+    const omitted = saveJournalEntrySchema.safeParse({
+      today: "2026-11-03",
+      mood: 5,
+      reflection: "ok",
+    });
+    expect(omitted.success).toBe(true);
+    if (omitted.success) {
+      expect(omitted.data.stress).toBeNull();
+      expect(omitted.data.energy).toBeNull();
+    }
+
+    const rated = saveJournalEntrySchema.safeParse({
+      today: "2026-11-03",
+      mood: 5,
+      reflection: "ok",
+      stress: 1,
+      energy: 10,
+    });
+    expect(rated.success).toBe(true);
+  });
+
+  it("rejects stress or energy outside 1–10 or not whole", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-03T15:00:00.000Z"));
+
+    const base = { today: "2026-11-03", mood: 5, reflection: "ok" };
+
+    const stress = saveJournalEntrySchema.safeParse({ ...base, stress: 11 });
+    expect(stress.success).toBe(false);
+    if (!stress.success) {
+      expect(formatJournalValidationErrors(stress.error).stress).toBe(
+        "Stress must be between 1 and 10.",
+      );
+    }
+
+    const energy = saveJournalEntrySchema.safeParse({ ...base, energy: 0 });
+    expect(energy.success).toBe(false);
+
+    const fractional = saveJournalEntrySchema.safeParse({
+      ...base,
+      energy: 4.5,
+    });
+    expect(fractional.success).toBe(false);
+  });
+
   it("rejects a win longer than 200 characters", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-03T15:00:00.000Z"));

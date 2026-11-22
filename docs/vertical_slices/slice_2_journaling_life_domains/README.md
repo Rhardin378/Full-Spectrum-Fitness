@@ -12,9 +12,9 @@ Ryan locked this on 2026-11-03. Ticket 2.9 aligned the handoff pack with [ADR-01
 
 1. **Weekly check-in moves from Slice 5 into Slice 2.** Slice 2 stores the subjective check-in (recap, stress, energy, domain scores, intention outcome, next intention). Slice 5 stays the **coach report**: analytics snapshot, model call, structured sections. Slice 2 does not call a model and does not render a coach report.
 2. **Life domains are Option B**, not the wellness wheel. Approved screen: [`docs/mockups/slice_2_journal_checkin/domains-compare-desktop.png`](../../mockups/slice_2_journal_checkin/domains-compare-desktop.png).
-3. **The daily journal is mood plus a written reflection, plus two optional one-line fields.** Stress and energy are check-in fields. The journal does not store domain scores. Optional tags are a join table, not `journal_domain_scores`. Ryan added “One win today” and “Grateful for” on 2026-11-17. They are nullable columns on `journal_entries`, not a wins table. Structured dated wins and life events stay Slice 7.
+3. **The daily journal is mood plus a written reflection, plus two optional one-line fields.** Stress and energy are required on the weekly check-in and, since 2026-11-21, optional daily ratings on the journal. The journal does not store domain scores. Optional tags are a join table, not `journal_domain_scores`. Ryan added “One win today” and “Grateful for” on 2026-11-17. They are nullable columns on `journal_entries`, not a wins table. Structured dated wins and life events stay Slice 7.
 
-`profiles.domain_priorities` uses the Option B slugs from `src/lib/life-domains/` (`DOMAIN_FOCUS_AREAS`, which ticket 2.2 moves out of `src/lib/types/profile.ts`). Ticket 2.9 mapped saved wellness-wheel values onto that set. Journal and check-in tickets do not migrate that column again. The decision record is [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted): Option B domains, stress and energy on the weekly check-in, that check-in in Slice 2, and exactly one weekly intention.
+`profiles.domain_priorities` uses the Option B slugs from `src/lib/life-domains/` (`DOMAIN_FOCUS_AREAS`, which ticket 2.2 moves out of `src/lib/types/profile.ts`). Ticket 2.9 mapped saved wellness-wheel values onto that set. Journal and check-in tickets do not migrate that column again. The decision record is [ADR-013](../../ARCHITECTURE_DECISIONS.md) (Accepted): Option B domains, stress and energy on the weekly check-in (and optional on the journal since 2026-11-21), that check-in in Slice 2, and exactly one weekly intention.
 
 ## Goal
 
@@ -82,7 +82,8 @@ One row per user per `entry_on`. The screen is for **local today** only (the val
 - **One win today:** optional single-line input. Label, exact: “One win today”. Column `win`. Nullable text. Omitted, null, and whitespace-only store null, not `''`. Otherwise trim and keep 1–200 characters. Skipping it does not block save.
 - **Grateful for:** optional single-line input. Label, exact: “Grateful for”. Column `grateful_for`. Same null rule and the same 200-character cap. Skipping it does not block save.
 - Tags: optional, at most three, from the eight domains. Copy: “What was today mostly about? Pick up to three.” Raised from two on 2026-11-21 (Ryan): real days often span three areas. The weekly recap still shows the top two tagged domains.
-- No stress, energy, sleep, or domain scores on the entry.
+- Stress and energy: optional, each 1–10, legend “1 = low, 10 = high”, after mood. Pressing the selected value again clears it. Skipped stores null. Ryan added these on 2026-11-21 so Insights can correlate daily mood, stress, energy, and training. Mood stays the only required rating.
+- No sleep or domain scores on the entry.
 
 Field order: mood, reflection, “One win today”, “Grateful for”, then domain tags. The 200-character cap is the same cap as the weekly intention body. Both are one line, not a second reflection.
 
@@ -100,9 +101,9 @@ One row per user per check-in `week_start`. A second submit for that week is rej
 
 Screen order matches [`checkin-desktop.png`](../../mockups/slice_2_journal_checkin/checkin-desktop.png) through the next intention, plus the Your goals bar and the notes field, which that PNG does not show. The list here is the approved order.
 
-1. **Your week so far** — deterministic recap of journal rows whose `entry_on` falls on the seven days of the check-in week (not a rolling window that includes today). Average mood to one decimal, days journaled as “N of 7”, top two tagged domains with counts, mood sparkline. Hollow point = no entry. Caption may say “Mood, last 7 days”. Empty week: honest empty copy, not zeros.
+1. **Your week so far** — deterministic recap of journal rows whose `entry_on` falls on the seven days of the check-in week (not a rolling window that includes today). Average mood to one decimal, days journaled as “N of 7”, top two tagged domains with counts, mood sparkline. Hollow point = no entry. Caption may say “Mood, last 7 days”. Empty week: honest empty copy, not zeros. When at least one entry rated them, average daily stress and energy show beside the stress and energy inputs as a reference. They do not prefill the inputs.
 2. **Last week’s intention** — the `weekly_intentions` row whose `week_start` equals this check-in week. “Did you do it?” maps Yes → `done`, Partly → `partly`, No → `not_done`. When that row does not exist (first check-in), hide the block entirely: no heading, no quoted body, and no outcome control. Required when it exists.
-3. **Stress and energy** — each integer 1–10. Copy: “1 = low, 10 = high”.
+3. **Stress and energy** — each integer 1–10, required. Copy: “1 = low, 10 = high”. This is the overall rating for the week, kept even though the journal can rate them daily.
 4. **Your goals** — read-only reminder of the profile’s free-text fitness and wellness goals, directly above the life-domain scores. “Edit in profile” goes to `/profile`. No inputs. Layout: [`G-checkin-goals-reminder.png`](../../mockups/nov_2026_tickets/G-checkin-goals-reminder.png). Both empty, and the three-line clamp, are not in that PNG. Ticket 2.4 governs them: a quiet “Add goals in your profile” link, not blank lines. Not shown on the Fitness Overview.
 5. **Life domains** — seven required scores plus optional Habits, canonical order, not profile-priority order. Copy: “1 = struggling, 10 = thriving”. Profile focus areas do not affect this screen for now. [ADR-013](../../ARCHITECTURE_DECISIONS.md) is unchanged.
 6. **Intention for the week of {Mon}–{Sun}** — label, exact. {Mon} is `currentIntentionWeekStart(today)` and {Sun} is that Sunday. Exactly one. Domain required, preselected to the lowest required score (Habits counts only if it was scored). Ties use canonical order. The user can change the domain before submit. Text required, 1–200 characters. Copy: “One concrete thing. Your lowest domain this week: {Label}.” Profile focus-area rank does not change this default. On 2026-11-16 Ryan rejected a proposal to preselect the top-ranked profile domain, and confirmed focus areas do not affect the check-in for now. See [`docs/mockups/nov_2026_tickets/B-checkin-journal.png`](../../mockups/nov_2026_tickets/B-checkin-journal.png).
@@ -180,7 +181,7 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 
 - A signed-in user can save today’s journal (mood, reflection, up to three tags) and see it after refresh. A second save the same day updates the same row. A successful save lands on `/mind` with an “Entry saved” confirmation.
 - “One win today” and “Grateful for” are optional. Leaving both blank still saves the entry and stores null. Mind history shows a line only when its value is non-null. There is no wins page.
-- Stress and energy are not on the journal.
+- Stress and energy on the journal are optional; an entry saves without them, and clearing one stores null.
 - A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice. There is no draft. A successful submit redirects to `/mind`. The first check-in hides the last-intention block. The intention label is “Intention for the week of {Mon}–{Sun}”.
 - Optional notes may be empty. When present, check-in history shows them. Nothing replies.
 - Exactly one next intention is stored. Its domain does not change later. Its text changes only through `editable_until`, from the journal line and from the Mind card.

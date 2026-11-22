@@ -9,6 +9,8 @@ type RawJournalEntry = {
   entry_on: unknown;
   mood: unknown;
   reflection: unknown;
+  stress?: unknown;
+  energy?: unknown;
   win?: unknown;
   grateful_for?: unknown;
   created_at: unknown;
@@ -35,6 +37,12 @@ function normalizeDomains(raw: RawJournalEntry): LifeDomain[] {
     );
 }
 
+function normalizeRating(value: unknown): number | null {
+  if (value == null || value === "") return null;
+  const rating = Number(value);
+  return Number.isFinite(rating) ? rating : null;
+}
+
 export function normalizeJournalEntry(raw: unknown): JournalEntry {
   const row = raw as RawJournalEntry;
 
@@ -44,6 +52,8 @@ export function normalizeJournalEntry(raw: unknown): JournalEntry {
     entry_on: String(row.entry_on),
     mood: Number(row.mood),
     reflection: String(row.reflection),
+    stress: normalizeRating(row.stress),
+    energy: normalizeRating(row.energy),
     win: row.win == null || row.win === "" ? null : String(row.win),
     grateful_for:
       row.grateful_for == null || row.grateful_for === ""

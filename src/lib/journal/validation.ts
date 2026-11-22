@@ -22,6 +22,18 @@ const optionalLineSchema = z.preprocess(
     .nullable(),
 );
 
+function optionalRatingSchema(label: string) {
+  return z.preprocess(
+    (value) => (value === undefined ? null : value),
+    z
+      .number({ message: `${label} must be a number.` })
+      .int(`${label} must be a whole number.`)
+      .min(1, `${label} must be between 1 and 10.`)
+      .max(10, `${label} must be between 1 and 10.`)
+      .nullable(),
+  );
+}
+
 export const todaySchema = z
   .string({ message: "Today must be a string." })
   .trim()
@@ -52,6 +64,8 @@ export const saveJournalEntrySchema = z
       .trim()
       .min(1, "Reflection is required.")
       .max(2000, "Reflection must be 2000 characters or fewer."),
+    stress: optionalRatingSchema("Stress"),
+    energy: optionalRatingSchema("Energy"),
     domains: z
       .array(
         z.enum(LIFE_DOMAINS, {

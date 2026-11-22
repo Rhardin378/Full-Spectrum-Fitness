@@ -29,6 +29,27 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-21 — Optional daily stress and energy on the journal
+
+### Completed
+
+- Migration `20261122030500_journal_entry_stress_energy.sql` adds nullable `stress` and `energy` (1–10) to `journal_entries` and grants update on both.
+- Zod, `saveJournalEntry`, `listJournalEntries`, and the normalizer carry the two ratings. Omitted means null.
+- `buildWeekRecap` returns `averageStress` and `averageEnergy`, averaged only over entries that rated each one (null when none did), with the same rounding as mood.
+- The journal form has “Stress today” and “Energy today” rows after mood, both marked optional. Pressing the selected value again clears it. Mood, stress, and energy share one `RatingScale` component.
+
+### Decisions
+
+- Ryan, 2026-11-21. Stress and energy are also captured daily, optional, so Insights can correlate mood, stress, energy, and training at a daily grain. Weekly values alone gave about four points a month. Mood stays the only required rating to keep the journal fast.
+- Ryan, 2026-11-21. The weekly check-in keeps its required stress and energy as the overall week rating. Its recap shows the week’s daily averages beside those inputs as a reference, without prefilling them. ADR-013 notes the change.
+
+### Next
+
+- Apply the migration to hosted: `npm run db:push`.
+- Ticket 2.4 renders the daily averages in the check-in recap.
+
+---
+
 ## 2026-11-21 — Daily journal screen (ticket 2.3) and three domain tags
 
 ### Completed
