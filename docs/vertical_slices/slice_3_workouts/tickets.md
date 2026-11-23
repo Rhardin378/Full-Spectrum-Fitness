@@ -1,6 +1,6 @@
 # Slice 3 Tickets (Copy to GitHub Issues)
 
-Use each section as one GitHub issue after Ryan locks the decisions in [`README.md`](./README.md). Create the `slice-3` label and the `Slice 3 - Workouts` milestone when the first issue opens (`docs/vertical_slices/tracking_setup.md`).
+Use each section as one GitHub issue. Ryan locked the decisions in [`README.md`](./README.md) on Nov 23, 2026. Create the `slice-3` label and the `Slice 3 - Workouts` milestone when the first issue opens (`docs/vertical_slices/tracking_setup.md`). Do not open those issues from a docs-only pass.
 
 **Gate:** Slice 2 QA (#79) and tests (#78) should be green enough that workouts are the active slice. NAV.1 is done. Prefer G.1 (weekly workout count) before or with OV.1.
 
@@ -16,13 +16,13 @@ Mockups: [`docs/mockups/slice_3_workouts/`](../../mockups/slice_3_workouts/READM
 
 ### Description
 
-Confirm or amend the Proposed locks D1–D18 in the Slice 3 README. Update the README status from Proposed to Locked. Fold any accepted competitive-research recommendations. Refresh mockups if a lock changes the primary UX (especially D1 live-timer vs post-hoc).
+Ryan locked D1–D21 on Nov 23, 2026. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
 
 ### Acceptance Criteria
 
-- Each D1–D18 row is Locked or explicitly Deferred with an owner slice.
-- README, mockups README, and this tickets file agree.
-- Development log note appended when locks land.
+- README, this tickets file, the mockups README, navigation IA, and the launch plan agree with the lock.
+- Development log notes the lock.
+- Existing mockup images stay untouched until that design pass.
 
 ### Suggested GitHub title
 
@@ -42,10 +42,10 @@ Migrations for `exercises` (global seed + owner custom), completed workout table
 
 ### Scope (draft)
 
-- Seed ~80–120 common exercises with slug, name, aliases, primary muscle, optional equipment.
-- Custom exercises: `user_id` not null; global rows have null owner.
-- Completed: sessions → exercises → sets.
-- Templates: program/session/exercise/set_prescription + optional groups.
+- Seed about 120–150 common exercises with slug, name, aliases, primary muscle, optional equipment (D4).
+- Custom exercises: `user_id` not null; global rows have null owner. No parent-link column and no variant action (D20).
+- Completed: sessions → exercises → sets. No rest-seconds column on completed sets (D13).
+- Templates: program/session/exercise/set_prescription + optional groups. Rest seconds stay nullable on set prescriptions only.
 - No AI import tables.
 
 ### Acceptance Criteria
@@ -77,7 +77,8 @@ Zod-validated server actions: create/list/update/soft-delete workouts, create cu
 ### Acceptance Criteria
 
 - Unauthorized callers fail generically.
-- Volume helper matches D10.
+- Volume helper matches D10: reps × load as entered, no dumbbell doubling, warm-ups and non-numeric load excluded.
+- PR flag matches D11: heaviest numeric load for an exercise, excluding warm-ups and non-numeric load. No e1RM.
 - Date slack window matches measurements/journal pattern.
 - Unit tests without a live DB (mock Supabase), including Chicago/UTC calendar cases.
 
@@ -105,7 +106,8 @@ Replace the Workouts coming-soon panel. History list, empty state, Show more win
 
 - `/fitness/workouts` shows real data or an honest empty state.
 - Soft-deleted sessions are absent.
-- Band button only on Workouts (and Overview when OV.1 lands).
+- **+ Log workout** opens a new log for today. No start chooser. Starting from a template is on this tab, not in the band (D15).
+- The same band action is the Overview primary when OV.1 lands. Overview still has secondary + Log measurement.
 
 ### Dependencies
 
@@ -125,14 +127,18 @@ Replace the Workouts coming-soon panel. History list, empty state, Show more win
 
 ### Description
 
-`/fitness/workouts/new` post-hoc log form and exercise picker (search, muscle chips, create custom). Last-session reference when an exercise was logged before. Save confirmation.
+`/fitness/workouts/new` is a FitNotes-style single log (D1). The date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. The picker is a search sheet (search, muscle chips, create custom). A per-exercise history view is reached from the log or the picker (D16).
 
 ### Acceptance Criteria
 
-- Multi-exercise session saves and reloads.
+- A multi-exercise session reloads after refresh. Phone-width layout is required. The normal nav stays, with a sticky save/finish bar on phone. No focus mode (D21).
+- The dumbbell load hint says “per dumbbell”. Volume uses the entered load with no doubling (D10).
+- Custom create shows a fuzzy-duplicate warning, and **Create anyway** stays. There is no **Create as variant** (D19, D20).
+- The per-exercise history view shows past sets and the PR badge. It is not a Library page.
+- The finish summary shows the PR badge when the heaviest non-warmup numeric load is a personal record (D11). No PR board and no e1RM.
 - Fourth-class junk fields rejected by Zod.
-- Custom exercise appears in search for the owner only.
-- Matches locked mockups; written spec wins if PNG lags.
+- A custom exercise appears in search for the owner only.
+- The written spec wins where the current images lag. Updated mockups come from a separate design pass.
 
 ### Dependencies
 
@@ -152,7 +158,13 @@ Replace the Workouts coming-soon panel. History list, empty state, Show more win
 
 ### Description
 
-Detail page for a session; edit sets; soft-delete with confirm. Heaviest-set line optional; no PR board.
+Detail page for a session; edit sets; soft-delete with confirm. The finish summary shows the PR badge from D11. No PR board and no e1RM. The normal nav stays. No focus mode.
+
+### Acceptance Criteria
+
+- The owner can edit sets and soft-delete the session.
+- The PR badge is the heaviest numeric load for that exercise, excluding warm-ups and non-numeric load.
+- The screen keeps the normal nav. No focus mode (D21).
 
 ### Dependencies
 
@@ -214,7 +226,7 @@ Feed `performed_on` into activity streak (ADR-014). Ship or finish OV.1 Fitness 
 
 ### Description
 
-Unit/action/component coverage for schema rules, volume, date slack, picker validation, history windowing, template save contract. No Playwright required in this ticket.
+Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling), the D11 PR flag, date slack, the duplicate warning, history windowing, and the template save contract. No Playwright required in this ticket.
 
 ### Dependencies
 
@@ -234,7 +246,7 @@ Unit/action/component coverage for schema rules, volume, date slack, picker vali
 
 ### Description
 
-Walk empty log, custom exercise, multi-set session, edit, soft-delete, template reuse, streak day, Overview (if shipped), phone-width. Capture gaps as follow-ups. Do not expand into 3.1 during QA.
+Walk an empty log, a custom exercise with the duplicate warning and Create anyway, a multi-set session (sets save as ticked, per-dumbbell hint, PR badge, per-exercise history), edit, soft-delete, template reuse from the Workouts tab, streak day, Overview (if shipped), and phone-width with the sticky save/finish bar and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, a rest timer, a PR board, or Create as variant during QA.
 
 ### Dependencies
 

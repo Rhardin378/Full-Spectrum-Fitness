@@ -29,6 +29,41 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Slice 3 decisions locked
+
+### Completed
+
+- Ryan locked the Slice 3 decision table. The README section is now “Decisions (locked Nov 23, 2026)”. Tickets, competitive research, the mockups README, navigation IA, and the launch plan match that lock.
+- Existing mockup images were not changed. Updated frames come from a separate design pass.
+
+### Decisions
+
+- D1: FitNotes-style single log. Date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. Phone-width is required.
+- D4: about 120–150 curated global exercises, plus owner-scoped custom exercises.
+- D10: dumbbell load is per dumbbell. Volume = reps × load as entered, no doubling. Hint says “per dumbbell”. Warm-ups stay excluded.
+- D11: simple PR flag (heaviest numeric load, excluding warm-ups and non-numeric load) as a badge on the finish summary and the per-exercise history view. No PR board or e1RM (Slice 4).
+- D13: rest timer deferred (gate D), first candidate follow-up after logging ships. Rest seconds stay nullable on template prescriptions only.
+- D15: + Log workout opens a new log for today. No start chooser. Start from a template stays on the Workouts tab.
+- D16: Library tab stays coming soon. The picker search sheet is the only library UI. Per-exercise history (past sets and the PR badge) is reached from the log or the picker and is not a Library page.
+- Custom create shows a fuzzy-duplicate warning, and Create anyway stays (D19).
+- Create as variant is out of Slice 3 (D20, gate D). It needs a parent link.
+- The log and finish screens keep the normal nav, with a sticky save/finish bar on phone. No focus mode (D21).
+
+### Issues
+
+- PRD §3 still lists rest on the completed-workout log. D13 keeps rest seconds on template prescriptions only. Not rewritten here.
+- PRD §3 also says to plan substitutions in the schema even if the UI is thin. D20 keeps a parent-link variant out of Slice 3. Not rewritten here.
+
+### Next
+
+- Slice 2 close-out still gates implementation.
+- Separate design pass for the Slice 3 mockups.
+- Then open Slice 3 GitHub issues from `tickets.md`.
+
+### AI Notes
+
+- Cursor cloud agent. Docs only. No ADR.
+
 ## 2026-11-23 — Slice 3 planning pack (decisions Proposed)
 
 ### Completed

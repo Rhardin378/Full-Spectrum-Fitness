@@ -8,7 +8,7 @@ Design notes for app navigation: global navbar, domain switcher, in-domain tabs,
 
 **Phase 1 nav implication:** Fitness | Mind | Insights are the real destinations. Community stays omitted or “Coming soon” and **must not** become a Phase 1 build. Achievements stay out of the navbar. The subjective weekly check-in is Slice 2 (`/mind/check-in` and the due card on `/mind`). The Slice 5 coach report reads that check-in later ([ADR-013](./ARCHITECTURE_DECISIONS.md)). Do not add a Prompts tab. Mind has no tab bar.
 
-Slice 3 (workouts) now has a planning pack under `docs/vertical_slices/slice_3_workouts/` (decisions Proposed until ticket 3.0). Slice 4 (Insights) and Slice 5 (coach report) are in the launch plan and still have **no ticket folder**. This file does not create those tickets.
+Slice 3 (workouts) has a planning pack under `docs/vertical_slices/slice_3_workouts/` (decisions locked Nov 23, 2026). Slice 4 (Insights) and Slice 5 (coach report) are in the launch plan and still have **no ticket folder**. This file does not create those tickets.
 
 ---
 
@@ -38,7 +38,7 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | Overview tab content | **OV.1**, with the workouts slice | Coming-soon panel today |
 | Workouts tab content | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) (planning; not built) | Coming-soon panel today |
 | Measurements tab | **Done** — Slice 1.5. URL is **NAV.1** | Live today on `/dashboard`. After NAV.1, `/fitness/measurements` |
-| Library tab content | **Slice 3.1** tickets, after Slice 3 | Coming-soon panel today. Slice 3.1’s folder exists. Slice 3’s does not |
+| Library tab content | **Slice 3.1** tickets, after Slice 3 | Coming-soon through Slice 3 (D16). Slice 3’s library UI is the log picker and a per-exercise history view, not this tab |
 | Mind tab bar | Not built. **Ticket 2.6** ships the page without one | No Mind route yet |
 | Mind home `/mind` | **Ticket 2.6** | No page. Middleware does not protect `/mind` yet (that ticket adds it) |
 | `/mind/journal` | **Ticket 2.3** | No page |
@@ -50,7 +50,7 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | Check-in due card | **Ticket 2.7** | Not built |
 | Fitness welcome band: greeting, subtitle, **+ Log measurement** only on Measurements | **Done** — 1.5.4 | `src/components/dashboard/dashboard-welcome-band.tsx` |
 | Overview band: **+ Log workout** and **+ Log measurement** | **OV.1** | Other tabs show no band button today |
-| Workouts band: **+ Log workout** | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | No button today |
+| Workouts band: **+ Log workout** | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | No button today. When it ships, it opens a new log for today. No start chooser (D15) |
 | Library band button | **Slice 3.1**, when Library ships | No button today, which is the 1.5 rule |
 | `/` marketing | **Done** | `src/app/(main)/page.tsx` |
 | `/auth` | **Done** | `src/app/auth/page.tsx` |
@@ -137,15 +137,15 @@ Same shell layout as dashboard mockups; **greeting + subtitle change by domain**
 
 | Active tab | Primary CTA | Owner | Notes |
 |------------|-------------|-------|-------|
-| Overview | **+ Log workout** (when the workouts slice turns this tab on) | **OV.1** | Secondary **+ Log measurement** on this tab once both flows are live. Approved layout: [`F-fitness-overview.png`](./mockups/nov_2026_tickets/F-fitness-overview.png). Do not turn the tab on before workouts. |
-| Workouts | **+ Log workout** | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | — |
+| Overview | **+ Log workout** (when the workouts slice turns this tab on) | **OV.1** | Opens a new log for today. No start chooser (D15). Secondary **+ Log measurement** on this tab once both flows are live. Approved layout: [`F-fitness-overview.png`](./mockups/nov_2026_tickets/F-fitness-overview.png). Do not turn the tab on before workouts. |
+| Workouts | **+ Log workout** | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | Same destination as Overview: a new log for today. No start chooser. Start from a template lives on the Workouts tab (D15). |
 | Measurements | **+ Log measurement** | **Done** — Slice 1.5 | Same action as in-tab “+ Log measurement”. This is the only band button in the app today |
 | Library | None until Library ships | **Slice 3.1** | The shell already shows no button here |
 
 - **Slice 1.5:** only the **Measurements** tab shows a welcome-band CTA (`+ Log measurement`). Other Fitness tabs show **no** log buttons in the band (coming-soon tab panels are fine). Overview stays coming soon through Slice 2.
 - **Numbers live in the page body, not the welcome band.** The band stays greeting, subtitle, and CTAs. That supersedes the welcome-band stat cards in issue #55 for the cards below. Do not edit #55 from a docs change. Mapping: [`docs/vertical_slices/nov_16_2026_decisions/README.md`](./vertical_slices/nov_16_2026_decisions/README.md).
 - **Slice 2.5:** Weight now card and the activity streak ([ADR-014](./ARCHITECTURE_DECISIONS.md)). The card is at the top of Measurements until **OV.1**, then only on Overview. Overview stays coming soon until then.
-- **Workouts slice:** Overview turns on ([ticket OV.1](./vertical_slices/nov_16_2026_decisions/tickets.md)). Contents are the F mockup: weekly workout goal, activity streak, Weight now, recent activity. PRs / consistency stay later (Slice 4), not on this tab.
+- **Workouts slice:** Overview turns on ([ticket OV.1](./vertical_slices/nov_16_2026_decisions/tickets.md)). Contents are the F mockup: weekly workout goal, activity streak, Weight now, recent activity. A PR board, e1RM, and consistency stay off this tab (Slice 4). Slice 3’s PR badge is on the finish summary and the per-exercise history view, not on Overview (D11).
 
 #### Mind welcome band
 
@@ -171,9 +171,9 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 | Tab | MVP | Owner | Notes |
 |-----|-----|-------|-------|
 | Overview | With the workouts slice | **OV.1** | Off until then (`coming soon`). Domain home per [`F-fitness-overview.png`](./mockups/nov_2026_tickets/F-fitness-overview.png). Not during Slice 1.5 or Slice 2. |
-| Workouts | Yes | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | Log, history, templates, programs. Placeholder panel today |
+| Workouts | Yes | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | Log, history, templates. The log and finish screens keep the normal nav, with a sticky save/finish bar on phone and no focus mode (D21). Placeholder panel today |
 | Measurements | Yes | **Done** — Slice 1.5 | Weight/waist, trend |
-| Library | Later | **Slice 3.1** tickets, after Slice 3 | Placeholder OK until then |
+| Library | Later | **Slice 3.1** tickets, after Slice 3 | Coming soon through Slice 3 (D16). The log picker and per-exercise history view are not this tab |
 
 #### Mind (no tab bar)
 
@@ -228,7 +228,7 @@ Ryan resolved the URL on 2026-11-16. See [Fitness URL](#fitness-url--resolved-20
 | `/fitness` | Fitness home. Overview content when OV.1 lands. Until then, Measurements is the selected tab | Route **NAV.1**. Content **OV.1** |
 | `/fitness/workouts` | Workouts | Path **NAV.1**. Feature: **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) |
 | `/fitness/measurements` | Measurements | Path **NAV.1**. Feature **Done** |
-| `/fitness/library` | Library | Path **NAV.1**. Feature: **Slice 3.1** after Slice 3 |
+| `/fitness/library` | Library | Path **NAV.1**. Feature: **Slice 3.1** after Slice 3. Stays coming soon in Slice 3 (D16) |
 | `/mind` | Mind home, no tab bar | **Ticket 2.6** |
 | `/mind/journal` | Today’s journal entry | **Ticket 2.3** |
 | `/mind/check-in` | Weekly check-in | **Ticket 2.4** |

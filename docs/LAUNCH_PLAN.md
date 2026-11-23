@@ -33,7 +33,7 @@ If a later idea conflicts with this document, update the handoff pack **before**
 | Slice 1 — Authentication & Profile Setup | **Done** |
 | Slice 1.5 — Measurements & Baseline Tracking | **Done** (closed 2026-11-16) |
 | **Slice 2 — Journaling, Life Domains & Weekly Check-In** | **Current work** (screens not built yet) |
-| Slice 3 — Workouts | Planned — planning pack in [`docs/vertical_slices/slice_3_workouts/`](./vertical_slices/slice_3_workouts/); do not implement until Slice 2 close-out and decision lock (ticket 3.0) |
+| Slice 3 — Workouts | Planned — decisions locked Nov 23, 2026 in [`docs/vertical_slices/slice_3_workouts/`](./vertical_slices/slice_3_workouts/); do not implement until Slice 2 close-out |
 | Slice 3.1+ | Planned follow-on — do not start |
 
 Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_2_journaling_life_domains/`](./vertical_slices/slice_2_journaling_life_domains/). Ticket **2.9** aligned this pack with [ADR-013](./ARCHITECTURE_DECISIONS.md) and mapped saved `profiles.domain_priorities` onto the Option B domains. Next is ticket **2.1** (schema). The journal and check-in screens are not built yet.
@@ -128,7 +128,7 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 | Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
 | Weight & waist time-series | 1.5 (done) | Deterministic weight trend in-tab; no unit conversion |
 | Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal, plus optional daily stress and energy and optional one-line win and gratitude. Weekly stress, energy, and domain scores on the check-in. One intention. No AI prompts. The journal lines are not Slice 7’s structured wins. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
-| Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions. Spec: [`docs/vertical_slices/slice_3_workouts/`](./vertical_slices/slice_3_workouts/) (decisions Proposed until ticket 3.0) |
+| Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD). Locked Nov 23, 2026: FitNotes-style log, simple PR badge, Library tab stays coming soon. Spec: [`docs/vertical_slices/slice_3_workouts/`](./vertical_slices/slice_3_workouts/) |
 | Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
 | Weekly coach report | 5 | Reads the Slice 2 check-in. Does not collect the form. Server-built snapshot. Zod-validated report UI. [ADR-013](./ARCHITECTURE_DECISIONS.md). |
 
@@ -219,7 +219,7 @@ Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tra
 | 1 | Auth & Profile | Account and goals | — | Circles, social privacy product |
 | 1.5 | Measurements | Body baseline over time | Slice 1 | Photos, extra tape measurements |
 | **2** | **Journaling, Life Domains & Weekly Check-In** | Wellbeing capture and the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 1 | LLM prompts, theme extraction, the coach report |
-| 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest |
+| 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest, rest timer, PR board, e1RM |
 | 4 | Deterministic Analytics & Insights | “What changed?” without AI | 1.5, 2, 3 | ML correlations presented as facts |
 | 5 | Weekly Coach Report | Structured report that reads the Slice 2 check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 4 | Tool-calling agent, RAG, collecting the check-in form |
 | 3.1 | AI Workout Import | Import a text PDF as templates | Slice 3 | OCR, images, auto-save |
