@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Community sharing note
+
+- Ryan approved a future community-feed note in PRD §8. Not Phase 1, not Slice 3. No UI, tables, or tickets.
+
 ## 2026-11-23 — Slice 3 decisions locked
 
 ### Completed

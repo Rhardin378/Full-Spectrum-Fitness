@@ -525,6 +525,17 @@ Users should be able to inspect underlying journal entries when themes ship.
 
 Out of Phase 1. If revisited: privacy-first, support rather than competition, no requirement to share journals. Do not staff navbar Community as a Phase 1 engagement bet.
 
+### Community and sharing (future)
+
+Long-term vision: a community feed where people share wins, PRs, and workouts, to build community. It might start with a Share button on a PR badge or a finished workout. This is future — not Phase 1, not Slice 3. No UI, tables, or tickets now. It is not trainer program sharing; that stays post–Slice 3 ingestion. Profile `sharing_preferences` already exists for later use and is unchanged here.
+
+When it is specced later:
+
+- Opt-in sharing, with visibility controls.
+- Journal and mind data are never shared by default and never auto-included.
+- Moderation and reporting.
+- It builds on the existing deterministic PR flag and workout records, so no Slice 3 data-model change is needed.
+
 ---
 
 ## 9. Achievements and badges — Later
