@@ -323,7 +323,7 @@ The UI renders sections from a validated schema, for example:
 
 ### Phase 1 capabilities
 
-- Log completed workouts (date, exercises, sets, reps, load, optional RPE/RIR, rest, notes)
+- Log completed workouts (date, exercises; strength sets with reps, load, optional RPE/RIR and notes; cardio sets with time, optional distance and effort)
 - Workout history
 - Basic progress (e.g. estimated volume, simple PR detection on a lift)
 - Reusable session templates as needed so logging is not painful

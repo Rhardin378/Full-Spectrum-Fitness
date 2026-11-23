@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — PRD §3 log line
+
+- Resolved the open note that PRD §3 listed rest, and not cardio, on the completed-workout bullet. That line now matches D13 and D28. Template rest and the substitutions note are unchanged.
+
 ## 2026-11-23 — Cardio logging in Slice 3
 
 - Ryan moved cardio into Slice 3 (D12 revised, D28 added): time and distance sets, about 12 seeded exercises inside the 120–150, strength-only volume and PRs. Pace, heart rate, GPS, and numeric template targets stay deferred. PRD was not edited.
