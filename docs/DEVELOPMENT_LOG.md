@@ -29,6 +29,32 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Slice 3 planning pack (decisions Proposed)
+
+### Completed
+
+- Added `docs/vertical_slices/slice_3_workouts/` with README (D1–D18 Proposed locks), tickets 3.0–3.9, and competitive research brief.
+- Added proposed mockups under `docs/mockups/slice_3_workouts/` (Workouts tab, log form, exercise picker).
+- Pointed `LAUNCH_PLAN.md` and `navigation-ia.md` at the new folder. Implementation still waits on Slice 2 close-out and ticket 3.0 lock.
+
+### Decisions
+
+- None locked yet. Recommended posture: post-hoc web log first (not live gym timer), empty workout + save-as-template, seeded library + custom exercises, templates separate from logs, quiet history (no social), OV.1 with this slice after G.1.
+
+### Issues
+
+- Could not auto-message the FSF social bot from this environment (no Slack send tool). Paste-ready research ask is in `slice_3_workouts/competitive_research.md`.
+
+### Next
+
+- Ryan: run Slice 2 QA on desktop (#79 / #78 / remaining open Slice 2 issues).
+- Ryan: lock D1–D18 (ticket 3.0) and optionally paste the social-bot brief.
+- Then open Slice 3 GitHub issues from `tickets.md`.
+
+### AI Notes
+
+- Cursor cloud agent drafted the planning pack and sampled 2026 Hevy/Strong/Fitbod comparisons for recommendations.
+
 ## 2026-11-22 — Intention display through Sunday (2.7 follow-up)
 
 ### Completed

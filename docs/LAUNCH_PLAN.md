@@ -33,7 +33,8 @@ If a later idea conflicts with this document, update the handoff pack **before**
 | Slice 1 — Authentication & Profile Setup | **Done** |
 | Slice 1.5 — Measurements & Baseline Tracking | **Done** (closed 2026-11-16) |
 | **Slice 2 — Journaling, Life Domains & Weekly Check-In** | **Current work** (screens not built yet) |
-| Slice 3+ | Planned — do not start |
+| Slice 3 — Workouts | Planned — planning pack in [`docs/vertical_slices/slice_3_workouts/`](./vertical_slices/slice_3_workouts/); do not implement until Slice 2 close-out and decision lock (ticket 3.0) |
+| Slice 3.1+ | Planned follow-on — do not start |
 
 Ticket-level work for the current slice lives in [`docs/vertical_slices/slice_2_journaling_life_domains/`](./vertical_slices/slice_2_journaling_life_domains/). Ticket **2.9** aligned this pack with [ADR-013](./ARCHITECTURE_DECISIONS.md) and mapped saved `profiles.domain_priorities` onto the Option B domains. Next is ticket **2.1** (schema). The journal and check-in screens are not built yet.
 
@@ -127,7 +128,7 @@ Daily journaling is **optional**. The loop can close on **workouts + measurement
 | Auth & profile | 1 (done) | Goals and domain priorities live on the profile; circles are not implemented |
 | Weight & waist time-series | 1.5 (done) | Deterministic weight trend in-tab; no unit conversion |
 | Journal, life domains, and the weekly check-in | 2 (current) | Mood and reflection on the journal, plus optional daily stress and energy and optional one-line win and gratitude. Weekly stress, energy, and domain scores on the check-in. One intention. No AI prompts. The journal lines are not Slice 7’s structured wins. [ADR-013](./ARCHITECTURE_DECISIONS.md). Screens are not built yet. |
-| Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions |
+| Manual workout logging + history | 3 | Canonical exercise identity from the start (see PRD); templates as needed to log and reuse sessions. Spec: [`docs/vertical_slices/slice_3_workouts/`](./vertical_slices/slice_3_workouts/) (decisions Proposed until ticket 3.0) |
 | Deterministic insights | 4 | Charts + rule-based statements from an analytics snapshot |
 | Weekly coach report | 5 | Reads the Slice 2 check-in. Does not collect the form. Server-built snapshot. Zod-validated report UI. [ADR-013](./ARCHITECTURE_DECISIONS.md). |
 

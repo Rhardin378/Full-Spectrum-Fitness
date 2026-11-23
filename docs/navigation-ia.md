@@ -8,7 +8,7 @@ Design notes for app navigation: global navbar, domain switcher, in-domain tabs,
 
 **Phase 1 nav implication:** Fitness | Mind | Insights are the real destinations. Community stays omitted or “Coming soon” and **must not** become a Phase 1 build. Achievements stay out of the navbar. The subjective weekly check-in is Slice 2 (`/mind/check-in` and the due card on `/mind`). The Slice 5 coach report reads that check-in later ([ADR-013](./ARCHITECTURE_DECISIONS.md)). Do not add a Prompts tab. Mind has no tab bar.
 
-Slice 3 (workouts), Slice 4 (Insights), and Slice 5 (coach report) are in the launch plan and have **no ticket folder** under `docs/vertical_slices/`. This file does not create those tickets. An item owned by one of those slices says so, and says the folder is missing.
+Slice 3 (workouts) now has a planning pack under `docs/vertical_slices/slice_3_workouts/` (decisions Proposed until ticket 3.0). Slice 4 (Insights) and Slice 5 (coach report) are in the launch plan and still have **no ticket folder**. This file does not create those tickets.
 
 ---
 
@@ -36,7 +36,7 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | Last-visited domain persistence | **Unplanned** | No cookie and no profile field. **NAV.1** moves the sign-in landing from `/dashboard` to `/fitness`. Remembering the last domain is still unplanned |
 | Fitness tab bar | **Done** — ticket 1.5.4 | `src/components/dashboard/fitness-tabs.ts`. Measurements is the default |
 | Overview tab content | **OV.1**, with the workouts slice | Coming-soon panel today |
-| Workouts tab content | **Slice 3** — no ticket folder yet | Coming-soon panel today |
+| Workouts tab content | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) (planning; not built) | Coming-soon panel today |
 | Measurements tab | **Done** — Slice 1.5. URL is **NAV.1** | Live today on `/dashboard`. After NAV.1, `/fitness/measurements` |
 | Library tab content | **Slice 3.1** tickets, after Slice 3 | Coming-soon panel today. Slice 3.1’s folder exists. Slice 3’s does not |
 | Mind tab bar | Not built. **Ticket 2.6** ships the page without one | No Mind route yet |
@@ -50,7 +50,7 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | Check-in due card | **Ticket 2.7** | Not built |
 | Fitness welcome band: greeting, subtitle, **+ Log measurement** only on Measurements | **Done** — 1.5.4 | `src/components/dashboard/dashboard-welcome-band.tsx` |
 | Overview band: **+ Log workout** and **+ Log measurement** | **OV.1** | Other tabs show no band button today |
-| Workouts band: **+ Log workout** | **Slice 3** — no ticket folder yet | No button today |
+| Workouts band: **+ Log workout** | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | No button today |
 | Library band button | **Slice 3.1**, when Library ships | No button today, which is the 1.5 rule |
 | `/` marketing | **Done** | `src/app/(main)/page.tsx` |
 | `/auth` | **Done** | `src/app/auth/page.tsx` |
@@ -58,7 +58,7 @@ Checked against the app on 2026-11-16. **Done** means that behavior is in `main`
 | `/dashboard` Fitness shell | Shell **Done** — Slice 1.5. Redirect is **NAV.1** | Live today. **NAV.1** permanently redirects it to `/fitness` and keeps the query string |
 | `/fitness` | **NAV.1** for the route. **OV.1** for Overview content | No page yet. Until OV.1, opening it selects Measurements |
 | `/fitness/measurements` | **NAV.1** | Measurements, already built |
-| `/fitness/workouts` | **NAV.1** for the path. **Slice 3** — no ticket folder yet — for the feature | Coming-soon panel |
+| `/fitness/workouts` | **NAV.1** for the path. **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) — for the feature | Coming-soon panel |
 | `/fitness/library` | **NAV.1** for the path. **Slice 3.1** for the feature | Coming-soon panel. Later than the other three |
 | `/insights` | **Slice 4** — no ticket folder yet | No page |
 | `/achievements` | **Unplanned** | No page |
@@ -138,7 +138,7 @@ Same shell layout as dashboard mockups; **greeting + subtitle change by domain**
 | Active tab | Primary CTA | Owner | Notes |
 |------------|-------------|-------|-------|
 | Overview | **+ Log workout** (when the workouts slice turns this tab on) | **OV.1** | Secondary **+ Log measurement** on this tab once both flows are live. Approved layout: [`F-fitness-overview.png`](./mockups/nov_2026_tickets/F-fitness-overview.png). Do not turn the tab on before workouts. |
-| Workouts | **+ Log workout** | **Slice 3** — no ticket folder yet | — |
+| Workouts | **+ Log workout** | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | — |
 | Measurements | **+ Log measurement** | **Done** — Slice 1.5 | Same action as in-tab “+ Log measurement”. This is the only band button in the app today |
 | Library | None until Library ships | **Slice 3.1** | The shell already shows no button here |
 
@@ -171,7 +171,7 @@ Do **not** mix Fitness and Mind items in one tab bar (supersedes the early 6-tab
 | Tab | MVP | Owner | Notes |
 |-----|-----|-------|-------|
 | Overview | With the workouts slice | **OV.1** | Off until then (`coming soon`). Domain home per [`F-fitness-overview.png`](./mockups/nov_2026_tickets/F-fitness-overview.png). Not during Slice 1.5 or Slice 2. |
-| Workouts | Yes | **Slice 3** — no ticket folder yet | Log, history, templates, programs. Placeholder panel today |
+| Workouts | Yes | **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) | Log, history, templates, programs. Placeholder panel today |
 | Measurements | Yes | **Done** — Slice 1.5 | Weight/waist, trend |
 | Library | Later | **Slice 3.1** tickets, after Slice 3 | Placeholder OK until then |
 
@@ -226,7 +226,7 @@ Ryan resolved the URL on 2026-11-16. See [Fitness URL](#fitness-url--resolved-20
 | `/auth` | Sign in and sign up | **Done** |
 | `/dashboard` | Old Fitness shell | Shell **Done**. Permanent redirect to `/fitness`, query string kept: **NAV.1** |
 | `/fitness` | Fitness home. Overview content when OV.1 lands. Until then, Measurements is the selected tab | Route **NAV.1**. Content **OV.1** |
-| `/fitness/workouts` | Workouts | Path **NAV.1**. Feature: **Slice 3** — no ticket folder yet |
+| `/fitness/workouts` | Workouts | Path **NAV.1**. Feature: **Slice 3** — [`slice_3_workouts/`](./vertical_slices/slice_3_workouts/) |
 | `/fitness/measurements` | Measurements | Path **NAV.1**. Feature **Done** |
 | `/fitness/library` | Library | Path **NAV.1**. Feature: **Slice 3.1** after Slice 3 |
 | `/mind` | Mind home, no tab bar | **Ticket 2.6** |
@@ -258,7 +258,7 @@ Ryan resolved the URL on 2026-11-16. See [Fitness URL](#fitness-url--resolved-20
 | Last-visited domain persistence | Not started | **Unplanned** |
 | Community nav item, coming-soon styling | In the navbar (muted, Soon). The link still goes to `/dashboard` until **NAV.1** | **Done** for the chrome. Product **Unplanned** |
 | Route groups `(fitness)`, `(mind)`, `(insights)` | Not started. App group is `(main)` | **Unplanned** |
-| Welcome band CTAs follow the active Fitness tab | Measurements button only, which is the Slice 1.5 rule | **Done** for Measurements. Overview is **OV.1**. Workouts is **Slice 3** (no ticket folder) |
+| Welcome band CTAs follow the active Fitness tab | Measurements button only, which is the Slice 1.5 rule | **Done** for Measurements. Overview is **OV.1**. Workouts is **Slice 3** ([`slice_3_workouts/`](./vertical_slices/slice_3_workouts/)) |
 | Mind welcome band and **+ New journal entry** | Not started | **Ticket 2.6** |
 | Achievements entry in the profile dropdown | Disabled Soon row is in the menu | **Done** for the row. Product **Unplanned** |
 | Insights route | Not started | **Slice 4** — no ticket folder yet |
