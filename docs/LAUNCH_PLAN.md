@@ -219,7 +219,7 @@ Issue tracking: [`docs/vertical_slices/tracking_setup.md`](./vertical_slices/tra
 | 1 | Auth & Profile | Account and goals | — | Circles, social privacy product |
 | 1.5 | Measurements | Body baseline over time | Slice 1 | Photos, extra tape measurements |
 | **2** | **Journaling, Life Domains & Weekly Check-In** | Wellbeing capture and the weekly check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 1 | LLM prompts, theme extraction, the coach report |
-| 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest, rest timer, PR board, e1RM |
+| 3 | Workouts | Training history and volume | Slice 1 | AI import, screenshot ingest, PR board, e1RM |
 | 4 | Deterministic Analytics & Insights | “What changed?” without AI | 1.5, 2, 3 | ML correlations presented as facts |
 | 5 | Weekly Coach Report | Structured report that reads the Slice 2 check-in ([ADR-013](./ARCHITECTURE_DECISIONS.md)) | Slice 4 | Tool-calling agent, RAG, collecting the check-in form |
 | 3.1 | AI Workout Import | Import a text PDF as templates | Slice 3 | OCR, images, auto-save |

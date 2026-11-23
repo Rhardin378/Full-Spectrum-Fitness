@@ -38,7 +38,7 @@ Do not reopen these without updating the pack.
 
 ## Decisions (locked Nov 23, 2026)
 
-Ryan locked this table on Nov 23, 2026. Do not reopen a row without updating this pack.
+Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest timer is in Slice 3) and added D22. Do not reopen a row without updating this pack.
 
 | ID | Topic | Decision | Why |
 |----|--------|----------|-----|
@@ -50,11 +50,11 @@ Ryan locked this table on Nov 23, 2026. Do not reopen a row without updating thi
 | D6 | Calendar day | `performed_on date` with the same local-today slack window pattern as measurements/journal. Multiple workouts per day **allowed**. | ADR-014 streak input; gym double-days are real. |
 | D7 | Edit / delete | Soft-delete (`deleted_at`) like measurements. Owner can edit a past session. | Expected in Strong/Hevy; matches 1.5. |
 | D8 | Set fields (completed) | Per set: `reps` (int), nullable `load` + `load_unit`, nullable `load_text` (bodyweight/bands), nullable `rpe` (0.5 steps 6–10 or null), nullable `rir`, optional `is_warmup`. Session + exercise notes allowed. | Aligns with 3.1 prescription capabilities; warm-up excluded from volume when flagged. |
-| D9 | Set fields (templates) | Same as completed, plus **rep range** on prescriptions. Groupings (superset/circuit) on templates required for 3.1. Nullable rest seconds live here only (D13). | Slice 3.1 dependency contract. |
+| D9 | Set fields (templates) | Same as completed, plus **rep range** on prescriptions. Groupings (superset/circuit) on templates required for 3.1. Nullable rest seconds stay on set prescriptions only. The timer reads them and does not copy them onto completed sets (D13). Exercise `notes` are nullable text (D22). | Slice 3.1 dependency contract. |
 | D10 | Volume | Dumbbell load is logged **per dumbbell**. Volume = reps × load as entered, **no doubling**. The input hint says “per dumbbell”. Warm-ups stay excluded. Null load / load_text-only sets excluded. | Volume uses the number the user typed. Doubling would invent load. |
 | D11 | PRs in Slice 3 | Follow PRD §3, simple PR detection on a lift. A deterministic flag is the heaviest numeric load for an exercise, excluding warm-ups and non-numeric load. It shows as a **badge** on the finish summary and on the per-exercise history view. **No PR board or e1RM** (Slice 4). | A badge is the Phase 1 PR. A board and e1RM are analytics. |
 | D12 | Cardio / time-only | **Deferred.** Strength/hypertrophy logging first. | Scope control. |
-| D13 | Rest timer | **Deferred** (gate D), and the first candidate follow-up after logging ships. Rest seconds stay nullable on template prescriptions only. | Not a Phase 1 web timer. The prescription field stays so templates and Slice 3.1 are not blocked. |
+| D13 | Rest timer | **In Slice 3.** Client-side only. Starts when a set is ticked. When the log was started from a template, duration is that exercise’s existing prescription rest seconds (the ticked set’s prescription); if there is no template or that value is null, **90s**. Adjustable in the timer, and not written back. Sticky pill in the log’s sticky bar, with **+30s** and **Skip**. At zero: a visual cue, plus vibration where the browser supports it. A new tick resets it. Runs only while the page is open. No push notifications or background timers. No new table. Rest is not stored on completed set rows. Template rest seconds stay on set prescriptions. | Smallest timer that still helps between sets. It is not a live session or a workout stopwatch (D1). |
 | D14 | Routes | `/fitness/workouts` history · `/fitness/workouts/new` log · `/fitness/workouts/[id]` detail · templates section on the Workouts tab (or `/fitness/workouts/templates`). | Matches NAV.1 + IA. |
 | D15 | Welcome band | **+ Log workout** opens a new log for today. **No start chooser.** Starting from a template lives on the Workouts tab. Overview (OV.1) keeps + Log workout primary and + Log measurement secondary. | The band is one tap to today’s log. |
 | D16 | Library tab | Stays **coming soon**. The exercise picker’s search sheet inside the log is the only library UI in Slice 3. A small **per-exercise history view**, reached from the log or the picker, shows past sets and the PR badge. It is not a Library page. | One library home later (Slice 3.1). History belongs to logging. |
@@ -62,7 +62,8 @@ Ryan locked this table on Nov 23, 2026. Do not reopen a row without updating thi
 | D18 | AI | None in this slice. | Launch plan. |
 | D19 | Picker duplicates | Creating a custom exercise shows a **fuzzy-duplicate warning**. **Create anyway** stays. | Stops silent duplicates without blocking a real new name. |
 | D20 | Create as variant | **Out of Slice 3** (gate D). It needs a parent link in the data model. | Do not add a parent-link column or a variant action in this slice. |
-| D21 | Log and finish chrome | The **normal nav stays** on the log and finish screens. Phone gets a **sticky save/finish bar**. **No focus mode.** | The Fitness shell stays available on those screens. |
+| D21 | Log and finish chrome | The **normal nav stays** on the log and finish screens. Phone gets a **sticky save/finish bar**. **No focus mode.** The rest pill sits in that bar (D13). | The Fitness shell stays available on those screens. |
+| D22 | Exercise notes tooltip | A template exercise’s `notes` (nullable text) holds form cues, tempo, or time under tension, for example “3-sec eccentric, pause at chest”. When a log is started from a template, each exercise with notes shows an info button. Tapping it opens a popover. Not hover-only: it works on touch and with a keyboard, with proper aria. The template editor can write the note. Log exercise notes (D8) stay. No new columns. | Cues sit on the template exercise the log already copies from. |
 
 ## What the user can do (target)
 
@@ -84,9 +85,10 @@ FitNotes-style single screen (D1). The normal nav stays. Phone uses a sticky sav
 3. Optional duration minutes, typed. No stopwatch and no live session state.
 4. Add exercises via the picker search sheet.
 5. Per exercise: ordered set rows (reps, load, optional RPE). Dumbbell load hint says “per dumbbell”.
-6. Each set saves as you tick it.
-7. Finish summary shows the PR badge when D11’s flag is true. Optional **Save as template** from there or from detail.
-8. Per-exercise history (past sets and the PR badge) opens from the log. It is not a Library page (D16).
+6. Each set saves as you tick it. That tick also starts the client-side rest timer (D13).
+7. If the log was started from a template, an exercise with template notes shows an info button that opens the note (D22).
+8. Finish summary shows the PR badge when D11’s flag is true. Optional **Save as template** from there or from detail.
+9. Per-exercise history (past sets and the PR badge) opens from the log. It is not a Library page (D16).
 
 ### Exercise picker
 
@@ -99,7 +101,8 @@ FitNotes-style single screen (D1). The normal nav stays. Phone uses a sticky sav
 ### Templates (thin)
 
 - List owner templates.
-- Start a new log prefilled from a template (prescriptions become editable actuals).
+- Start a new log prefilled from a template (prescriptions become editable actuals). The rest timer then uses the ticked set’s prescription rest seconds (D13).
+- Edit the template exercise note (D22).
 - No calendar scheduler. No AI import entry until 3.1 (muted control OK).
 
 ## Data (logical)
@@ -115,17 +118,17 @@ workout_sessions (completed) — performed_on, name, duration_minutes, notes, de
 program_templates
   └─ session_templates (position, optional week/day labels)
        ├─ exercise_groups (optional)
-       └─ exercise_templates → exercise_id
-            └─ set_prescriptions (nullable rest seconds live only here)
+       └─ exercise_templates → exercise_id, notes (nullable text)
+            └─ set_prescriptions (nullable rest seconds; not copied onto completed sets)
 ```
 
-No parent-link column for exercise variants (D20). Owner-scoped RLS. Zod on every action. `user_id` from session. Same grant/revoke style as measurements and Slice 2.
+No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). `exercise_templates.notes` is the D22 cue. Owner-scoped RLS. Zod on every action. `user_id` from session. Same grant/revoke style as measurements and Slice 2.
 
 Versioned domain input for “save template / confirm import” is owned here so Slice 3.1 does not invent a second model.
 
 ## Future / not this slice
 
-- Rest timer UI (D13, gate D) — first candidate follow-up after logging ships. Watch / offline gym mode stay later.
+- Push notifications, background rest timers, Watch, and offline gym mode. The Slice 3 timer runs only while the log page is open (D13).
 - **Create as variant** (D20, gate D) — needs a parent link.
 - Fitbod-style generated sessions
 - Auto progressive overload
@@ -138,7 +141,8 @@ Versioned domain input for “save template / confirm import” is owned here so
 
 ## Done criteria (draft)
 
-- Signed-in user can log a multi-exercise session on a phone-width FitNotes-style screen. Each set saves as it is ticked. Sets reference canonical exercises and the session is still there after refresh.
+- Signed-in user can log a multi-exercise session on a phone-width FitNotes-style screen. Each set saves as it is ticked and starts the client-side rest timer. Sets reference canonical exercises and the session is still there after refresh.
+- A log started from a template shows an info button on each exercise that has template notes. The template editor can write that note.
 - Finish summary shows the PR badge. The per-exercise history view shows past sets and that badge.
 - Custom exercise can be created and used in a log. A fuzzy duplicate warns first, and Create anyway still saves.
 - Dumbbell volume does not double the entered load. Warm-ups stay out of volume and out of the PR flag.

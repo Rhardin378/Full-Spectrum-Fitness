@@ -16,7 +16,7 @@ Mockups: [`docs/mockups/slice_3_workouts/`](../../mockups/slice_3_workouts/READM
 
 ### Description
 
-Ryan locked D1–D21 on Nov 23, 2026. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
+Ryan locked the Slice 3 table on Nov 23, 2026, then revised D13 the same day (rest timer is in Slice 3) and added D22. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
 
 ### Acceptance Criteria
 
@@ -45,7 +45,7 @@ Migrations for `exercises` (global seed + owner custom), completed workout table
 - Seed about 120–150 common exercises with slug, name, aliases, primary muscle, optional equipment (D4).
 - Custom exercises: `user_id` not null; global rows have null owner. No parent-link column and no variant action (D20).
 - Completed: sessions → exercises → sets. No rest-seconds column on completed sets (D13).
-- Templates: program/session/exercise/set_prescription + optional groups. Rest seconds stay nullable on set prescriptions only.
+- Templates: program/session/exercise/set_prescription + optional groups. Rest seconds stay nullable on set prescriptions only. `exercise_templates.notes` is nullable text (D22). No rest-timer table.
 - No AI import tables.
 
 ### Acceptance Criteria
@@ -127,11 +127,13 @@ Replace the Workouts coming-soon panel. History list, empty state, Show more win
 
 ### Description
 
-`/fitness/workouts/new` is a FitNotes-style single log (D1). The date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. The picker is a search sheet (search, muscle chips, create custom). A per-exercise history view is reached from the log or the picker (D16).
+`/fitness/workouts/new` is a FitNotes-style single log (D1). The date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. Ticking a set starts the client-side rest timer (D13). The picker is a search sheet (search, muscle chips, create custom). A per-exercise history view is reached from the log or the picker (D16). A log started from a template shows an info button on each exercise that has template notes (D22).
 
 ### Acceptance Criteria
 
 - A multi-exercise session reloads after refresh. Phone-width layout is required. The normal nav stays, with a sticky save/finish bar on phone. No focus mode (D21).
+- Rest timer (D13), client-side only, in the sticky bar: it starts when a set is ticked, shows **+30s** and **Skip**, and at zero shows a visual cue plus vibration where the browser supports it. Duration is the ticked set’s template prescription rest seconds, or **90s** when there is no template or that value is null. Adjusting it does not write rest onto the completed set or the template. It runs only while the page is open. Tests cover countdown, +30s, skip, a new tick resetting it, and the 90s fallback.
+- When the log was started from a template, each exercise with notes shows an info button. Activating it opens a popover with the note. It is not hover-only: touch, keyboard, and aria all work (D22). Log exercise notes (D8) stay.
 - The dumbbell load hint says “per dumbbell”. Volume uses the entered load with no doubling (D10).
 - Custom create shows a fuzzy-duplicate warning, and **Create anyway** stays. There is no **Create as variant** (D19, D20).
 - The per-exercise history view shows past sets and the PR badge. It is not a Library page.
@@ -184,7 +186,12 @@ Detail page for a session; edit sets; soft-delete with confirm. The finish summa
 
 ### Description
 
-Save session as template; list templates on Workouts; start a new log from a template. No scheduler. No AI import.
+Save session as template; list templates on Workouts; start a new log from a template. No scheduler. No AI import. The editor can write the template exercise note (D22).
+
+### Acceptance Criteria
+
+- The template editor saves a nullable exercise note (form cue, tempo, or time under tension).
+- Starting a log from that template supplies the note to the info button (D22) and the prescription rest seconds to the timer (D13).
 
 ### Dependencies
 
@@ -226,7 +233,7 @@ Feed `performed_on` into activity streak (ADR-014). Ship or finish OV.1 Fitness 
 
 ### Description
 
-Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling), the D11 PR flag, date slack, the duplicate warning, history windowing, and the template save contract. No Playwright required in this ticket.
+Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling), the D11 PR flag, the D13 rest timer (countdown, +30s, skip, a new tick resetting it, and the 90s fallback), date slack, the duplicate warning, the D22 notes popover (touch, keyboard, aria), history windowing, and the template save contract. No Playwright required in this ticket.
 
 ### Dependencies
 
@@ -246,7 +253,7 @@ Unit/action/component coverage for schema rules, D10 volume (no dumbbell doublin
 
 ### Description
 
-Walk an empty log, a custom exercise with the duplicate warning and Create anyway, a multi-set session (sets save as ticked, per-dumbbell hint, PR badge, per-exercise history), edit, soft-delete, template reuse from the Workouts tab, streak day, Overview (if shipped), and phone-width with the sticky save/finish bar and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, a rest timer, a PR board, or Create as variant during QA.
+Walk an empty log, a custom exercise with the duplicate warning and Create anyway, a multi-set session (sets save as ticked, rest pill, per-dumbbell hint, PR badge, per-exercise history), a template with an exercise note and its info button, edit, soft-delete, template reuse from the Workouts tab, streak day, Overview (if shipped), and phone-width with the sticky save/finish bar and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, push or background timers, a PR board, or Create as variant during QA.
 
 ### Dependencies
 

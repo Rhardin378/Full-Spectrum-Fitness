@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Rest timer in Slice 3, template notes tooltip
+
+- Ryan revised D13: the rest timer is in Slice 3 (client-side pill, template rest or 90s, no new table, not stored on completed sets). Added D22: template exercise notes open from an info button. `exercise_templates.notes` is now in the Slice 3 logical model; the PRD and Slice 3.1 draft already had it.
+
 ## 2026-11-23 — Community sharing note
 
 - Ryan approved a future community-feed note in PRD §8. Not Phase 1, not Slice 3. No UI, tables, or tickets.

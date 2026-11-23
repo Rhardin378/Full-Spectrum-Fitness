@@ -40,7 +40,7 @@ These show up across Strong and Hevy. Treat as the bar users will expect, then d
 | Competitor pattern | Why not for Slice 3 |
 |--------------------|---------------------|
 | Social feed / friend workouts | Out of Phase 1 |
-| Live session, stopwatch, or rest timer as the log | Locked D1 and D13. FitNotes-style single screen. Each set saves as you tick it. No live session state. Rest timer is the first follow-up after logging ships (gate D). |
+| Live session or workout stopwatch as the log | Locked D1. FitNotes-style single screen. Each set saves as you tick it. No live session state. The rest timer is a separate client-side pill (D13), not a session clock. |
 | AI session planner (Fitbod) | Conflicts with “analytics calculate; AI interprets” and Phase 1 scope |
 | Auto progressive overload | Slice 4/5 territory, not capture |
 | Watch / Wear OS | Later |
@@ -55,13 +55,13 @@ Locked with [`README.md`](./README.md) on Nov 23, 2026. Where this table and the
 |----------|--------|-------------------|
 | Primary capture | **FitNotes-style single log** (D1). Date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. Phone-width is required. | Strong/Hevy are live-timer first because they are gym-phone apps. FSF’s Phase 1 surface is the Fitness web shell. |
 | Start path | **+ Log workout** opens today’s empty log. No start chooser (D15). Start from a template lives on the Workouts tab. | Both apps expose empty + routine. FSF keeps the band to one tap. |
-| Set model | One row per set; reps + nullable load + unit; optional RPE; optional notes at exercise or session. Dumbbell load is per dumbbell. The hint says “per dumbbell”. Volume does not double it (D10). | Matches both on rows. Doubling dumbbells would invent load. |
+| Set model | One row per set; reps + nullable load + unit; optional RPE; optional notes at exercise or session. Dumbbell load is per dumbbell. The hint says “per dumbbell”. Volume does not double it (D10). Template exercise notes show as an info popover on a log started from that template (D22). | Matches both on rows. Doubling dumbbells would invent load. |
 | Previous performance | A small **per-exercise history view**, from the log or the picker, shows past sets and the PR badge (D16). Not a forced prefill and not a Library page. | Table stakes; adapted for a post-hoc log. |
 | PRs | Deterministic badge: heaviest numeric load, excluding warm-ups and non-numeric load (D11). No PR board or e1RM. | Strong/Hevy ship richer PR boards. Those stay Slice 4. |
 | Exercise identity | About **120–150** curated global exercises plus owner custom exercises. Logs use `exercise_id`. Custom create shows a fuzzy-duplicate warning, and **Create anyway** stays (D19). **Create as variant** is out (D20). | Both ship library + custom. A parent link is a later data-model change. |
 | Warm-up / drop / failure | Warm-up flag optional. Warm-ups stay out of volume and out of the PR flag. | Strong excludes warm-ups from charts. |
 | Supersets | In **template** model for Slice 3.1 contract; completed-log groupings can trail. | Both have them; 3.1 needs groups on templates. |
-| Rest timer | Deferred (gate D), first candidate follow-up after logging ships. Rest seconds stay nullable on template prescriptions only (D13). | Mobile-native pattern. |
+| Rest timer | **In Slice 3** (D13, revised Nov 23). Client-side pill in the sticky bar. Starts on tick. Uses the template prescription rest seconds, otherwise 90s. +30s and Skip. Visual cue at zero, plus vibration where the browser supports it. Page-open only. Rest stays on template prescriptions, not on completed sets. | Strong is per-set; Hevy is per-exercise. FSF reads the existing prescription and does not add a table. |
 | Log chrome | Normal nav stays on the log and finish screens. Sticky save/finish bar on phone. No focus mode (D21). | Gym apps often hide chrome. FSF does not. |
 | Library tab | Stays coming soon. The picker search sheet is the only library UI in Slice 3 (D16). | Hevy/Strong have a library home. FSF’s is Slice 3.1. |
 | Program builder UX | Schema yes; full builder trails log/history. | Hevy routines/folders are deeper than FSF needs for v1. |
@@ -69,7 +69,7 @@ Locked with [`README.md`](./README.md) on Nov 23, 2026. Where this table and the
 
 ## Mobile note
 
-Beta form already asks “Phone / Computer / Both.” Slice 3 requires a phone-width log (D1) and keeps the normal nav, with a sticky save/finish bar (D21). Do not block the slice on a native gym-floor timer. That timer is the deferred rest-timer follow-up (D13), not a live session inside the log.
+Beta form already asks “Phone / Computer / Both.” Slice 3 requires a phone-width log (D1) and keeps the normal nav, with a sticky save/finish bar (D21). The rest timer is the client-side pill in that bar (D13). It is not a native gym-floor session, and it does not run in the background.
 
 ## Paste for FSF social bot
 
