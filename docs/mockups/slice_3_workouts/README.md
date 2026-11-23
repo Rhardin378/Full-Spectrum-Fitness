@@ -4,7 +4,7 @@ UI references for [`docs/vertical_slices/slice_3_workouts/`](../../vertical_slic
 
 Chrome (charcoal bar, coral welcome band, warm page, coral primary buttons) matches `docs/brand_style_guide.md`. Fitness Overview content remains [`../nov_2026_tickets/F-fitness-overview.png`](../nov_2026_tickets/F-fitness-overview.png) (OV.1).
 
-These images are the pre-lock frames from 2026-11-23. **Updated mockups are coming from a separate design pass.** Do not edit the image files to match the Nov 23 lock. Until that pass lands, the Slice 3 README wins (D1–D22). D13 now includes a client-side rest pill. D22 is the template-notes info button.
+These images are the pre-lock frames from 2026-11-23. **Updated mockups are coming from a separate design pass.** Do not edit the image files to match the Nov 23 lock. Until that pass lands, the Slice 3 README wins. D13 now includes a client-side rest pill. D22 is the template-notes info button. The current mockups do not show cardio cards yet (D28).
 
 | File | What it is |
 |------|------------|

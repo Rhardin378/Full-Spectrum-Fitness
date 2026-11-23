@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Cardio logging in Slice 3
+
+- Ryan moved cardio into Slice 3 (D12 revised, D28 added): time and distance sets, about 12 seeded exercises inside the 120–150, strength-only volume and PRs. Pace, heart rate, GPS, and numeric template targets stay deferred. PRD was not edited.
+
 ## 2026-11-23 — Prefill, wake lock, offline set save, steppers
 
 - Ryan added D24–D27. Last-time weight and reps are a one-tap suggestion. The rest timer uses an end timestamp and an optional Wake Lock. A set’s client-supplied uuid is the primary key, with `ON CONFLICT (id) DO NOTHING`. Steppers are 5 lb, 2.5 kg, and 1 rep. The PR badge stays computed at read time; there is no `is_pr` column.
