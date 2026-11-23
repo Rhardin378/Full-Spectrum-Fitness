@@ -4,7 +4,9 @@ UI references for [`docs/vertical_slices/slice_3_workouts/`](../../vertical_slic
 
 Chrome (charcoal bar, coral welcome band, warm page, coral primary buttons) matches `docs/brand_style_guide.md`. Fitness Overview content remains [`../nov_2026_tickets/F-fitness-overview.png`](../nov_2026_tickets/F-fitness-overview.png) (OV.1).
 
-These images are the pre-lock frames from 2026-11-23. **Updated mockups are coming from a separate design pass.** Do not edit the image files to match the Nov 23 lock. Until that pass lands, the Slice 3 README wins. D13 now includes a client-side rest pill. D22 is the template-notes info button. The current mockups do not show cardio cards yet (D28).
+These images are the pre-lock frames from 2026-11-23. **Updated mockups are coming from a separate design pass.** Do not edit the image files. Until that pass lands, the Slice 3 README wins.
+
+The locked log is **Option B**: a day view plus a per-exercise Track screen (D1, changed Nov 23, 2026). Ryan reviewed the Option B mockups in chat that day. The committed images still show the earlier inline layout. They also do not show cardio Track or the day-view cards.
 
 | File | What it is |
 |------|------------|
@@ -14,7 +16,7 @@ These images are the pre-lock frames from 2026-11-23. **Updated mockups are comi
 
 ## How to read these
 
-1. **Capture is the FitNotes-style single log** (D1, locked Nov 23, 2026). Date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. Phone-width is required. The normal nav stays, with a sticky save/finish bar on phone. No focus mode (D21). The rest timer is a client-side pill in that bar (D13), not a session clock.
+1. **Capture is Option B** (D1, changed Nov 23, 2026): day view, then Track at `?exercise=`. Save set still saves immediately. No live session or stopwatch. The committed `log-workout-desktop.jpg` is the older inline form.
 2. **+ Log workout** opens a new log for today. No start chooser (D15).
 3. The Library tab stays coming soon. The picker search sheet is the only library UI. The per-exercise history view (past sets and the PR badge) is not a Library page (D16).
 4. The Workouts tab mock may still show Overview as a tab; Overview content stays off until OV.1 with this slice.

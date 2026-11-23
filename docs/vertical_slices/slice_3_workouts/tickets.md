@@ -16,7 +16,7 @@ Mockups: [`docs/mockups/slice_3_workouts/`](../../mockups/slice_3_workouts/READM
 
 ### Description
 
-Ryan locked the Slice 3 table on Nov 23, 2026, then revised D13 the same day (rest timer is in Slice 3), added D22–D27, and brought cardio in as D28. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
+Ryan locked the Slice 3 table on Nov 23, 2026, then revised D13, added D22–D28, and replaced the inline log with Option B (day view plus Track) the same day. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
 
 ### Acceptance Criteria
 
@@ -48,6 +48,7 @@ Migrations for `exercises` (global seed + owner custom), completed workout table
 - Completed: sessions → exercises → sets. No rest-seconds column on completed sets (D13).
 - `workout_sessions.session_rpe`: nullable integer. Check constraint: null or between 1 and 10 inclusive (D23). `duration_minutes` stays optional. No new clock column; duration pre-fill reads the set rows’ saved-at timestamps.
 - `workout_sets.id` is a uuid primary key, `default gen_random_uuid()`, and the client supplies it (D26). No `client_id` column and no `is_pr` column. RLS matches measurements: owner-scoped on `user_id` from the session. `ON CONFLICT (id) DO NOTHING` stays.
+- `workout_sets.notes` nullable text. Check: null or `char_length` between 1 and 500, matching measurements notes (D8). Include it on the column-level insert and update grants.
 - Cardio columns on `workout_sets` (D28): `reps` nullable; `duration_seconds` nullable integer, null or > 0 and ≤ 86400; `distance` nullable numeric, null or > 0; `distance_unit` nullable text, null or `mi` / `km` / `m`. `distance` and `distance_unit` are both null or both set. `reps` or `duration_seconds` is non-null. Insert and update grants name columns, including the new ones, the way measurements names its update columns. `id` and `user_id` stay off the update grant.
 - Templates: program/session/exercise/set_prescription + optional groups. Rest seconds stay nullable on set prescriptions only. `exercise_templates.notes` is nullable text (D22). No rest-timer table.
 - No AI import tables.
@@ -82,7 +83,8 @@ Zod-validated server actions: create/list/update/soft-delete workouts, create cu
 
 - Unauthorized callers fail generically.
 - Volume helper matches D10: reps × load as entered, no dumbbell doubling, warm-ups and non-numeric load excluded.
-- The PR badge is computed on read from log history (D11): heaviest numeric load, excluding warm-ups, non-numeric load, cardio sets, and soft-deleted sessions. No e1RM, no cardio PRs, and no stored flag. An edit or soft-delete changes the next read.
+- The PR trophy is computed on read (D11): one non-warm-up set, the earliest to reach the heaviest stored numeric load. Warm-ups, non-numeric load, cardio, and soft-deleted sessions are excluded. No unit conversion. No e1RM and no stored flag. An edit or soft-delete changes the next read.
+- Set notes validate as null or 1–500 characters on strength and cardio saves (D8). Empty stores null.
 - The set action loads `tracking_type` from the exercise row and ignores a client-sent type (D28). Strength requires reps and rejects `duration_seconds`, `distance`, and `distance_unit`. Cardio requires `duration_seconds`; distance with its unit and RPE are optional; reps, load, load_text, and RIR must be null, and the warm-up flag must be null or false. Cross-type fields fail validation. Volume still excludes cardio.
 - Saving a set accepts the client uuid and uses `ON CONFLICT (id) DO NOTHING`. A second save with the same id does not insert another row (D26). The caller still cannot write another owner’s row.
 - Date slack window matches measurements/journal pattern.
@@ -134,23 +136,27 @@ Replace the Workouts coming-soon panel. History list, empty state, Show more win
 
 ### Description
 
-`/fitness/workouts/new` is a FitNotes-style single log (D1). The date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. Ticking a set starts the client-side rest timer (D13). The picker is a search sheet (search, muscle chips, create custom). A per-exercise history view is reached from the log or the picker (D16). A log started from a template shows an info button on each exercise that has template notes (D22).
+`/fitness/workouts/new` is the Option B day view (D1, changed Nov 23, 2026). Track for one exercise is the same route with `?exercise=<workout_exercise id>`, full screen on phone, so refresh and back work. No new route. Save set is the old tick. No live session or stopwatch. The picker is still the search sheet. History is the Track History tab (D16).
 
 ### Acceptance Criteria
 
-- A multi-exercise session reloads after refresh. Phone-width layout is required. The normal nav stays, with a sticky save/finish bar on phone. No focus mode (D21).
+- The day view reloads after refresh. Opening Track, refreshing, and using back all keep `?exercise=<workout_exercise id>`. Phone-width is required. The normal nav stays. The day-view sticky bar shows the saved count and Finish workout. No focus mode (D21).
+- Date arrows step one day. The pill opens a picker. Forward is disabled on today. Each exercise card shows the muscle chip, the target line (`sets × rep range · rest` only), read-only logged rows, and “N more sets · tap to log” when template sets remain.
+- Save set writes immediately with the D26 client uuid. Clear resets the inputs and deletes nothing. Logged today: tap a set to edit or delete it.
+- Strength Track uses boxed steppers with the unit inside, the last-time hint, optional RPE, warm-up, and Add note. Save starts the rest timer. The timer icon opens +30s, Skip, and the zero cue (D13/D25).
+- Cardio Track uses boxed Time and Distance, effort chips, and a per-set note. There is no timer icon, and Save does not start the rest timer (D28).
 - Rest timer (D13), client-side only, in the sticky bar: it starts when a strength set is ticked, not a cardio set (D28), shows **+30s** and **Skip**, and at zero shows a visual cue plus vibration where the browser supports it. Duration is the ticked set’s template prescription rest seconds, or **90s** when there is no template or that value is null. Adjusting it does not write rest onto the completed set or the template. It runs only while the page is open. Tests cover countdown, +30s, skip, a new tick resetting it, and the 90s fallback.
 - When the log was started from a template, each exercise with notes shows an info button. Activating it opens a popover with the note. It is not hover-only: touch, keyboard, and aria all work (D22). Log exercise notes (D8) stay.
 - The dumbbell load hint says “per dumbbell”. Volume uses the entered load with no doubling (D10).
 - Custom create shows a fuzzy-duplicate warning, and **Create anyway** stays. There is no **Create as variant** (D19, D20).
-- The per-exercise history view shows past sets and the PR badge. It is not a Library page.
-- The finish summary shows the PR badge when the read-time comparison says this set’s load is the heaviest numeric load for that exercise (D11). No PR board, no e1RM, and no stored flag.
-- A new set row suggests weight and reps from the latest logged set of that exercise across workouts: same position when it exists, otherwise the last set. Warm-ups are skipped unless this row is a warm-up. Suggestions look different from confirmed values. One tap on the check saves them (D24). Template targets are labeled as targets and are not logged values. Confirming a set does not update the template.
+- The History tab shows past sets and the PR trophy. It is not a Library page and not its own route (D16).
+- The trophy marks one non-warm-up set: the earliest to reach the heaviest stored load. Ties, warm-ups, and cardio are covered by tests. It shows on day-view rows, History rows, and the finish summary. No PR board, no e1RM, and no stored flag (D11).
+- A new set row suggests weight and reps from the latest logged set of that exercise across workouts: same position when it exists, otherwise the last set. Warm-ups are skipped unless this row is a warm-up. Suggestions look different from confirmed values. Save set confirms them (D24). The hint reads “From last time · 205 × 6 · Save to confirm”. Template targets are labeled as targets and are not logged values. Confirming a set does not update the template.
 - The rest timer stores an end timestamp and recomputes on visibility change (D25). **Keep screen on** uses Wake Lock where supported, is hidden otherwise, and re-acquires the lock when the page becomes visible. No push and no background alarm.
 - A failed or offline tick stays on screen and is queued in localStorage, with a small “Saving… / Not synced yet” state. Retry on reconnect, on visibility, and on the next tick. Reload shows server rows plus the queue. No service worker (D26).
 - Weight +/− steps 5 lb or 2.5 kg. Reps step by 1. Targets are large enough for a phone. Typing still works. There is no per-exercise step setting (D27). Steppers are strength-only.
-- A cardio card has Time (mm:ss, also h:mm:ss), Distance with mi/km/m, and optional effort. No warm-up control and no steppers. Tick-to-save matches strength. The rest timer does not start. D24 prefills the last cardio set, including its unit. Custom create offers Strength or Cardio and defaults to Strength (D28).
-- Per-exercise history for cardio shows date, time, distance, and effort, and no PR badge.
+- Cardio Track has Time (mm:ss, also h:mm:ss), Distance with mi/km/m inside the box, effort chips 1–10, and a per-set note. No warm-up control, no steppers, and no timer icon. Save does not start the rest timer. D24 prefills the last cardio set, including its unit. Custom create offers Strength or Cardio and defaults to Strength (D28).
+- Per-exercise history for cardio shows date, time, distance, and effort, and no trophy.
 - Finish pre-fills `duration_minutes` from the first and last ticked set’s saved-at timestamps, rounded to whole minutes (D23). If that span is blank or shorter than the session’s total cardio time, the pre-fill uses the total cardio time (D28). It stays blank when the log date is in the past. The user can edit or clear it. No session clock and no Start button.
 - Finish has an optional “How hard was that?” 1–10 tap row. Skipping it stores null. Per-set RPE/RIR stay optional (D8). Copy is plain and non-medical.
 - Fourth-class junk fields rejected by Zod.
@@ -250,7 +256,7 @@ Feed `performed_on` into activity streak (ADR-014), including a cardio-only sess
 
 ### Description
 
-Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling; cardio excluded), the D11 PR badge computed at read time (including after edit and soft-delete; no stored flag; cardio excluded), the D13/D25 rest timer (countdown from an end timestamp, +30s, skip, a new tick resetting it, the 90s fallback, no drift across a visibility change, and no auto-start on a cardio tick), D23 duration pre-fill (under 2 sets, past date, rounding, edit, and the cardio-time fallback when the tick span is blank or shorter), `session_rpe` validation (1–10 or null), D24 prefill (position match, warm-up exclusion, suggestion versus confirmed, template targets not logged, cardio unit), D26 idempotent set save (a retry with the same id does not duplicate; the queue resumes), D27 stepper steps (5 lb, 2.5 kg, reps by 1; not on cardio), D28 per-type validation, the set CHECKs, and cross-type rejection, date slack, the duplicate warning, the D22 notes popover (touch, keyboard, aria), history windowing, and the template save contract. No Playwright required in this ticket. No service worker.
+Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling; cardio excluded), the D11 trophy (earliest set at the heaviest stored load; ties; warm-ups excluded; cardio excluded; nothing stored; edit and soft-delete change the next read), per-set notes validation and the 1–500 check on strength and cardio, the D13/D25 rest timer (countdown from an end timestamp, +30s, skip, a new tick resetting it, the 90s fallback, no drift across a visibility change, and no auto-start on a cardio save), Track URL state (refresh and back keep `?exercise=`), Clear resetting inputs without deleting a set, D23 duration pre-fill (under 2 sets, past date, rounding, edit, and the cardio-time fallback when the tick span is blank or shorter), `session_rpe` validation (1–10 or null), D24 prefill (position match, warm-up exclusion, suggestion versus confirmed, template targets not logged, cardio unit), D26 idempotent set save (a retry with the same id does not duplicate; the queue resumes), D27 stepper steps (5 lb, 2.5 kg, reps by 1; not on cardio), D28 per-type validation, the set CHECKs, and cross-type rejection, date slack, the duplicate warning, the D22 notes popover (touch, keyboard, aria), history windowing, and the template save contract. No Playwright required in this ticket. No service worker. No Graph tab.
 
 ### Dependencies
 
@@ -270,7 +276,7 @@ Unit/action/component coverage for schema rules, D10 volume (no dumbbell doublin
 
 ### Description
 
-Walk an empty log, a custom exercise with the duplicate warning and Create anyway, a multi-set strength session (last-time suggestion and one-tap confirm, steppers, sets save as ticked, rest pill with the screen-on toggle where supported, per-dumbbell hint, computed PR badge, per-exercise history, duration pre-fill, and the optional effort tap), one cardio exercise (time, optional distance and unit, no stepper, no rest timer, history as time rather than volume, and a run-only duration), a failed save that shows “Not synced yet” and then retries without a duplicate row, a past-date log with duration left blank, a template whose targets stay targets and whose note has an info button, edit and soft-delete that correct the PR badge, template reuse from the Workouts tab, a cardio-only streak day, Overview (if shipped), and phone-width with the sticky save/finish bar and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, push or background alarms, a service worker, a PR board, a per-exercise step setting, pace, heart rate, GPS, or Create as variant during QA.
+Walk an empty day view, open Track and confirm refresh and back keep the exercise, a custom exercise with the duplicate warning and Create anyway, a multi-set strength session (last-time hint, boxed steppers, Save set, Clear does not delete, timer icon, per-dumbbell hint, one PR trophy, History tab, duration pre-fill, and the optional effort tap), one cardio Track screen (time, optional distance and unit, note, no timer, history as time rather than volume, and a run-only duration), a failed save that shows “Not synced yet” and then retries without a duplicate row, a past-date log with duration left blank, a template whose targets stay targets and whose note has an info button, edit and soft-delete that correct the PR badge, template reuse from the Workouts tab, a cardio-only streak day, Overview (if shipped), and phone-width with the day-view bar (saved count and Finish workout) and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, push or background alarms, a service worker, a PR board, a per-exercise step setting, pace, heart rate, GPS, or Create as variant during QA.
 
 ### Dependencies
 

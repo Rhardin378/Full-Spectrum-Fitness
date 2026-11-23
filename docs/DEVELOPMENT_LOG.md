@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Option B log: day view and Track
+
+- Ryan replaced the inline log with a day view plus a per-exercise Track screen on the same route (`?exercise=`). Per-set notes are a nullable 1–500 text column. The PR trophy marks the earliest set at the heaviest stored load, on the day view, History, and the finish summary. Tempo stays in the exercise note. A Graph tab stays in Insights. PRD was not edited.
+
 ## 2026-11-23 — PRD §3 log line
 
 - Resolved the open note that PRD §3 listed rest, and not cardio, on the completed-workout bullet. That line now matches D13 and D28. Template rest and the substitutions note are unchanged.
