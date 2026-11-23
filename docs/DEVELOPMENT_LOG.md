@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Prefill, wake lock, offline set save, steppers
+
+- Ryan added D24–D27. Last-time weight and reps are a one-tap suggestion. The rest timer uses an end timestamp and an optional Wake Lock. A set’s client-supplied uuid is the primary key, with `ON CONFLICT (id) DO NOTHING`. Steppers are 5 lb, 2.5 kg, and 1 rep. The PR badge stays computed at read time; there is no `is_pr` column.
+
 ## 2026-11-23 — Session duration pre-fill and effort
 
 - Ryan added D23. Finish pre-fills `duration_minutes` from ticked-set timestamps, with blank cases for under two sets and past dates. Optional `session_rpe` is a nullable integer 1–10 on the workout session. D1 is unchanged. No PRD edit.

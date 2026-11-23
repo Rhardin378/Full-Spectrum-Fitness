@@ -38,7 +38,7 @@ Do not reopen these without updating the pack.
 
 ## Decisions (locked Nov 23, 2026)
 
-Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest timer is in Slice 3) and added D22 and D23. Do not reopen a row without updating this pack.
+Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest timer is in Slice 3) and added D22–D27. Do not reopen a row without updating this pack.
 
 | ID | Topic | Decision | Why |
 |----|--------|----------|-----|
@@ -52,9 +52,9 @@ Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest 
 | D8 | Set fields (completed) | Per set: `reps` (int), nullable `load` + `load_unit`, nullable `load_text` (bodyweight/bands), nullable `rpe` (0.5 steps 6–10 or null), nullable `rir`, optional `is_warmup`. Session + exercise notes allowed. | Aligns with 3.1 prescription capabilities; warm-up excluded from volume when flagged. |
 | D9 | Set fields (templates) | Same as completed, plus **rep range** on prescriptions. Groupings (superset/circuit) on templates required for 3.1. Nullable rest seconds stay on set prescriptions only. The timer reads them and does not copy them onto completed sets (D13). Exercise `notes` are nullable text (D22). | Slice 3.1 dependency contract. |
 | D10 | Volume | Dumbbell load is logged **per dumbbell**. Volume = reps × load as entered, **no doubling**. The input hint says “per dumbbell”. Warm-ups stay excluded. Null load / load_text-only sets excluded. | Volume uses the number the user typed. Doubling would invent load. |
-| D11 | PRs in Slice 3 | Follow PRD §3, simple PR detection on a lift. A deterministic flag is the heaviest numeric load for an exercise, excluding warm-ups and non-numeric load. It shows as a **badge** on the finish summary and on the per-exercise history view. **No PR board or e1RM** (Slice 4). | A badge is the Phase 1 PR. A board and e1RM are analytics. |
+| D11 | PRs in Slice 3 | Follow PRD §3, simple PR detection on a lift. **Computed at read time** from log history: the heaviest numeric load for an exercise, excluding warm-ups, non-numeric load, and soft-deleted sessions. Nothing is stored. Editing or deleting a past workout corrects the badge on the next read. It shows on the finish summary and on the per-exercise history view. **No PR board or e1RM** (Slice 4). | A badge is the Phase 1 PR. A stored flag would go stale after an edit. |
 | D12 | Cardio / time-only | **Deferred.** Strength/hypertrophy logging first. | Scope control. |
-| D13 | Rest timer | **In Slice 3.** Client-side only. Starts when a set is ticked. When the log was started from a template, duration is that exercise’s existing prescription rest seconds (the ticked set’s prescription); if there is no template or that value is null, **90s**. Adjustable in the timer, and not written back. Sticky pill in the log’s sticky bar, with **+30s** and **Skip**. At zero: a visual cue, plus vibration where the browser supports it. A new tick resets it. Runs only while the page is open. No push notifications or background timers. No new table. Rest is not stored on completed set rows. Template rest seconds stay on set prescriptions. | Smallest timer that still helps between sets. It is not a live session or a workout stopwatch (D1). |
+| D13 | Rest timer | **In Slice 3.** Client-side only. Starts when a set is ticked. When the log was started from a template, duration is that exercise’s existing prescription rest seconds (the ticked set’s prescription); if there is no template or that value is null, **90s**. Adjustable in the timer, and not written back. Sticky pill in the log’s sticky bar, with **+30s** and **Skip**. At zero: a visual cue, plus vibration where the browser supports it. A new tick resets it. It counts down from an end timestamp (D25). Runs only while the page is open. No push notifications and no background alarms. No new table. Rest is not stored on completed set rows. Template rest seconds stay on set prescriptions. | Smallest timer that still helps between sets. It is not a live session or a workout stopwatch (D1). |
 | D14 | Routes | `/fitness/workouts` history · `/fitness/workouts/new` log · `/fitness/workouts/[id]` detail · templates section on the Workouts tab (or `/fitness/workouts/templates`). | Matches NAV.1 + IA. |
 | D15 | Welcome band | **+ Log workout** opens a new log for today. **No start chooser.** Starting from a template lives on the Workouts tab. Overview (OV.1) keeps + Log workout primary and + Log measurement secondary. | The band is one tap to today’s log. |
 | D16 | Library tab | Stays **coming soon**. The exercise picker’s search sheet inside the log is the only library UI in Slice 3. A small **per-exercise history view**, reached from the log or the picker, shows past sets and the PR badge. It is not a Library page. | One library home later (Slice 3.1). History belongs to logging. |
@@ -65,6 +65,10 @@ Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest 
 | D21 | Log and finish chrome | The **normal nav stays** on the log and finish screens. Phone gets a **sticky save/finish bar**. **No focus mode.** The rest pill sits in that bar (D13). | The Fitness shell stays available on those screens. |
 | D22 | Exercise notes tooltip | A template exercise’s `notes` (nullable text) holds form cues, tempo, or time under tension, for example “3-sec eccentric, pause at chest”. When a log is started from a template, each exercise with notes shows an info button. Tapping it opens a popover. Not hover-only: it works on touch and with a keyboard, with proper aria. The template editor can write the note. Log exercise notes (D8) stay. No new columns. | Cues sit on the template exercise the log already copies from. |
 | D23 | Session duration and effort | **Auto duration.** The finish screen pre-fills optional `duration_minutes` from the time between the first and last ticked set, using those rows’ saved-at timestamps. Round to whole minutes. Leave it blank when fewer than 2 sets are ticked, or when the log is for a past date. The user can edit or clear it before saving. No session clock and no Start button (D1 unchanged). **Session effort, one tap.** Optional “How hard was that?” 1–10 row, stored as nullable `session_rpe` (integer 1–10, or null). It can be skipped. Per-set RPE/RIR (D8) stay optional. Copy stays plain and non-medical. | Later insights need a duration and an effort without a live session. |
+| D24 | Prefill from last time | A new set row prefills weight and reps from the most recent logged set of the same canonical exercise, across any workout. Match the set position when it exists; otherwise use the last set. Warm-ups are excluded unless the new row is tagged warm-up. Suggestions are styled differently from typed or confirmed values. One tap on the check confirms and saves them. Template targets, when the log started from a template, show as targets and never as logged values. Logged values never write back to the template. The lookup only reads history. This replaces “last session’s numbers beside each set.” | One tap is faster than retyping, and a suggestion is not yet a log. |
+| D25 | Reliable rest timer | The D13 timer counts down from a client-held end timestamp, not by decrementing, and recomputes when the page becomes visible, so a backgrounded tab or a locked phone does not drift it. A **Keep screen on** toggle uses the Screen Wake Lock API where supported, is hidden where it is not, and re-acquires the lock on visibility. The end timestamp is not a database column. No push and no background alarms (D13). | A decrementing counter is wrong after the tab sleeps. |
+| D26 | Offline-tolerant set save | Each set’s `id` is a client-generated UUID. A tick saves optimistically and queues in localStorage when the request fails or the device is offline. Retry on reconnect, on visibility, and on the next tick. The save is idempotent: `ON CONFLICT (id) DO NOTHING`, so a retry never duplicates a set. The UI shows a small “Saving… / Not synced yet” state. A reload shows server rows plus the queue. No service worker and no full offline app. RLS stays owner-scoped. | A dropped request should not lose the set or insert it twice. |
+| D27 | +/− steppers | Weight steps by unit: **5 lb** or **2.5 kg**. The per-dumbbell hint still applies (D10). Reps step by 1. Tap targets are large enough for a phone browser. Typing still works. No per-exercise step setting in Slice 3. | Phone logging should not require a precise tap in a small field. |
 
 ## What the user can do (target)
 
@@ -85,11 +89,12 @@ FitNotes-style single screen (D1). The normal nav stays. Phone uses a sticky sav
 2. `performed_on` defaults to validated local today and stays editable.
 3. Optional duration minutes. No stopwatch, no session clock, and no Start button (D1). The finish screen may pre-fill it (D23).
 4. Add exercises via the picker search sheet.
-5. Per exercise: ordered set rows (reps, load, optional RPE). Dumbbell load hint says “per dumbbell”.
-6. Each set saves as you tick it. That tick also starts the client-side rest timer (D13).
-7. If the log was started from a template, an exercise with template notes shows an info button that opens the note (D22).
-8. Finish summary shows the PR badge when D11’s flag is true. It pre-fills duration and offers the optional effort tap (D23). Both stay editable, including on the detail page. Optional **Save as template** from there or from detail.
-9. Per-exercise history (past sets and the PR badge) opens from the log. It is not a Library page (D16).
+5. Per exercise: ordered set rows (reps, load, optional RPE). Dumbbell load hint says “per dumbbell”. Weight and reps have +/− steppers; typing still works (D27).
+6. A new row suggests weight and reps from the last logged set of that exercise. One tap confirms them (D24). Template targets stay labeled as targets.
+7. Each set saves as you tick it, including when offline (D26). That tick also starts the client-side rest timer (D13, D25). **Keep screen on** shows only where Wake Lock is supported.
+8. If the log was started from a template, an exercise with template notes shows an info button that opens the note (D22).
+9. Finish summary shows the PR badge when the read-time comparison in D11 says so. It pre-fills duration and offers the optional effort tap (D23). Both stay editable, including on the detail page. Optional **Save as template** from there or from detail. Saving a template does not copy confirmed set values back onto the template (D24).
+10. Per-exercise history (past sets and the PR badge) opens from the log. It is not a Library page (D16).
 
 ### Exercise picker
 
@@ -114,7 +119,7 @@ Physical names land in ticket 3.1 schema work.
 exercises (global + owner custom)
 workout_sessions (completed) — performed_on, name, duration_minutes, session_rpe, notes, deleted_at
   └─ workout_exercises — position, exercise_id, notes
-       └─ workout_sets — position, reps, load, load_unit, load_text, rpe, rir, is_warmup
+       └─ workout_sets — id (client-supplied uuid, primary key), position, reps, load, load_unit, load_text, rpe, rir, is_warmup
 
 program_templates
   └─ session_templates (position, optional week/day labels)
@@ -123,13 +128,13 @@ program_templates
             └─ set_prescriptions (nullable rest seconds; not copied onto completed sets)
 ```
 
-No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). `exercise_templates.notes` is the D22 cue. `session_rpe` is a nullable integer; a check allows null or 1–10 (D23). Duration pre-fill reads the ticked set rows’ saved-at timestamps and does not add a clock column. Owner-scoped RLS. Zod on every action. `user_id` from session. Same grant/revoke style as measurements and Slice 2.
+No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). No `is_pr` column: the badge is computed at read time (D11). `exercise_templates.notes` is the D22 cue. `session_rpe` is a nullable integer; a check allows null or 1–10 (D23). Duration pre-fill reads the ticked set rows’ saved-at timestamps and does not add a clock column. `workout_sets.id` is a uuid primary key, `default gen_random_uuid()` like `measurements.id`, and the client supplies it on tick (D26). There is no separate `client_id` column. Insert uses `ON CONFLICT (id) DO NOTHING`. Owner-scoped RLS, `user_id` from the session, same grant style as measurements. Zod on every action.
 
 Versioned domain input for “save template / confirm import” is owned here so Slice 3.1 does not invent a second model.
 
 ## Future / not this slice
 
-- Push notifications, background rest timers, Watch, and offline gym mode. The Slice 3 timer runs only while the log page is open (D13).
+- Push notifications, background alarms, Watch, and a service worker. The Slice 3 timer runs only while the log page is open (D13, D25). A failed set save retries from localStorage (D26); that is not a full offline app.
 - **Create as variant** (D20, gate D) — needs a parent link.
 - Fitbod-style generated sessions
 - Auto progressive overload
@@ -144,7 +149,8 @@ Versioned domain input for “save template / confirm import” is owned here so
 
 - Signed-in user can log a multi-exercise session on a phone-width FitNotes-style screen. Each set saves as it is ticked and starts the client-side rest timer. Sets reference canonical exercises and the session is still there after refresh.
 - A log started from a template shows an info button on each exercise that has template notes. The template editor can write that note.
-- Finish summary shows the PR badge. The per-exercise history view shows past sets and that badge.
+- Finish summary shows the PR badge, computed from current log history. Editing or deleting a past workout changes it. Nothing stores the flag.
+- A new set can be confirmed from a last-time suggestion in one tap. Template targets stay targets. A failed save retries without duplicating the set. Weight and reps have steppers.
 - Finish pre-fills duration from ticked-set timestamps when the rules in D23 say so, and offers an optional 1–10 “How hard was that?” tap. Both can be cleared.
 - Custom exercise can be created and used in a log. A fuzzy duplicate warns first, and Create anyway still saves.
 - Dumbbell volume does not double the entered load. Warm-ups stay out of volume and out of the PR flag.
