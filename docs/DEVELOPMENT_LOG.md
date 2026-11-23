@@ -29,6 +29,10 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-23 — Session duration pre-fill and effort
+
+- Ryan added D23. Finish pre-fills `duration_minutes` from ticked-set timestamps, with blank cases for under two sets and past dates. Optional `session_rpe` is a nullable integer 1–10 on the workout session. D1 is unchanged. No PRD edit.
+
 ## 2026-11-23 — Rest timer in Slice 3, template notes tooltip
 
 - Ryan revised D13: the rest timer is in Slice 3 (client-side pill, template rest or 90s, no new table, not stored on completed sets). Added D22: template exercise notes open from an info button. `exercise_templates.notes` is now in the Slice 3 logical model; the PRD and Slice 3.1 draft already had it.

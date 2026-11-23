@@ -16,7 +16,7 @@ Mockups: [`docs/mockups/slice_3_workouts/`](../../mockups/slice_3_workouts/READM
 
 ### Description
 
-Ryan locked the Slice 3 table on Nov 23, 2026, then revised D13 the same day (rest timer is in Slice 3) and added D22. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
+Ryan locked the Slice 3 table on Nov 23, 2026, then revised D13 the same day (rest timer is in Slice 3) and added D22 and D23. The README table is the lock. D1 is a FitNotes-style single log with no live session or stopwatch. Mockup images are still the pre-lock frames. A separate design pass updates the images. Do not reopen the decisions from those images.
 
 ### Acceptance Criteria
 
@@ -45,6 +45,7 @@ Migrations for `exercises` (global seed + owner custom), completed workout table
 - Seed about 120–150 common exercises with slug, name, aliases, primary muscle, optional equipment (D4).
 - Custom exercises: `user_id` not null; global rows have null owner. No parent-link column and no variant action (D20).
 - Completed: sessions → exercises → sets. No rest-seconds column on completed sets (D13).
+- `workout_sessions.session_rpe`: nullable integer. Check constraint: null or between 1 and 10 inclusive (D23). `duration_minutes` stays optional. No new clock column; duration pre-fill reads the set rows’ saved-at timestamps.
 - Templates: program/session/exercise/set_prescription + optional groups. Rest seconds stay nullable on set prescriptions only. `exercise_templates.notes` is nullable text (D22). No rest-timer table.
 - No AI import tables.
 
@@ -80,6 +81,7 @@ Zod-validated server actions: create/list/update/soft-delete workouts, create cu
 - Volume helper matches D10: reps × load as entered, no dumbbell doubling, warm-ups and non-numeric load excluded.
 - PR flag matches D11: heaviest numeric load for an exercise, excluding warm-ups and non-numeric load. No e1RM.
 - Date slack window matches measurements/journal pattern.
+- `session_rpe` validates as an integer 1–10 or null. `duration_minutes` validates as a whole number of minutes or null (D23). Out-of-range effort is rejected.
 - Unit tests without a live DB (mock Supabase), including Chicago/UTC calendar cases.
 
 ### Dependencies
@@ -138,6 +140,8 @@ Replace the Workouts coming-soon panel. History list, empty state, Show more win
 - Custom create shows a fuzzy-duplicate warning, and **Create anyway** stays. There is no **Create as variant** (D19, D20).
 - The per-exercise history view shows past sets and the PR badge. It is not a Library page.
 - The finish summary shows the PR badge when the heaviest non-warmup numeric load is a personal record (D11). No PR board and no e1RM.
+- Finish pre-fills `duration_minutes` from the first and last ticked set’s saved-at timestamps, rounded to whole minutes (D23). It stays blank when fewer than 2 sets are ticked, or when the log date is in the past. The user can edit or clear it. No session clock and no Start button.
+- Finish has an optional “How hard was that?” 1–10 tap row. Skipping it stores null. Per-set RPE/RIR stay optional (D8). Copy is plain and non-medical.
 - Fourth-class junk fields rejected by Zod.
 - A custom exercise appears in search for the owner only.
 - The written spec wins where the current images lag. Updated mockups come from a separate design pass.
@@ -165,6 +169,7 @@ Detail page for a session; edit sets; soft-delete with confirm. The finish summa
 ### Acceptance Criteria
 
 - The owner can edit sets and soft-delete the session.
+- Duration and session effort are editable on the detail page, and either can be cleared (D23).
 - The PR badge is the heaviest numeric load for that exercise, excluding warm-ups and non-numeric load.
 - The screen keeps the normal nav. No focus mode (D21).
 
@@ -233,7 +238,7 @@ Feed `performed_on` into activity streak (ADR-014). Ship or finish OV.1 Fitness 
 
 ### Description
 
-Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling), the D11 PR flag, the D13 rest timer (countdown, +30s, skip, a new tick resetting it, and the 90s fallback), date slack, the duplicate warning, the D22 notes popover (touch, keyboard, aria), history windowing, and the template save contract. No Playwright required in this ticket.
+Unit/action/component coverage for schema rules, D10 volume (no dumbbell doubling), the D11 PR flag, the D13 rest timer (countdown, +30s, skip, a new tick resetting it, and the 90s fallback), D23 duration pre-fill (under 2 sets, past date, rounding, and edit) and `session_rpe` validation (1–10 or null), date slack, the duplicate warning, the D22 notes popover (touch, keyboard, aria), history windowing, and the template save contract. No Playwright required in this ticket.
 
 ### Dependencies
 
@@ -253,7 +258,7 @@ Unit/action/component coverage for schema rules, D10 volume (no dumbbell doublin
 
 ### Description
 
-Walk an empty log, a custom exercise with the duplicate warning and Create anyway, a multi-set session (sets save as ticked, rest pill, per-dumbbell hint, PR badge, per-exercise history), a template with an exercise note and its info button, edit, soft-delete, template reuse from the Workouts tab, streak day, Overview (if shipped), and phone-width with the sticky save/finish bar and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, push or background timers, a PR board, or Create as variant during QA.
+Walk an empty log, a custom exercise with the duplicate warning and Create anyway, a multi-set session (sets save as ticked, rest pill, per-dumbbell hint, PR badge, per-exercise history, duration pre-fill, and the optional effort tap), a past-date log with duration left blank, a template with an exercise note and its info button, edit of duration and effort on the detail page, soft-delete, template reuse from the Workouts tab, streak day, Overview (if shipped), and phone-width with the sticky save/finish bar and the normal nav. Capture gaps as follow-ups. Do not expand into 3.1, push or background timers, a PR board, or Create as variant during QA.
 
 ### Dependencies
 

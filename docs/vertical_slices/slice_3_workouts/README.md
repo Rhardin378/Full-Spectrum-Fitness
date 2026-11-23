@@ -38,7 +38,7 @@ Do not reopen these without updating the pack.
 
 ## Decisions (locked Nov 23, 2026)
 
-Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest timer is in Slice 3) and added D22. Do not reopen a row without updating this pack.
+Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest timer is in Slice 3) and added D22 and D23. Do not reopen a row without updating this pack.
 
 | ID | Topic | Decision | Why |
 |----|--------|----------|-----|
@@ -64,6 +64,7 @@ Ryan locked this table on Nov 23, 2026. Later that day he revised D13 (the rest 
 | D20 | Create as variant | **Out of Slice 3** (gate D). It needs a parent link in the data model. | Do not add a parent-link column or a variant action in this slice. |
 | D21 | Log and finish chrome | The **normal nav stays** on the log and finish screens. Phone gets a **sticky save/finish bar**. **No focus mode.** The rest pill sits in that bar (D13). | The Fitness shell stays available on those screens. |
 | D22 | Exercise notes tooltip | A template exercise’s `notes` (nullable text) holds form cues, tempo, or time under tension, for example “3-sec eccentric, pause at chest”. When a log is started from a template, each exercise with notes shows an info button. Tapping it opens a popover. Not hover-only: it works on touch and with a keyboard, with proper aria. The template editor can write the note. Log exercise notes (D8) stay. No new columns. | Cues sit on the template exercise the log already copies from. |
+| D23 | Session duration and effort | **Auto duration.** The finish screen pre-fills optional `duration_minutes` from the time between the first and last ticked set, using those rows’ saved-at timestamps. Round to whole minutes. Leave it blank when fewer than 2 sets are ticked, or when the log is for a past date. The user can edit or clear it before saving. No session clock and no Start button (D1 unchanged). **Session effort, one tap.** Optional “How hard was that?” 1–10 row, stored as nullable `session_rpe` (integer 1–10, or null). It can be skipped. Per-set RPE/RIR (D8) stay optional. Copy stays plain and non-medical. | Later insights need a duration and an effort without a live session. |
 
 ## What the user can do (target)
 
@@ -82,12 +83,12 @@ FitNotes-style single screen (D1). The normal nav stays. Phone uses a sticky sav
 
 1. Session name (required, trimmed, reasonable max).
 2. `performed_on` defaults to validated local today and stays editable.
-3. Optional duration minutes, typed. No stopwatch and no live session state.
+3. Optional duration minutes. No stopwatch, no session clock, and no Start button (D1). The finish screen may pre-fill it (D23).
 4. Add exercises via the picker search sheet.
 5. Per exercise: ordered set rows (reps, load, optional RPE). Dumbbell load hint says “per dumbbell”.
 6. Each set saves as you tick it. That tick also starts the client-side rest timer (D13).
 7. If the log was started from a template, an exercise with template notes shows an info button that opens the note (D22).
-8. Finish summary shows the PR badge when D11’s flag is true. Optional **Save as template** from there or from detail.
+8. Finish summary shows the PR badge when D11’s flag is true. It pre-fills duration and offers the optional effort tap (D23). Both stay editable, including on the detail page. Optional **Save as template** from there or from detail.
 9. Per-exercise history (past sets and the PR badge) opens from the log. It is not a Library page (D16).
 
 ### Exercise picker
@@ -111,7 +112,7 @@ Physical names land in ticket 3.1 schema work.
 
 ```text
 exercises (global + owner custom)
-workout_sessions (completed) — performed_on, name, duration_minutes, notes, deleted_at
+workout_sessions (completed) — performed_on, name, duration_minutes, session_rpe, notes, deleted_at
   └─ workout_exercises — position, exercise_id, notes
        └─ workout_sets — position, reps, load, load_unit, load_text, rpe, rir, is_warmup
 
@@ -122,7 +123,7 @@ program_templates
             └─ set_prescriptions (nullable rest seconds; not copied onto completed sets)
 ```
 
-No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). `exercise_templates.notes` is the D22 cue. Owner-scoped RLS. Zod on every action. `user_id` from session. Same grant/revoke style as measurements and Slice 2.
+No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). `exercise_templates.notes` is the D22 cue. `session_rpe` is a nullable integer; a check allows null or 1–10 (D23). Duration pre-fill reads the ticked set rows’ saved-at timestamps and does not add a clock column. Owner-scoped RLS. Zod on every action. `user_id` from session. Same grant/revoke style as measurements and Slice 2.
 
 Versioned domain input for “save template / confirm import” is owned here so Slice 3.1 does not invent a second model.
 
@@ -144,6 +145,7 @@ Versioned domain input for “save template / confirm import” is owned here so
 - Signed-in user can log a multi-exercise session on a phone-width FitNotes-style screen. Each set saves as it is ticked and starts the client-side rest timer. Sets reference canonical exercises and the session is still there after refresh.
 - A log started from a template shows an info button on each exercise that has template notes. The template editor can write that note.
 - Finish summary shows the PR badge. The per-exercise history view shows past sets and that badge.
+- Finish pre-fills duration from ticked-set timestamps when the rules in D23 say so, and offers an optional 1–10 “How hard was that?” tap. Both can be cleared.
 - Custom exercise can be created and used in a log. A fuzzy duplicate warns first, and Create anyway still saves.
 - Dumbbell volume does not double the entered load. Warm-ups stay out of volume and out of the PR flag.
 - Soft-deleted sessions disappear from history and streak inputs.
