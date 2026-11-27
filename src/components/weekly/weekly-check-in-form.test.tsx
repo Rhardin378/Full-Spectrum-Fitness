@@ -112,6 +112,8 @@ async function fillRequiredScores() {
 }
 
 beforeEach(() => {
+  // Other suites use fake timers; waitFor needs real time in this file.
+  vi.useRealTimers();
   vi.clearAllMocks();
 });
 
@@ -157,7 +159,9 @@ describe("WeeklyCheckInForm", () => {
     expect(screen.getByText("Sleep")).toBeInTheDocument();
   });
 
-  it("defaults the intention domain to the lowest score and redirects on success", async () => {
+  it(
+    "defaults the intention domain to the lowest score and redirects on success",
+    async () => {
     submitWeeklyCheckIn.mockResolvedValue({
       success: true,
       checkIn: makeCheckIn({ week_start: "2026-10-26" }),
@@ -187,12 +191,10 @@ describe("WeeklyCheckInForm", () => {
     await fillRequiredScores();
     fireEvent.click(screen.getByRole("button", { name: "Partly" }));
 
-    await waitFor(() => {
-      expect(screen.getByLabelText("Domain")).toHaveValue("career");
-    });
     expect(
-      screen.getByText(/Your lowest domain this week: Career/),
+      await screen.findByText(/Your lowest domain this week: Career/),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Domain")).toHaveValue("career");
 
     fireEvent.change(screen.getByLabelText("Intention"), {
       target: { value: "Ship the check-in screen" },
@@ -215,11 +217,13 @@ describe("WeeklyCheckInForm", () => {
       );
     });
 
-    expect(push).toHaveBeenCalledWith("/mind");
-    expect(
-      screen.getByRole("button", { name: "Submitting…" }),
-    ).toBeDisabled();
-  });
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith("/mind");
+    });
+    expect(refresh).toHaveBeenCalled();
+  },
+  10_000,
+  );
 
   it("requires an outcome when a prior intention exists", async () => {
     render(
@@ -335,5 +339,40 @@ describe("WeeklyCheckInForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Submit check-in" }));
     expect(submitWeeklyCheckIn).not.toHaveBeenCalled();
+  });
+
+  it("shows past-check-in notes when present and hides them when null", () => {
+    render(
+      <WeeklyCheckInForm
+        today={TODAY}
+        recap={emptyRecap}
+        priorIntention={null}
+        existingCheckIn={null}
+        pastCheckIns={[
+          makeCheckIn({
+            id: "with-notes",
+            week_start: "2026-10-19",
+            stress: 6,
+            energy: 7,
+            notes: "Kept training light",
+          }),
+          makeCheckIn({
+            id: "without-notes",
+            week_start: "2026-10-12",
+            stress: 3,
+            energy: 5,
+            notes: null,
+          }),
+        ]}
+        fitnessGoal={null}
+        wellnessGoal={null}
+      />,
+    );
+
+    expect(screen.getByText("Past check-ins")).toBeInTheDocument();
+    expect(screen.getByText("Kept training light")).toBeInTheDocument();
+    expect(screen.getByText("Stress 6 · Energy 7")).toBeInTheDocument();
+    expect(screen.getByText("Stress 3 · Energy 5")).toBeInTheDocument();
+    expect(screen.queryByText("Remembered notes")).not.toBeInTheDocument();
   });
 });

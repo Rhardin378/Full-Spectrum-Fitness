@@ -137,4 +137,12 @@ describe("MindHome", () => {
       screen.queryByText(/Past days are history, not an editor/),
     ).not.toBeInTheDocument();
   });
+
+  it("does not link to a wins route", () => {
+    render(<MindHome entries={[makeEntry()]} initialStreak={ZERO_STREAK} />);
+    expect(
+      screen.queryByRole("link", { name: /wins/i }),
+    ).not.toBeInTheDocument();
+    expect(document.querySelector('a[href="/mind/wins"]')).toBeNull();
+  });
 });
