@@ -571,6 +571,8 @@ These align with ADR-013 and link to it:
 
 Walk the Mind loop on a real account after the feature tickets merge. Capture gaps as new issues. Do not expand the slice during QA.
 
+**Click-through checklist:** [`QA_CHECKLIST.md`](./QA_CHECKLIST.md)
+
 ### Scope
 
 - Sign in, open Mind from the navbar (desktop and a phone-width menu), save today’s journal, confirm it lands on `/mind` with “Entry saved” and the entry first in history, reload and confirm the message is gone, then use **Edit today’s entry** and confirm the form loads the same row. Rate stress and energy on one save and skip them on another; confirm both reload as saved.
