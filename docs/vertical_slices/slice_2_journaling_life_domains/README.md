@@ -183,16 +183,18 @@ Check-in domain scores are columns on `weekly_check_ins`, not a second scores ta
 
 ## Done criteria
 
-- A signed-in user can save today’s journal (mood, reflection, up to three tags) and see it after refresh. A second save the same day updates the same row. A successful save lands on `/mind` with an “Entry saved” confirmation.
-- “One win today” and “Grateful for” are optional. Leaving both blank still saves the entry and stores null. Mind history shows a line only when its value is non-null. There is no wins page.
-- Stress and energy on the journal are optional; an entry saves without them, and clearing one stores null.
-- A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice. There is no draft. A successful submit redirects to `/mind`. The first check-in hides the last-intention block. The intention label is “Intention for the week of {Mon}–{Sun}”.
-- Optional notes may be empty. When present, check-in history shows them. Nothing replies.
-- Exactly one next intention is stored. Its domain does not change later. Its text changes only through `editable_until`, from the journal line and from the Mind card.
-- `/mind` is one page (no tab bar) and shows the stat row, a 7-day mood trend, history with Show more, the intention, and a due card that appears and disappears from data alone. The stat row does not show “N of 7”. Activity streak is ticket 2.5.1. A history entry is read-only and clamps the reflection to about 2–3 lines.
-- Another user cannot read or write these rows. Unauthenticated requests fail.
-- `npm test` covers week math, the edit lock, recap math, validation, and the main screens.
-- Empty weeks and empty history do not show fake numbers. The “Example data” pill is not in the product UI.
+Checked off 2026-11-26 after ticket 2.10 manual QA ([`QA_CHECKLIST.md`](./QA_CHECKLIST.md), [#79](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/79)).
+
+- [x] A signed-in user can save today’s journal (mood, reflection, up to three tags) and see it after refresh. A second save the same day updates the same row. A successful save lands on `/mind` with an “Entry saved” confirmation.
+- [x] “One win today” and “Grateful for” are optional. Leaving both blank still saves the entry and stores null. Mind history shows a line only when its value is non-null. There is no wins page.
+- [x] Stress and energy on the journal are optional; an entry saves without them, and clearing one stores null.
+- [x] A signed-in user can submit the check-in for the last completed week, including the recap from real journal rows, and cannot submit that week twice. There is no draft. A successful submit redirects to `/mind`. The first check-in hides the last-intention block. The intention label is “Intention for the week of {Mon}–{Sun}”.
+- [x] Optional notes may be empty. When present, check-in history shows them. Nothing replies.
+- [x] Exactly one next intention is stored. Its domain does not change later. Its text changes only through `editable_until`, from the journal line and from the Mind card.
+- [x] `/mind` is one page (no tab bar) and shows the stat row, a 7-day mood trend, history with Show more, the intention, and a due card that appears and disappears from data alone. The stat row does not show “N of 7”. Activity streak is ticket 2.5.1. A history entry is read-only and clamps the reflection to about 2–3 lines.
+- [x] Another user cannot read or write these rows. Unauthenticated requests fail.
+- [x] `npm test` covers week math, the edit lock, recap math, validation, and the main screens.
+- [x] Empty weeks and empty history do not show fake numbers. The “Example data” pill is not in the product UI.
 
 ## Notes
 

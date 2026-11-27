@@ -29,7 +29,7 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
-## 2026-11-27 — Slice 3 workouts planning (PR #100)
+## 2026-11-26 — Slice 3 workouts planning (PR #100)
 
 ### Completed
 
