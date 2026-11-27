@@ -8,7 +8,11 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: createClientMock,
 }));
 
-import { saveJournalEntry } from "@/lib/journal/actions";
+import {
+  getWeekRecap,
+  listJournalEntries,
+  saveJournalEntry,
+} from "@/lib/journal/actions";
 
 const ENTRY_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const USER_ID = "user-1";
@@ -71,6 +75,11 @@ function makeChain(result: ChainResult) {
 
   chain.single = terminal;
   chain.maybeSingle = terminal;
+  // List / recap queries await the builder after .limit() / .order().
+  chain.then = (
+    onFulfilled: (value: ChainResult) => unknown,
+    onRejected?: (reason: unknown) => unknown,
+  ) => Promise.resolve(result).then(onFulfilled, onRejected);
   return { chain, terminal };
 }
 
@@ -290,5 +299,179 @@ describe("saveJournalEntry", () => {
       win: null,
       grateful_for: null,
     });
+  });
+
+  it("stores blank win and grateful_for as null, and accepts 200 characters", async () => {
+    const insertPayload = vi.fn();
+    const win = "w".repeat(200);
+    const row = makeEntryRow({ win, grateful_for: null });
+    const withTags = makeEntryRow({
+      win,
+      grateful_for: null,
+      journal_entry_domains: [],
+    });
+
+    const testClient = makeClient({ id: USER_ID }, [
+      { result: { data: null, error: null } },
+      {
+        result: { data: row, error: null },
+        capture: { insert: insertPayload },
+      },
+      { result: { data: null, error: null } },
+      { result: { data: withTags, error: null } },
+    ]);
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await saveJournalEntry({
+      today: "2026-11-03",
+      mood: 7,
+      reflection: "A solid day",
+      domains: [],
+      win,
+      grateful_for: "   ",
+    });
+
+    expect(result.success).toBe(true);
+    expect(insertPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        win,
+        grateful_for: null,
+      }),
+    );
+  });
+
+  it("rejects a win longer than 200 characters before writing", async () => {
+    const testClient = makeClient({ id: USER_ID }, []);
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await saveJournalEntry({
+      today: "2026-11-03",
+      mood: 7,
+      reflection: "A solid day",
+      win: "w".repeat(201),
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBe("validation");
+      expect(result.fieldErrors?.win).toMatch(/200/);
+    }
+    expect(testClient.spies.from).not.toHaveBeenCalled();
+  });
+});
+
+describe("listJournalEntries", () => {
+  beforeEach(() => {
+    createClientMock.mockReset();
+  });
+
+  it("rejects signed-out callers", async () => {
+    const testClient = makeClient(null, []);
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await listJournalEntries();
+
+    expect(result).toMatchObject({
+      success: false,
+      error: "unauthorized",
+    });
+    expect(testClient.spies.from).not.toHaveBeenCalled();
+  });
+
+  it("returns only the session user’s rows including win and grateful_for", async () => {
+    const rows = [
+      makeEntryRow({
+        win: "Shipped",
+        grateful_for: null,
+        journal_entry_domains: [{ domain: "career" }],
+      }),
+      makeEntryRow({
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        entry_on: "2026-11-02",
+        win: null,
+        grateful_for: "Quiet evening",
+        journal_entry_domains: [],
+      }),
+    ];
+    const testClient = makeClient({ id: USER_ID }, [
+      { result: { data: rows, error: null } },
+    ]);
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await listJournalEntries({ limit: 25 });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.entries).toHaveLength(2);
+      expect(result.entries[0]?.win).toBe("Shipped");
+      expect(result.entries[0]?.grateful_for).toBeNull();
+      expect(result.entries[0]?.domains).toEqual(["career"]);
+      expect(result.entries[1]?.grateful_for).toBe("Quiet evening");
+      expect(result.entries.every((entry) => entry.user_id === USER_ID)).toBe(
+        true,
+      );
+    }
+    expect(testClient.spies.from).toHaveBeenCalledWith("journal_entries");
+  });
+});
+
+describe("getWeekRecap", () => {
+  beforeEach(() => {
+    createClientMock.mockReset();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-03T15:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("rejects signed-out callers", async () => {
+    const testClient = makeClient(null, []);
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await getWeekRecap({ today: "2026-11-03" });
+
+    expect(result).toMatchObject({
+      success: false,
+      error: "unauthorized",
+    });
+    expect(testClient.spies.from).not.toHaveBeenCalled();
+  });
+
+  it("builds the recap from the last completed week’s journal rows", async () => {
+    const rows = [
+      makeEntryRow({
+        entry_on: "2026-10-26",
+        mood: 4,
+        stress: 8,
+        energy: null,
+        journal_entry_domains: [{ domain: "career" }],
+      }),
+      makeEntryRow({
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        entry_on: "2026-10-28",
+        mood: 6,
+        stress: 4,
+        energy: 7,
+        journal_entry_domains: [{ domain: "learning" }],
+      }),
+    ];
+    const testClient = makeClient({ id: USER_ID }, [
+      { result: { data: rows, error: null } },
+    ]);
+    createClientMock.mockResolvedValueOnce(testClient.client);
+
+    const result = await getWeekRecap({ today: "2026-11-03" });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.recap.weekStart).toBe("2026-10-26");
+      expect(result.recap.weekEnd).toBe("2026-11-01");
+      expect(result.recap.daysJournaled).toBe(2);
+      expect(result.recap.averageMood).toBe(5);
+      expect(result.recap.averageStress).toBe(6);
+      expect(result.recap.averageEnergy).toBe(7);
+    }
   });
 });

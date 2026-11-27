@@ -319,6 +319,15 @@ describe("JournalEntryForm", () => {
     expect(ratingPressed("mood", 5)).toBe("true");
   });
 
+  it("does not link to a wins route", () => {
+    render(<JournalEntryForm today={TODAY} initialEntry={null} />);
+
+    expect(
+      screen.queryByRole("link", { name: /wins/i }),
+    ).not.toBeInTheDocument();
+    expect(document.querySelector('a[href="/mind/wins"]')).toBeNull();
+  });
+
   it("sends stress and energy with the entry", async () => {
     saveJournalEntry.mockResolvedValue({
       success: true,
