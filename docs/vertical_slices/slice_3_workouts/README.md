@@ -75,6 +75,7 @@ Ryan locked this table on Nov 23, 2026. Later that day he revised D13, added D22
 | D31 | Prescription shapes | Template reps/load use discriminated kinds (`exact` / `range` / `text` / `null` and `numeric` / `text` / `combined` / `null`). No structured tempo column (D22). | Prevents contradictory prescription fields. |
 | D32 | Zero prescribed sets | Template exercises may have zero set rows after acknowledgement. Users can add rows later or while logging. | Source fidelity when a PDF lists exercises without a set scheme. |
 | D33 | Template → log snapshot | Starting from a template snapshots prescriptions into the log. Later template edits do not rewrite history. Analytics use performed values; `exercise_id` links stay. Extends D24. | Stable history and honest volume/PRs. |
+| D34 | Workout mood before/after | Optional one-tap mood on the day log and again on finish. Same 1–10 journal scale (“1 = rough, 10 = great”). Nullable `mood_before` / `mood_after` on `workout_sessions`. Never required. Distinct from `session_rpe`. Does not write a journal entry. Spec: [`../nov_26_2026_slice_3_1_lock_in/README.md`](../nov_26_2026_slice_3_1_lock_in/README.md). | Low-friction mind×training signal without a second mood system. |
 
 ## What the user can do (target)
 
@@ -91,7 +92,7 @@ Ryan locked this table on Nov 23, 2026. Later that day he revised D13, added D22
 
 Option B (D1, changed Nov 23, 2026). The normal nav stays. No focus mode (D21). No live session and no stopwatch.
 
-**Day view.** `‹ Today, Mon Nov 23 ›` steps one day. The pill opens a picker. Forward is disabled on today. Session name is required. One card per exercise: muscle chip, target line (`sets × rep range · rest` only), then read-only logged rows (warm-up tag, weight × reps or time · distance, RPE or effort, note indicator, PR trophy). “N more sets · tap to log” when template sets remain. Then + Add exercise. The sticky bar shows the saved count and Finish workout.
+**Day view.** `‹ Today, Mon Nov 23 ›` steps one day. The pill opens a picker. Forward is disabled on today. Session name is required. Optional mood chip (D34) near the top: same 1–10 journal scale, skippable, stores `mood_before`. One card per exercise: muscle chip, target line (`sets × rep range · rest` only), then read-only logged rows (warm-up tag, weight × reps or time · distance, RPE or effort, note indicator, PR trophy). “N more sets · tap to log” when template sets remain. Then + Add exercise. The sticky bar shows the saved count and Finish workout.
 
 **Track.** Same route, `?exercise=<workout_exercise id>`, full screen on phone. Refresh and back return to this screen. Header: back to the day log, name, muscle, target, (i) for the D22 note, and a strength-only timer icon (D13/D25). Tabs: Track and History. History is D16.
 
@@ -99,7 +100,7 @@ Strength Track uses boxed steppers (D27), the last-time hint (D24), optional RPE
 
 Cardio Track uses boxed Time and Distance, effort chips, and a per-set note. Save does not start the rest timer. There is no timer icon.
 
-Finish still pre-fills duration (D23) and offers the optional session effort tap. The trophy there follows D11. Optional Save as template does not copy logged values back (D24).
+Finish still pre-fills duration (D23) and offers the optional session effort tap plus an optional after-workout mood chip (`mood_after`, D34). Mood and effort stay separate. Neither is required. The trophy there follows D11. Optional Save as template does not copy logged values back (D24).
 
 ### Exercise picker
 
@@ -123,7 +124,7 @@ Physical names land in ticket 3.1 schema work.
 ```text
 exercises (global + owner custom) — tracking_type text not null default 'strength'
   check (tracking_type in ('strength', 'cardio'))
-workout_sessions (completed) — performed_on, name, duration_minutes, session_rpe, notes, deleted_at
+workout_sessions (completed) — performed_on, name, duration_minutes, session_rpe, mood_before, mood_after, notes, deleted_at
   └─ workout_exercises — position, exercise_id, notes
        └─ workout_sets — id (client-supplied uuid, primary key), position,
             reps (nullable), load, load_unit, load_text, rpe, rir, is_warmup,
@@ -137,7 +138,9 @@ program_templates
             └─ set_prescriptions (nullable rest seconds; not copied onto completed sets; D31–D32)
 ```
 
-No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). No `is_pr` column: the badge is computed at read time (D11) and ignores cardio sets. `exercise_templates.notes` is the D22 cue. `session_rpe` is a nullable integer; a check allows null or 1–10 (D23). Duration pre-fill reads the ticked set rows’ saved-at timestamps and does not add a clock column. `workout_sets.id` is a uuid primary key, `default gen_random_uuid()` like `measurements.id`, and the client supplies it on tick (D26). There is no separate `client_id` column. Insert uses `ON CONFLICT (id) DO NOTHING`. Owner-scoped RLS is unchanged. `user_id` comes from the session.
+No parent-link column for exercise variants (D20). No rest column on completed sets, and no rest-timer table (D13). No `is_pr` column: the badge is computed at read time (D11) and ignores cardio sets. `exercise_templates.notes` is the D22 cue. `session_rpe` is a nullable integer; a check allows null or 1–10 (D23). `mood_before` and `mood_after` are the same null-or-1–10 check (D34). Duration pre-fill reads the ticked set rows’ saved-at timestamps and does not add a clock column. `workout_sets.id` is a uuid primary key, `default gen_random_uuid()` like `measurements.id`, and the client supplies it on tick (D26). There is no separate `client_id` column. Insert uses `ON CONFLICT (id) DO NOTHING`. Owner-scoped RLS is unchanged. `user_id` comes from the session.
+
+`mood_before` and `mood_after` are nullable integers with a check of null or 1–10 (D34). They share the journal mood scale and copy. They are on the column-level insert and update grants. Saving them never inserts or updates `journal_entries`.
 
 `workout_sets.notes` is null or `char_length` 1–500, the measurements notes check (D8). It is on the insert and update column grants and on both Zod set schemas. Cardio checks on `workout_sets` (D28): `duration_seconds` is null or > 0 and ≤ 86400; `distance` is null or > 0; `distance_unit` is null or one of `mi`, `km`, `m`; `distance` and `distance_unit` are both null or both set; `reps` or `duration_seconds` is non-null. Insert and update grants name columns, including `duration_seconds`, `distance`, and `distance_unit`, the way measurements names its update columns. `id` and `user_id` stay off the update grant. Zod on every action. The set action reads `tracking_type` from the exercise row.
 

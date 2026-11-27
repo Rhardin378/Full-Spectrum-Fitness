@@ -4,7 +4,7 @@ Ryan locked these on 2026-11-26 after a Slice 3.1 plan audit. This folder is the
 
 Related packs:
 
-- Slice 3 planning: [`../slice_3_workouts/README.md`](../slice_3_workouts/README.md) (D1–D28; this pack adds D29–D33)
+- Slice 3 planning: [`../slice_3_workouts/README.md`](../slice_3_workouts/README.md) (D1–D28; this pack adds D29–D34)
 - Slice 3.1 AI import: [`../slice_3_1_ai_workout_import/`](../slice_3_1_ai_workout_import/)
 - Prior sequencing: [`../nov_16_2026_decisions/README.md`](../nov_16_2026_decisions/README.md)
 - ADRs: [ADR-009](../../ARCHITECTURE_DECISIONS.md), [ADR-010](../../ARCHITECTURE_DECISIONS.md)
@@ -38,7 +38,7 @@ These bullets validate the current Slice 3.1 direction. They do not justify soci
 
 ## Locked decisions
 
-### Slice 3 contract amendments (D29–D33)
+### Slice 3 contract amendments (D29–D34)
 
 | ID | Topic | Decision | Gate |
 |----|--------|----------|------|
@@ -47,6 +47,7 @@ These bullets validate the current Slice 3.1 direction. They do not justify soci
 | D31 | Prescription value shapes | Template reps and load use typed discriminated values: reps are `exact`, `range`, `text`, or `null`; load is `numeric`, `text`, `combined`, or `null`. Invalid parallel combinations are rejected. Aligns completed-log fields with existing D8 storage where practical. Tempo is **not** a structured column (D22 unchanged): extracted tempo cues map into the exercise note. | A |
 | D32 | Zero prescribed sets | A template exercise may have zero prescribed set rows after explicit review acknowledgement when the source had no set scheme. Users may add rows in review, later template edit, or while logging. Performed sets remain distinct from prescriptions. | A |
 | D33 | Template → log snapshot | Starting a workout from a template snapshots prescriptions into the log. Later template edits do not change completed or in-progress logs. Canonical `exercise_id` links remain for analytics. Analytics use **performed** values, not template targets. Extends D24. | A |
+| D34 | Workout mood before/after | Optional one-tap mood on the day log (before/during) and again on the finish summary. Same integer 1–10 scale and “1 = rough, 10 = great” copy as the journal. Store as nullable `mood_before` and `mood_after` on `workout_sessions`. Never required; never blocks logging or finish. Distinct from `session_rpe` (effort). Does **not** create or update a journal entry. No free-text mood prompt in Slice 3. Wellbeing language only (ADR-011). | A |
 
 ### Slice 3.1 import locks (I1–I14)
 
@@ -83,6 +84,8 @@ These bullets validate the current Slice 3.1 direction. They do not justify soci
 - Last-write-wins draft concurrency.
 - Automatic retry of all failures without classification.
 - Sending document content to a provider without verified no-training terms and disclosed retention.
+- Required before/after workout mood prompts, or a second mood scale that differs from the journal.
+- Auto-creating journal entries from workout mood taps.
 
 ## Alignment notes
 
@@ -97,6 +100,6 @@ These bullets validate the current Slice 3.1 direction. They do not justify soci
 
 ## What to do next
 
-1. Keep building / finishing the Phase 1 path through Slice 3 using D1–D33.
+1. Keep building / finishing the Phase 1 path through Slice 3 using D1–D34.
 2. When opening Slice 3.1 GitHub issues, copy from [`../slice_3_1_ai_workout_import/tickets.md`](../slice_3_1_ai_workout_import/tickets.md) and apply I1–I15.
 3. Do not start Slice 3.1 migrations, Edge Functions, or import UI until the Slice 3 canonical save path exists.

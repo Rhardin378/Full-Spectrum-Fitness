@@ -34,7 +34,7 @@ Handoff pack: [README.md](./README.md).
 ### Completed
 
 - Docs only. Recorded Ryan’s Nov 26 lock-in in [`docs/vertical_slices/nov_26_2026_slice_3_1_lock_in/README.md`](./vertical_slices/nov_26_2026_slice_3_1_lock_in/README.md).
-- Extended Slice 3 decisions with **D29–D33** (unified program→workout contract, group rules, prescription shapes, zero prescribed sets, template→log snapshot).
+- Extended Slice 3 decisions with **D29–D34** (unified program→workout contract, group rules, prescription shapes, zero prescribed sets, template→log snapshot, optional workout mood before/after).
 - Updated Slice 3.1 brief, architecture draft contract, and tickets to match I1–I15 (execution gate, exercise matching, confirmation rules, retention, polling, provider disclosure).
 - Captured market-research takeaways for PDF/program import; OCR/screenshots stay deferred.
 
@@ -44,6 +44,7 @@ Handoff pack: [README.md](./README.md).
 - Every saved template exercise requires a canonical `exercise_id`; exact unique aliases may prefill.
 - Structural/identity flags block confirmation; optional fields may stay `null` after acknowledgement.
 - Provider release requires verified no-training terms and disclosed retention controls.
+- Optional workout `mood_before` / `mood_after` (1–10, journal scale) on the day log and finish summary; never required; distinct from `session_rpe`; does not create a journal entry (D34).
 
 ### Issues
 
