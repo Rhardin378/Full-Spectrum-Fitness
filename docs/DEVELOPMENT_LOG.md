@@ -29,6 +29,27 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-26 — Slice 2 QA close-out (ticket 2.10)
+
+### Completed
+
+- Manual QA walk on a real account against [`QA_CHECKLIST.md`](./vertical_slices/slice_2_journaling_life_domains/QA_CHECKLIST.md).
+- Slice README done criteria checked off. Issue [#79](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/79) closed as **Pass**.
+
+### Decisions
+
+- Later-week check-in note + prior-intention outcome UI not re-walked this calendar week; first-check-in path verified; `editable_until` lock covered by unit/action tests. No follow-up issues filed.
+
+### Next
+
+- Slice 2 is ready to call done. Next product work is outside this slice (e.g. workouts / Slice 3).
+
+### AI Notes
+
+- Cursor agent assisted checklist close-out after Ryan’s walk.
+
+---
+
 ## 2026-11-22 — Intention display through Sunday (2.7 follow-up)
 
 ### Completed
