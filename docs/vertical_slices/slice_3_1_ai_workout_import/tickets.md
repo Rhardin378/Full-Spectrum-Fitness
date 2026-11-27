@@ -2,6 +2,8 @@
 
 Copy each section into a GitHub issue after the Slice 3 workout/template foundation is complete.
 
+Locked decisions for this slice: [`../nov_26_2026_slice_3_1_lock_in/README.md`](../nov_26_2026_slice_3_1_lock_in/README.md) (I1–I15, D29–D33). Apply those locks when opening issues; they supersede older deferred-matching language in this file.
+
 ---
 
 ## Ticket 3.1.1: Lock the canonical workout-template import contract
@@ -16,18 +18,17 @@ Define the versioned domain input that both the manual workout editor and AI imp
 
 ### Scope
 
-- Confirm that Slice 3 supports:
-  - Program templates with ordered sessions
+- Confirm that Slice 3 supports (D29–D33):
+  - One versioned `ProgramTemplate → WorkoutTemplate[]` contract (standalone = one workout)
   - Optional week/day labels
-  - Ordered exercises
-  - One row per prescribed set
-  - Nullable reps/ranges, load, rest, RPE/RIR, tempo, and notes
-  - Numeric `lb` / `kg` load plus nonstandard load text
-  - Editable superset/circuit/giant-set groupings
+  - Ordered exercises with required `exercise_id`
+  - Set prescriptions that may be empty after acknowledgement
+  - Discriminated reps/load shapes; rest; RPE/RIR; notes (tempo in notes)
+  - Contiguous editable superset/circuit/giant-set groupings
 - Create one strict, versioned Zod/domain input for canonical template creation.
 - Ensure the manual editor uses the same validation and save path.
 - Define atomic save and idempotency behavior.
-- Document translation rules from an import draft to the canonical input.
+- Document translation rules from an import draft to the canonical input, including exact-alias vs confirmed-fuzzy exercise matching (I2).
 
 ### Acceptance Criteria
 
@@ -241,12 +242,12 @@ Consume durable Supabase Queue messages through a trusted Edge Function and pers
 
 ### Description
 
-Add the Workouts-tab entry point and dedicated upload/status flow at `/dashboard/workouts/import`.
+Add the Workouts-tab entry point and dedicated upload/status flow at `/fitness/workouts/import`.
 
 ### Scope
 
 - Add **Import with AI** to the Workouts tab.
-- Show a pre-upload notice naming the configured AI provider, explaining that extracted document content is sent to it, and linking to current provider data-use/retention information.
+- Show a pre-upload notice naming the configured AI provider, explaining that extracted document content is sent to it under verified no-training terms, and linking to current provider data-use/retention information (I15).
 - Upload action acknowledges the notice.
 - Display limits: PDF only, text-based, 10 MB, 30 pages.
 - Display duplicate warning without blocking continuation.
@@ -330,11 +331,12 @@ Validate a reviewed draft and atomically create reusable canonical templates thr
 ### Scope
 
 - Require:
-  - User-confirmed name
-  - At least one session
-  - At least one exercise
+  - User-confirmed program or standalone workout name (I4)
+  - At least one named workout
+  - At least one exercise with a canonical `exercise_id` (I2)
+  - No unresolved structural/identity flags (I3)
 - Require `review_ready` and `expires_at > now()` at the transactional confirmation boundary.
-- Allow optional prescription values to remain `null`.
+- Allow optional prescription values to remain `null` after acknowledgement; allow zero prescribed sets after acknowledgement (D32).
 - Translate the draft into the versioned Slice 3 canonical input.
 - Create all template data in one Postgres transaction.
 - Use owner-derived identity; never accept caller-supplied ownership.

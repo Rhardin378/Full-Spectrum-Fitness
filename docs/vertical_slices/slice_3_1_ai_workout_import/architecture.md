@@ -34,27 +34,25 @@ This slice follows the implemented Supabase migration/server-action patterns. Hi
 
 Slice 3 owns the canonical workout/template model. Before Slice 3.1 starts, it must expose a versioned domain input accepted by both manual creation and import confirmation.
 
-Logical entities required from Slice 3:
+Logical entities required from Slice 3 (Nov 26 lock-in D29–D33):
 
 ```text
 ProgramTemplate
-  └─ ordered SessionTemplate[]
-       ├─ ordered ExerciseGroup[] (optional)
-       └─ ordered ExerciseTemplate[]
-            └─ ordered SetPrescription[]
+  └─ ordered WorkoutTemplate[]
+       ├─ ordered ExerciseGroup[] (optional; contiguous, flat)
+       └─ ordered ExerciseTemplate[] → exercise_id
+            └─ ordered SetPrescription[] (may be empty after acknowledgement)
 ```
 
 Required prescription capabilities:
 
-- Per-set reps or rep range
-- Nullable numeric load and `lb` / `kg`
-- Nullable free-text load description
+- Discriminated reps (`exact` / `range` / `text` / `null`)
+- Discriminated load (`numeric` / `text` / `combined` / `null`) with `lb` / `kg` when numeric
 - Nullable rest duration
 - Nullable RPE and RIR
-- Nullable tempo
-- Notes
+- Notes (tempo cues live here — no structured tempo column)
 
-A single workout is represented through the same domain contract with one session. Physical table names may be finalized by Slice 3, but Slice 3.1 must not write those tables directly from model output.
+A standalone workout is the same domain contract with one workout. Physical table names may be finalized by Slice 3, but Slice 3.1 must not write those tables directly from model output. See [`../nov_26_2026_slice_3_1_lock_in/README.md`](../nov_26_2026_slice_3_1_lock_in/README.md).
 
 ## Components
 
@@ -204,8 +202,9 @@ RLS alone is not column-level protection. Raw responses, internal paths, and ext
 
 ```text
 ImportDraft
+  kind: "workout" | "program"   # AI-proposed; user-editable (I5)
   name: string | null
-  sessions: [
+  workouts: [
     {
       name: string | null
       weekLabel: string | null
@@ -221,23 +220,20 @@ ImportDraft
       exercises: [
         {
           localId: string
-          name: string | null
+          sourceName: string | null
+          exerciseId: string | null          # required at confirm (I2)
+          matchStatus: "exact" | "suggested" | "unmatched" | "confirmed"
           position: number
           groupLocalId: string | null
-          notes: string | null
-          sets: [
+          notes: string | null               # may include tempo cues
+          sets: [                            # may be empty (D32)
             {
               position: number
-              repsMin: number | null
-              repsMax: number | null
-              repsText: string | null
-              loadValue: number | null
-              loadUnit: "lb" | "kg" | null
-              loadText: string | null
+              reps: DiscriminatedReps | null
+              load: DiscriminatedLoad | null
               restSeconds: number | null
               rpe: number | null
               rir: number | null
-              tempo: string | null
               notes: string | null
             }
           ]
@@ -249,7 +245,7 @@ ImportDraft
   sourceExcerpts: [...]
 ```
 
-The exact schema is versioned. Unknown source values are `null`; an empty string is not a substitute for unknown.
+The exact schema is versioned and pinned per import (I6). Unknown source values are `null`; an empty string is not a substitute for unknown.
 
 ## State Machine
 
