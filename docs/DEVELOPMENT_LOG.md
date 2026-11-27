@@ -29,26 +29,121 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
-## 2026-11-26 — Slice 2 QA close-out (ticket 2.10)
+## 2026-11-26 — Slice 3 workouts planning (PR #100)
 
 ### Completed
 
-- Manual QA walk on a real account against [`QA_CHECKLIST.md`](./vertical_slices/slice_2_journaling_life_domains/QA_CHECKLIST.md).
-- Slice README done criteria checked off. Issue [#79](https://github.com/Rhardin378/Full-Spectrum-Fitness/issues/79) closed as **Pass**.
+- Docs only. Slice 3 planning is in `docs/vertical_slices/slice_3_workouts/README.md` and `tickets.md`, with decisions D1–D28. No application code and no migration, so no `db:push`.
+- D28 brings cardio into Slice 3. `exercises.tracking_type` is `strength` or `cardio`. `workout_sets.reps` is nullable. `duration_seconds`, `distance`, and `distance_unit` are nullable, with CHECKs, and are on the column-level insert and update grants. Cardio sets are excluded from volume and PRs, and saving one does not start the rest timer.
+- PRD line 326 now describes strength sets (reps, load, optional RPE/RIR and notes) and cardio sets (time, optional distance and effort).
+- Option B log UX locked Nov 23, 2026: a day view with date arrows and one card per exercise; the Track screen stays on the log route via `?exercise=`; History is a tab there; per-set notes are null or 1–500 characters; the trophy is computed at read time and marks the earliest non-warm-up set at the heaviest stored load; there is no tempo field.
+- Option B mockups are under `docs/mockups/slice_3_workouts/` (`option-b-01-day-view.png`, `option-b-02-track.png`, `option-b-03-history-and-cardio.png`). The older inline log image is marked superseded for the logging flow.
 
 ### Decisions
 
-- Later-week check-in note + prior-intention outcome UI not re-walked this calendar week; first-check-in path verified; `editable_until` lock covered by unit/action tests. No follow-up issues filed.
+- Ryan locked D1–D28 on Nov 23, 2026, including Option B and cardio in Slice 3.
+- Deferred: pace, cardio PRs, heart rate and zones, intervals and laps, GPS/Strava, calories, numeric cardio template targets, a structured tempo field, and a Graph tab on Track (Insights).
+
+### Issues
+
+- None in this PR.
 
 ### Next
 
-- Slice 2 is ready to call done. Next product work is outside this slice (e.g. workouts / Slice 3).
+- Slice 3 implementation still waits on Slice 2 close-out. Open the GitHub issues from `tickets.md` when that starts.
 
 ### AI Notes
 
-- Cursor agent assisted checklist close-out after Ryan’s walk.
+- Cursor cloud agent. Docs only.
 
----
+## 2026-11-23 — Option B log: day view and Track
+
+- Ryan replaced the inline log with a day view plus a per-exercise Track screen on the same route (`?exercise=`). Per-set notes are a nullable 1–500 text column. The PR trophy marks the earliest set at the heaviest stored load, on the day view, History, and the finish summary. Tempo stays in the exercise note. A Graph tab stays in Insights. PRD was not edited.
+
+## 2026-11-23 — PRD §3 log line
+
+- Resolved the open note that PRD §3 listed rest, and not cardio, on the completed-workout bullet. That line now matches D13 and D28. Template rest and the substitutions note are unchanged.
+
+## 2026-11-23 — Cardio logging in Slice 3
+
+- Ryan moved cardio into Slice 3 (D12 revised, D28 added): time and distance sets, about 12 seeded exercises inside the 120–150, strength-only volume and PRs. Pace, heart rate, GPS, and numeric template targets stay deferred. PRD was not edited.
+
+## 2026-11-23 — Prefill, wake lock, offline set save, steppers
+
+- Ryan added D24–D27. Last-time weight and reps are a one-tap suggestion. The rest timer uses an end timestamp and an optional Wake Lock. A set’s client-supplied uuid is the primary key, with `ON CONFLICT (id) DO NOTHING`. Steppers are 5 lb, 2.5 kg, and 1 rep. The PR badge stays computed at read time; there is no `is_pr` column.
+
+## 2026-11-23 — Session duration pre-fill and effort
+
+- Ryan added D23. Finish pre-fills `duration_minutes` from ticked-set timestamps, with blank cases for under two sets and past dates. Optional `session_rpe` is a nullable integer 1–10 on the workout session. D1 is unchanged. No PRD edit.
+
+## 2026-11-23 — Rest timer in Slice 3, template notes tooltip
+
+- Ryan revised D13: the rest timer is in Slice 3 (client-side pill, template rest or 90s, no new table, not stored on completed sets). Added D22: template exercise notes open from an info button. `exercise_templates.notes` is now in the Slice 3 logical model; the PRD and Slice 3.1 draft already had it.
+
+## 2026-11-23 — Community sharing note
+
+- Ryan approved a future community-feed note in PRD §8. Not Phase 1, not Slice 3. No UI, tables, or tickets.
+
+## 2026-11-23 — Slice 3 decisions locked
+
+### Completed
+
+- Ryan locked the Slice 3 decision table. The README section is now “Decisions (locked Nov 23, 2026)”. Tickets, competitive research, the mockups README, navigation IA, and the launch plan match that lock.
+- Existing mockup images were not changed. Updated frames come from a separate design pass.
+
+### Decisions
+
+- D1: FitNotes-style single log. Date defaults to today and is editable. Each set saves as you tick it. No live session or stopwatch. Phone-width is required.
+- D4: about 120–150 curated global exercises, plus owner-scoped custom exercises.
+- D10: dumbbell load is per dumbbell. Volume = reps × load as entered, no doubling. Hint says “per dumbbell”. Warm-ups stay excluded.
+- D11: simple PR flag (heaviest numeric load, excluding warm-ups and non-numeric load) as a badge on the finish summary and the per-exercise history view. No PR board or e1RM (Slice 4).
+- D13: rest timer deferred (gate D), first candidate follow-up after logging ships. Rest seconds stay nullable on template prescriptions only.
+- D15: + Log workout opens a new log for today. No start chooser. Start from a template stays on the Workouts tab.
+- D16: Library tab stays coming soon. The picker search sheet is the only library UI. Per-exercise history (past sets and the PR badge) is reached from the log or the picker and is not a Library page.
+- Custom create shows a fuzzy-duplicate warning, and Create anyway stays (D19).
+- Create as variant is out of Slice 3 (D20, gate D). It needs a parent link.
+- The log and finish screens keep the normal nav, with a sticky save/finish bar on phone. No focus mode (D21).
+
+### Issues
+
+- PRD §3 still lists rest on the completed-workout log. D13 keeps rest seconds on template prescriptions only. Not rewritten here.
+- PRD §3 also says to plan substitutions in the schema even if the UI is thin. D20 keeps a parent-link variant out of Slice 3. Not rewritten here.
+
+### Next
+
+- Slice 2 close-out still gates implementation.
+- Separate design pass for the Slice 3 mockups.
+- Then open Slice 3 GitHub issues from `tickets.md`.
+
+### AI Notes
+
+- Cursor cloud agent. Docs only. No ADR.
+
+## 2026-11-23 — Slice 3 planning pack (decisions Proposed)
+
+### Completed
+
+- Added `docs/vertical_slices/slice_3_workouts/` with README (D1–D18 Proposed locks), tickets 3.0–3.9, and competitive research brief.
+- Added proposed mockups under `docs/mockups/slice_3_workouts/` (Workouts tab, log form, exercise picker).
+- Pointed `LAUNCH_PLAN.md` and `navigation-ia.md` at the new folder. Implementation still waits on Slice 2 close-out and ticket 3.0 lock.
+
+### Decisions
+
+- None locked yet. Recommended posture: post-hoc web log first (not live gym timer), empty workout + save-as-template, seeded library + custom exercises, templates separate from logs, quiet history (no social), OV.1 with this slice after G.1.
+
+### Issues
+
+- Could not auto-message the FSF social bot from this environment (no Slack send tool). Paste-ready research ask is in `slice_3_workouts/competitive_research.md`.
+
+### Next
+
+- Ryan: run Slice 2 QA on desktop (#79 / #78 / remaining open Slice 2 issues).
+- Ryan: lock D1–D18 (ticket 3.0) and optionally paste the social-bot brief.
+- Then open Slice 3 GitHub issues from `tickets.md`.
+
+### AI Notes
+
+- Cursor cloud agent drafted the planning pack and sampled 2026 Hevy/Strong/Fitbod comparisons for recommendations.
 
 ## 2026-11-22 — Intention display through Sunday (2.7 follow-up)
 

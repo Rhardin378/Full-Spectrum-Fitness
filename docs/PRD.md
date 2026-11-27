@@ -323,7 +323,7 @@ The UI renders sections from a validated schema, for example:
 
 ### Phase 1 capabilities
 
-- Log completed workouts (date, exercises, sets, reps, load, optional RPE/RIR, rest, notes)
+- Log completed workouts (date, exercises; strength sets with reps, load, optional RPE/RIR and notes; cardio sets with time, optional distance and effort)
 - Workout history
 - Basic progress (e.g. estimated volume, simple PR detection on a lift)
 - Reusable session templates as needed so logging is not painful
@@ -524,6 +524,17 @@ Users should be able to inspect underlying journal entries when themes ship.
 ## 8. Social accountability — Later
 
 Out of Phase 1. If revisited: privacy-first, support rather than competition, no requirement to share journals. Do not staff navbar Community as a Phase 1 engagement bet.
+
+### Community and sharing (future)
+
+Long-term vision: a community feed where people share wins, PRs, and workouts, to build community. It might start with a Share button on a PR badge or a finished workout. This is future — not Phase 1, not Slice 3. No UI, tables, or tickets now. It is not trainer program sharing; that stays post–Slice 3 ingestion. Profile `sharing_preferences` already exists for later use and is unchanged here.
+
+When it is specced later:
+
+- Opt-in sharing, with visibility controls.
+- Journal and mind data are never shared by default and never auto-included.
+- Moderation and reporting.
+- It builds on the existing deterministic PR flag and workout records, so no Slice 3 data-model change is needed.
 
 ---
 
