@@ -29,6 +29,33 @@ Handoff pack: [README.md](./README.md).
 
 ---
 
+## 2026-11-27 — Slice 3 workouts planning (PR #100)
+
+### Completed
+
+- Docs only. Slice 3 planning is in `docs/vertical_slices/slice_3_workouts/README.md` and `tickets.md`, with decisions D1–D28. No application code and no migration, so no `db:push`.
+- D28 brings cardio into Slice 3. `exercises.tracking_type` is `strength` or `cardio`. `workout_sets.reps` is nullable. `duration_seconds`, `distance`, and `distance_unit` are nullable, with CHECKs, and are on the column-level insert and update grants. Cardio sets are excluded from volume and PRs, and saving one does not start the rest timer.
+- PRD line 326 now describes strength sets (reps, load, optional RPE/RIR and notes) and cardio sets (time, optional distance and effort).
+- Option B log UX locked Nov 23, 2026: a day view with date arrows and one card per exercise; the Track screen stays on the log route via `?exercise=`; History is a tab there; per-set notes are null or 1–500 characters; the trophy is computed at read time and marks the earliest non-warm-up set at the heaviest stored load; there is no tempo field.
+- Option B mockups are under `docs/mockups/slice_3_workouts/` (`option-b-01-day-view.png`, `option-b-02-track.png`, `option-b-03-history-and-cardio.png`). The older inline log image is marked superseded for the logging flow.
+
+### Decisions
+
+- Ryan locked D1–D28 on Nov 23, 2026, including Option B and cardio in Slice 3.
+- Deferred: pace, cardio PRs, heart rate and zones, intervals and laps, GPS/Strava, calories, numeric cardio template targets, a structured tempo field, and a Graph tab on Track (Insights).
+
+### Issues
+
+- None in this PR.
+
+### Next
+
+- Slice 3 implementation still waits on Slice 2 close-out. Open the GitHub issues from `tickets.md` when that starts.
+
+### AI Notes
+
+- Cursor cloud agent. Docs only.
+
 ## 2026-11-23 — Option B log: day view and Track
 
 - Ryan replaced the inline log with a day view plus a per-exercise Track screen on the same route (`?exercise=`). Per-set notes are a nullable 1–500 text column. The PR trophy marks the earliest set at the heaviest stored load, on the day view, History, and the finish summary. Tempo stays in the exercise note. A Graph tab stays in Insights. PRD was not edited.
